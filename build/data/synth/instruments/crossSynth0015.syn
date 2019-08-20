@@ -1,0 +1,112 @@
+synth {
+  instrument {
+    name: Cross synth 15
+    volume: 1
+    biquadFilter {
+      subtype: High-pass
+      gain: 1
+      wet: 1
+      frequency: 20
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+    }
+    reverb {
+      subtype: MVerb
+      gain: 1.3
+      mix: 0.300000012
+      earlyMix: 1
+      size: 1
+      density: 0.5
+      decay: 0.800000012
+      preDelay: 0
+      dampingFrequency: 0.200000003
+      bandwidthFrequency: 1
+    }
+    voice {
+      volume: 0.55
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Saw
+        waveTableMode: Single
+        waveformParameters: 
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 1
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+        pitchSmoothingsDraggingGraph {
+          numDataPoints: 128
+          xRange: 0, 0
+          yRange: 0, 1
+          curve: 0, 1, 0, 0.696160267, 0.909547739, 0, 1, 0, 0
+        }
+      }
+    }
+    voice {
+      volume: 0.25
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      filterFrequencyModular: -1, 1, 500, 40000
+      waveform {
+        type: Saw
+        waveTableMode: Single
+        waveformParameters: 
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 1
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+        pitchSmoothingsDraggingGraph {
+          numDataPoints: 128
+          xRange: 0, 0
+          yRange: 0, 1
+          curve: 0, 1, 0, 0.555926544, 0.859296482, 0, 1, 0, 0
+        }
+      }
+    }
+    envelope {
+      type: adsr
+      parameters: 0, 0.1, 1, 0.07
+      output: 0
+    }
+    voiceCrossModulation {
+      mode: Frequency modulation
+      numVoices: 2
+      amounts: 0, 0.01, 20, 4
+    }
+  }
+}

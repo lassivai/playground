@@ -1,0 +1,48 @@
+instrument {
+  volume: 1.000000
+  name: Synth 16
+  voice {
+    volume: 0.150000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1.000000
+    unisonDetuning: 0.001000
+    unisonDetuningRandomSeeds: 4.000000, 8.000000
+    amplitudeModulator: 0.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 0.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Sin
+      waveTableMode: Single faster
+      partials {
+        count: 9.000000
+        usePattern: 1.000000
+        frequencyParameters: 1.000000, 1.000000, 1.000000, 2.000000, 1.000000, 0.000000
+        gainParameters: 3.000000, 8.000000, 200.000000, 8.000000, 0.090000, 0.000006
+      }
+      fastNoiseWaveform {
+        noiseType: 0.000000
+        frequency: 100.000000
+        seed: 56789.000000
+        interpolation: 0.000000
+        fractalType: 0.000000
+        fractalOctaves: 3.000000
+        fractalLacunarity: 2.000000
+        fractalGain: 0.500000
+        cellularDistanceFunction: 0.000000
+        cellularReturnType: 0.000000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.050000, 0.000000, -40.000000
+    output: 0.000000
+    type: ahe
+  }
+}

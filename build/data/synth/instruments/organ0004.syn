@@ -1,0 +1,52 @@
+instrument {
+  name: Organ 4
+  volume: 0.850000
+  multiDelay {
+    gain: 1.080000
+    wet: 0.880000
+    out: 1, 1.000000
+    out: 0, 0.000000
+    out: 0, 0.000000
+  }
+  biquadFilter {
+    subtype: Low-pass
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 2600.000000
+    dbGain: 3.000000
+    bandwidth: 2.000000
+    qualityFactor: 1.000000
+  }
+  voice {
+    volume: 0.700000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.600000
+    unison: 2
+    unisonDetuning: 0.006000
+    unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave02
+      waveTableMode: Single faster
+      waveformParameters: 0.800000
+      phaseOffsets: 0.000030, 1.000000
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 8
+        usePattern: 1
+        frequencyParameters: 1.000000, 2.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        gainParameters: 1.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.020000, -0.000000, -2.000000
+    output: 1
+  }
+}

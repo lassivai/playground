@@ -1,0 +1,68 @@
+instrument {
+  name: Synth 48
+  volume: 1
+  reverb {
+    subtype: FreeVerb
+    gain: 1
+    wet: 0.933333
+    dry: 0.6
+    width: 1
+    roomSize: 0.18
+    damp: 0.94
+  }
+  voice {
+    volume: 0.55
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 2
+    unisonDetuning: 0.009
+    unisonDetuningRandomSeeds: 1, 9
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0.013351453, 0.013351453
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 5
+      maxHarmonicSmoothing: 500
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 4
+      partials {
+        pattern: Graphs
+        count: 20
+      }
+      factorDraggingGraph {
+        yRange: 1, 20
+        curve: 0, 1, 0.5, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 20
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0.5, 0.082706767, 0.080200501, 0.4, 0.095238095, 0.56641604, 0.5, 0.172932331, 0.897243108, 0.6, 0.28320802, 0.313283208, 0.5, 0.411027569, 0.929824561, 0.6, 0.466165414, 0.157894737, 0.4, 0.609022556, 0.86716792, 0.5, 0.726817043, 0.421052632, 0.4, 0.794486216, 0.834586466, 0.4, 1, 1, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.05, -1.7, -20, -0.00001
+    output: 0
+  }
+}

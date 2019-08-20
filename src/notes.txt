@@ -1,0 +1,107 @@
+*
+* 19.11.2018
+*  7317+2777+3839+10967+7060+546+3995+1324 = 37825 lines of code (including empty lines every now and then)
+*  756.5 pages (supposing 50 lines per page)
+*  about 2.5 pages of code per day on average (started this project in january 2018)
+*
+
+
+
+NOTE
+ * 27.8.2018: RtMidi and PortAudio initialization several times longer than before
+ *  - explanation: had modified /etc/pulse/default.pa with the following additions
+ *      load-module module-jack-sink
+ *      load-module module-jack-source
+ *
+
+ IDEA
+ * Generic tile engine or at least for clock work (tile editor with saving/loading)
+ *  - stretched screenshots of existing games could be used as templates to "reverse-engineer" some classic games
+ * Plants are needed! Either generic L-system engine or some other
+ *
+ *
+ *
+
+LEARN
+ * Non-pointer classes used with std::vectors have caused trouble in multiple occassions. Apparently their destructor
+ * being called unexpectedly before it should have happened.
+ *
+
+ DEBUG
+ * OpenGL: (SOLVED) dedicated half a day trying to make FBO work, but couldn't find anything I could do.
+           It tells that GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT. It might have something to do with troubles with SDL. I can't remember adding
+           any significant changes dealing with graphics/OpengGL/SDL after everything was going well.
+           Actually I don't know if it works any poorer than before, but I can't remember seeing that error message before.
+           Some things are fine (actually all the things I tested then), but for example GeomRenderer and textRenderer seem not to work with it.
+           As expected, the problem was there where one least expects it. There was coordinate problems with render targets whose size didn't
+           match window size. Y-coordinate needed to be flipped. The GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT error was because of one gui element,
+           apparently the guiRoot, which didn't have physical dimensions. Yeah. Tears.
+           I am still unable to get proper resolution from render to texture systems. There might be problems in the both rendering passes.
+           Probably some projection matrix thing.
+           It was not projection matrix thing. I got the original resolution when I changed clear(0, 0, 0, 0); to clear(1, 1, 1, 0);
+           The next problem is that all the colors look brighter.
+ * ShapeSketch: one curve (once -- twice -- 3x) skipped systematically when rendering a text with certain density values/and zoom ("a" part of "ä" of one specific ä), might have something to do bounding box clipping (on both times there was part of the text out of the screen). In every 3 case the ä had been second letter of the word following  a capital character. Really weird. (It was actually the same text and same ä letter in first and third case)
+ * OpenGL: either incomplete OpenGL initialization in my part or not matching OpenGL settings in SDL
+ *   - apparently still something needed in the texture creation setup, as creation of Fontxx before TextGl fixes failure to create texture
+ *   - similar error: alpha blending apparently not working but rendering of SDL primitive fixes that
+ *   - some color variation in text rendered to texture depending on what other stuff is going on
+ * TextGl: failure to create scaled down copy of a font once (infinite loop apparently somewhere)
+
+ TODO
+ * GeomRenderer: textures for rects, circles, triangles and polygons
+ * GeomRenderer: rendering sucks currently if scale changed (SOLVED?)
+ * get rid of that scene class (?)
+ * Debugging: extensive debugging info/messaging system
+ * Comprehensive OpenGL setup
+ * Get rid of memory leaks
+ * Generic implementation of key frame based animation
+ * Timer: arbitrary cycle period
+ * do the transformation math with own matrices instead of OpenGL matrices which could be used in other calculations
+ * ShapeSketch: paging for TextShapeSet
+ * ShapeSketch: curve selection with mouse pointer
+ * ShapeSketch: scale curve
+ * ShapeSketch: individual brush options for each shape
+ * ShapeSketch: whole word wrap, x position normalization for defined char shapes
+ * ShapeSketch: selection of point groups
+ * ShapeSketch: reset noise counters (or change to position based noise values to ensure start and end point matching)
+ * ShapeSketch: ShapePainter acceleration, automatic reset if shape changed
+ * Texture: render swap texture for only the part that was changed (?)
+ * Texture: histogram based image normalization etc.
+ * Texture: mipmaps, other sampling option for uv values outside normal range
+ * Texture: pixel perfect rendering for textures
+ * Texture: decide where to clamp color values (play safe and put to the lowest level?)
+ * complete transition from SDL image rendering to OpenGL
+ * PortAudio: check if initialized before finalizing (DONE)
+ * PortAudio/Synth: loop time independent of pa timer (FIXED at least partially, probably fine now)
+ * PortAudio/Synth: the transition from one loop to the next isn't exact currently (FIXED)
+ * PortAudio/Synth: tempo selection
+ * Synth: sound effects, different voices, etc. (encoded in individual notes...)
+ * Synth: option to arrange loop tracks in arbitrary order or overlapping
+ * Synth: apparently some incomplete stuff in midi message getter
+ * support for all common color models (RGB, HSV, HSL, etc.)
+ * TextGl: support for multiple font families
+ * TextGl: whole word wrapping
+ * FractSketch: save/load settings (DONE)
+ * FractSketch: variable sized rendering buffer (super sampling)
+ * FractSketch: remove or fix the synth integration
+ * FractSketch: animation color interpolation with rgb values (maybe done already)
+ * FractSketch: prevent color bar recreation when nothing relevant has changed
+ * text input: complete unicode support
+ * transition from char* strings to std::strings (e.g. text file)
+ * Command: browse command history with up/down arrows
+ * Command: give chance for the inherited sketch class to do additional functions with the commands
+ * Command: command actions through class inheritance and method overloading, or function pointers (probably unnecessary?)
+ * Command: command description (?)
+ * Command: definition of possible string values (to be shown in the usage string)
+ * Command: tab completion cycling for those possible string values
+ * error/warning/debug messages to message queue
+ * Build system: something more sophisticated
+ * screenshot
+ * window resize
+ * save/load current sketch state
+ * 3d scenes
+ * more support of OpenGL features
+ *  - abitrary 3D shapes
+ * volumetric rendering (test FBO with 3D texture)
+ * 3D fractals
+ * integration of some physics engine (Box2D for starters) (DONE, started with chipmunks)

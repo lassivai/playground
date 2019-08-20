@@ -1,0 +1,80 @@
+instrument {
+  name: Bells 6
+  volume: 1
+  reverb {
+    subtype: Zita
+    gain: 0.7
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.69
+    rt60: 20
+    rt60factorLow: 1
+    rt60factorHigh: 0.2
+    dcCutFrequency: 1
+    lfo1: 0.8
+    lfo2: 0.7
+    lfoFactor: 0
+    spin: 0.7
+    spinFactor: 0.09
+    xOverLow: 1
+    xOverHigh: 400
+    apFeedback: 0
+    lowPass: 100
+    highPass: 20
+  }
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 400
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 18
+      }
+      factorDraggingGraph {
+        yRange: 1, 90
+        curve: 0, 1, 0.5, 0.235588972, 0.704260652, 0.5, 0.551378446, 0.65914787, 0.5, 0.84962406, 0.240601504, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 18
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -1, -1, -0.05
+    output: 0
+  }
+}

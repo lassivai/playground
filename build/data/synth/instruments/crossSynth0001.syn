@@ -1,0 +1,78 @@
+synth {
+  instrument {
+    name: Cross synth 1
+    volume: 1
+    voice {
+      volume: 0.25
+      tuning: 1.011
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    voice {
+      volume: 0.25
+      tuning: 1.011
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0, 0, -6
+      output: 0
+    }
+    voiceCrossModulation {
+      mode: Frequency modulation
+      numVoices: 2
+      amounts: 0, 36, 0.1, 0
+    }
+  }
+}

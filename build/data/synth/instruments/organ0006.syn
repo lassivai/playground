@@ -1,0 +1,128 @@
+synth {
+  instrument {
+    name: Organ 6
+    volume: 1
+    reverb {
+      subtype: Zita
+      gain: 1
+      wet: 1
+      dry: 1
+      width: 1
+      diffusion: 0.99
+      rt60: 20
+      rt60factorLow: 1
+      rt60factorHigh: 0.2
+      dcCutFrequency: 1
+      lfo1: 0.8
+      lfo2: 0.7
+      lfoFactor: 0
+      spin: 0.7
+      spinFactor: 0.09
+      xOverLow: 1
+      xOverHigh: 8
+      apFeedback: 0
+      lowPass: 1000
+      highPass: 20
+    }
+    equalizer {
+      gain: 1
+      wet: 1
+      channel: 60, -10, 2
+      channel: 200, -4, 2
+      channel: 400, 0, 2
+      channel: 900, 0, 2
+      channel: 2000, 0, 2
+      channel: 4500, 0, 2
+      channel: 10000, 0, 2
+      channel: 15000, 0, 2
+    }
+    reverb {
+      subtype: MVerb
+      gain: 1
+      mix: 0.800000012
+      earlyMix: 1
+      size: 0.600000024
+      density: 0
+      decay: 1
+      preDelay: 0
+      dampingFrequency: 1
+      bandwidthFrequency: 0.200000003
+    }
+    biquadFilter {
+      subtype: High-pass
+      gain: 1
+      wet: 1
+      frequency: 2
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+    }
+    voice {
+      volume: 0.25
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 1
+      unison: 2
+      unisonDetuning: 0.005
+      unisonDetuningRandomSeeds: 3, 8
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: Equation
+          count: 7
+          frequencyParameters: 1, 2, 0, 0, 0, 0
+          gainParameters: 1, 0, 0, 0, 0, 0
+        }
+      }
+    }
+    voice {
+      volume: 0.25
+      tuning: 0.99
+      stereoPhaseOffset: 0
+      pan: -1
+      unison: 2
+      unisonDetuning: 0.0008
+      unisonDetuningRandomSeeds: 1, 4
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Wave02
+        waveTableMode: Single
+        waveformParameters: 4
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: Equation
+          count: 7
+          frequencyParameters: 1, 2, 0, 0, 0, 0
+          gainParameters: 1, 0, 0, 0, 0, 0
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.03, 0, -70, -0.05
+      output: 0
+    }
+  }
+}

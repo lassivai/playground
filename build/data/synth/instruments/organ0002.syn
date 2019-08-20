@@ -1,0 +1,50 @@
+instrument {
+  name: Organ 2
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 100, 1000
+  voice {
+    volume: 0.15
+    tuning: 1
+    stereoPhaseOffset: 0.6
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.01
+    unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    filterFrequencyModular: -1, 1, 100, 1000
+    waveform {
+      type: Wave02
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 600
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Equation
+        count: 8
+        frequencyParameters: 1, 2, 0, 0, 0, 0
+        gainParameters: 1, 0, 0, 0, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: adsr
+    parameters: 0.04, 0, 1, 0.03
+    output: 1
+  }
+}

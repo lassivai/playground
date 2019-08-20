@@ -1,0 +1,54 @@
+instrument {
+  volume: 0.600000
+  name: Organ 3
+  biquadFilter {
+    gain: 0.300000
+    wet: 1.000000
+    frequency: 3450.000000
+    dbGain: 0.440000
+    bandwidth: 3.000000
+    qualityFactor: 1.700000
+    subtype: High shelving
+  }
+  biquadFilter {
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 1.000000
+    dbGain: 3.000000
+    bandwidth: 2.000000
+    qualityFactor: 1.000000
+    subtype: High-pass
+  }
+  voice {
+    volume: 0.500000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000400
+    unison: 2.000000
+    unisonDetuning: 0.006000
+    unisonDetuningRandomSeeds: 4.000000, 5.000000
+    amplitudeModulator: 0.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 5.000000, 5.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 0.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Wave07
+      waveTableMode: Single faster
+      partials {
+        count: 5.000000
+        usePattern: 1.000000
+        frequencyParameters: 1.000000, 2.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        gainParameters: 1.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.200000, -0.010000, -8.000000
+    output: 1.000000
+    type: ahe
+  }
+}

@@ -1,0 +1,64 @@
+instrument {
+  name: Percussive 6
+  volume: 1.000000
+  biquadFilter {
+    subtype: Low-pass
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 380.000000
+    dbGain: 3.000000
+    bandwidth: 2.000000
+    qualityFactor: 1.000000
+  }
+  biquadFilter {
+    subtype: High-pass
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 8.200000
+    dbGain: 3.000000
+    bandwidth: 10.000000
+    qualityFactor: 1.000000
+  }
+  multiDelay {
+    gain: 1.100000
+    wet: 0.900000
+    out: 1, 1.000000
+    out: 0, 0.000000
+  }
+  voice {
+    volume: 0.500000
+    tuning: 0.700000
+    stereoPhaseOffset: 0.000001
+    unison: 8
+    unisonDetuning: 0.400000
+    unisonDetuningRandomSeeds: 2, 8
+    amplitudeModulator: 0
+    frequencyModulator: 1
+    amplitudeEnvelope: 1
+    frequencyEnvelope: 2
+    waveform {
+      type: Wave06
+      waveTableMode: Single faster
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 12
+        usePattern: 0
+        frequencies: 1.000000, 2.000000, 3.000000, 4.000000, 5.000000, 6.000000, 7.000000, 8.000000, 9.000000, 10.000000, 11.000000, 12.000000
+        gains: 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.000000, 0.000000, -6.000000
+    output: 1
+  }
+  envelope {
+    type: ahe
+    parameters: 0.000000, -1.000000, -1.000000
+    output: 2
+  }
+}

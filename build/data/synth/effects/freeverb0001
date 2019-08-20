@@ -1,0 +1,10 @@
+reverb {
+  subtype: FreeVerb
+  presetName: freeverb0001
+  gain: 0.400000
+  wet: 1.000000
+  dry: 0.500000
+  width: 1.000000
+  roomSize: 1.000000
+  damp: 0.600000
+}

@@ -1,0 +1,23 @@
+reverb {
+  subtype: Zita
+  presetName: zita0001
+  gain: 0.500000
+  wet: 1.000000
+  dry: 1.000000
+  width: 1.000000
+  diffusion: 0.780000
+  rt60: 6.000000
+  rt60factorLow: 1.300000
+  rt60factorHigh: 0.300000
+  dcCutFrequency: 2.500000
+  lfo1: 0.900000
+  lfo2: 1.300000
+  lfoFactor: 0.310000
+  spin: 2.400000
+  spinFactor: 0.300000
+  xOverLow: 500.000000
+  xOverHigh: 3600.000000
+  apFeedback: 0.600000
+  lowPass: 10000.000000
+  highPass: 4.000000
+}

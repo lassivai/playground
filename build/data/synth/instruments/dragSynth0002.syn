@@ -1,0 +1,81 @@
+synth {
+  instrument {
+    name: Drag synth 2
+    volume: 1
+    reverb {
+      subtype: Zita
+      gain: 0.8
+      wet: 1
+      dry: 1
+      width: 1
+      diffusion: 0.95
+      rt60: 5
+      rt60factorLow: 1
+      rt60factorHigh: 0.4
+      dcCutFrequency: 1
+      lfo1: 6
+      lfo2: 6
+      lfoFactor: 0.1
+      spin: 0.7
+      spinFactor: 0.09
+      xOverLow: 1
+      xOverHigh: 8
+      apFeedback: 0
+      lowPass: 1000
+      highPass: 60
+    }
+    voice {
+      volume: 0.35
+      tuning: 1
+      stereoPhaseOffset: 0.25
+      pan: 0
+      unison: 4
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Saw
+        waveTableMode: Single
+        waveformParameters: 
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 1
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: Graphs
+          count: 27
+        }
+        factorDraggingGraph {
+          yRange: 1, 8
+          curve: 0, 1, 0.5, 0.290720551, 0.879699248, 0.4, 0.37593985, 0.671679198, 0, 0.671679198, 0.661654135, 0, 1, 0, 0
+          roundDraggingFactors: 0
+          roundToNearestDraggingFraction: 1
+          clampMinDraggingFactor: 1
+        }
+        gainDraggingGraph {
+          numDataPoints: 27
+          xRange: 0, 0
+          yRange: 0, 1
+          curve: 0, 0, 0, 1, 0, 0
+        }
+        pitchSmoothingsDraggingGraph {
+          numDataPoints: 128
+          xRange: 0, 0
+          yRange: 0, 1
+          curve: 0, 1, 0, 0.515859766, 0.994974874, 0, 0.824707846, 0.869346734, 0, 1, 0.412060302, 0
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0, 0, -30
+      output: 0
+    }
+  }
+}

@@ -1,0 +1,82 @@
+instrument {
+  name: Flute 18 rev
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 100, 1000
+  reverb {
+    subtype: Zita
+    gain: 0.8
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.59
+    rt60: 5
+    rt60factorLow: 1
+    rt60factorHigh: 0.4
+    dcCutFrequency: 1
+    lfo1: 6
+    lfo2: 6
+    lfoFactor: 0.1
+    spin: 0.7
+    spinFactor: 0.09
+    xOverLow: 1
+    xOverHigh: 8
+    apFeedback: 0
+    lowPass: 1000
+    highPass: 60
+  }
+  voice {
+    volume: 0.7
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.006
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    filterFrequencyModular: -1, 1, 100, 1000
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 60
+      maxHarmonicSmoothing: 3000
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 21
+      }
+      factorDraggingGraph {
+        yRange: 1, 20
+        curve: 0, 1, 0.4, 0.135338346, 0.634085213, 0.5, 0.827067669, 0.463659148, 0.4, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 21
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 1, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.04, 0, -20, -0.05
+    output: 0
+  }
+}

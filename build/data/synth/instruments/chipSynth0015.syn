@@ -1,0 +1,47 @@
+instrument {
+  name: Chip Synth 15
+  volume: 1
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Triangle
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      waveformParameters: 2
+      phaseOffsets: 0.25, 0.25
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.56427379, 1, 0, 0.831385643, 0.793969849, 0, 1, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.00009, -2, -4, -0.03
+    output: 0
+  }
+}

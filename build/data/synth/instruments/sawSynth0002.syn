@@ -1,0 +1,63 @@
+instrument {
+  name: Saw synth 1
+  volume: 1
+  voice {
+    volume: 32.05
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Saw
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 1
+      waveValueOffset: 0
+      partials {
+        pattern: Equation
+        count: 7
+        frequencyParameters: 0.5, 2, 0, 1, 1, 0
+        gainParameters: 2, 0, 0, 3.7, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.58096828, 1, 0, 0.81803005, 0.768844221, 0, 1, 0.085427136, 0
+      }
+      pitchGainDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0.91959799, 0.5, 0.230383973, 0.914572864, 0.5, 0.537562604, 0.884422111, 0.5, 0.671118531, 0.698492462, 0.5, 0.754590985, 0.170854271, 0.5, 1, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, 0, -6, -0.05
+    output: 0
+  }
+  noteFilter {
+    subtype: Low-pass
+    gain: 1
+    wet: 1
+    frequency: 1025.457795895
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+  }
+}

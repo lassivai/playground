@@ -1,0 +1,11 @@
+reverb {
+  subtype: CCRMA
+  presetName: ccrma0005
+  gain: 1.100000
+  wet: 0.900000
+  dry: 0.800000
+  width: 1.000000
+  feedback: 0.500000
+  apFeedback: 0.920000
+  damp: 0.700000
+}

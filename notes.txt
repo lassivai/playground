@@ -1,0 +1,18 @@
+playground deployment
+
+dependency libraries probably should be statically linked
+
+freeverb3 needed to be downloaded from browser, other dependency libraries from ubuntu repositories. And placed into a parent folder...
+
+lodepng should be included in the project folder
+
+libglew updated from 2.0 to 2.1
+
+had custom sdl include folder name to distinguish different versions
+
+chipmunk header dissapeared
+//#include <chipmunk/chipmunk_structs.h>
+
+include only dependencies (available from repos.)
+ - eigen (matrices)
+ - cereal (serialization)

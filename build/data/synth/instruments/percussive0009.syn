@@ -1,0 +1,105 @@
+instrument {
+  name: Percussive 9
+  volume: 1.000000
+  biquadFilter {
+    subtype: Low-pass
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 730.000000
+    dbGain: 3.000000
+    bandwidth: 2.000000
+    qualityFactor: 1.000000
+  }
+  voice {
+    volume: 0.200000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1
+    unisonDetuning: 0.500000
+    unisonDetuningRandomSeeds: 2, 8
+    amplitudeModulator: -1
+    frequencyModulator: 1
+    amplitudeEnvelope: 1
+    frequencyEnvelope: 1
+    waveform {
+      type: White noise
+      waveTableMode: Single faster
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 1
+        usePattern: 1
+        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+        gainParameters: 30.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.100000
+      }
+    }
+  }
+  voice {
+    volume: 1.000000
+    tuning: 0.080000
+    stereoPhaseOffset: 0.000000
+    unison: 1
+    unisonDetuning: 0.001000
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: -1
+    frequencyModulator: -1
+    amplitudeEnvelope: 2
+    frequencyEnvelope: 2
+    waveform {
+      type: Wave08
+      waveTableMode: Single faster
+      waveformParameters: 0.700000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 1
+        usePattern: 0
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  modulator {
+    frequency: 1.000000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1
+    inputAM: -1
+    inputFM: -1
+    outputAM: 1
+    outputFM: 1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1.000000
+    depthFM: 1.000000
+    waveform {
+      type: Wave02
+      waveTableMode: Single faster
+      waveformParameters: 5.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 1
+        usePattern: 0
+        frequencies: 1.000000
+        gains: 1.000000
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.000000, -4.000000, -4.000000
+    output: 1
+  }
+  envelope {
+    type: ahe
+    parameters: 0.000000, -40.000000, -40.000000
+    output: 2
+  }
+}

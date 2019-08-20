@@ -1,0 +1,74 @@
+instrument {
+  name: FM synth 4
+  volume: 1
+  voice {
+    volume: 0.2
+    tuning: 1
+    stereoPhaseOffset: 0
+    unison: 1
+    unisonDetuning: 1
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 1
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveformParameters: 1
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 1
+      }
+    }
+  }
+  modulator {
+    frequency: 1
+    stereoPhaseOffset: 0.5
+    stereoPhaseDifference: 0
+    relativeMode: 1
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
+    outputFM: 1
+    amplitudeEnvelope: 2
+    frequencyEnvelope: -1
+    depthAM: 0.1
+    depthFM: 2
+    waveform {
+      type: Wave04
+      waveTableMode: Single faster
+      waveformParameters: 4
+      phaseOffsets: 0.29, 0.29
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      partials {
+        pattern: Equation
+        count: 4
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 20, 0, 0, 0, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, 0, -3
+    output: 1
+  }
+  envelope {
+    type: fourPoint
+    parameters: 0.01, 0, 0, 1, 0, 1, 0, 1
+    output: 2
+  }
+}

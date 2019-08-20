@@ -1,0 +1,13 @@
+reverb {
+  subtype: MVerb
+  presetName: mverb0002
+  gain: 1.300000
+  mix: 0.400000
+  earlyMix: 1.000000
+  size: 1.000000
+  density: 0.090000
+  decay: 1.000000
+  preDelay: 0.000000
+  dampingFrequency: 0.400000
+  bandwidthFrequency: 0.400000
+}

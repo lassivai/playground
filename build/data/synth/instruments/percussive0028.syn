@@ -1,0 +1,45 @@
+instrument {
+  volume: 1.000000
+  name: Percussive 28
+  biquadFilter {
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 88.000000
+    dbGain: 2.000000
+    bandwidth: 0.300000
+    qualityFactor: 1.000000
+    subtype: Band-pass
+  }
+  voice {
+    volume: 3.000000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1.000000
+    unisonDetuning: 0.007000
+    unisonDetuningRandomSeeds: 0.000000, 0.000000
+    amplitudeModulator: 0.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 0.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: White noise
+      waveTableMode: None
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.000000, -6.000000, -6.000000
+    output: 1.000000
+    type: ahe
+  }
+}

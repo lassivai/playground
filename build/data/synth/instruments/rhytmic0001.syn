@@ -1,0 +1,171 @@
+instrument {
+  volume: 1.000000
+  name: Rhythmic 1
+  biquadFilter {
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 2.000000
+    dbGain: 3.000000
+    bandwidth: 2.000000
+    qualityFactor: 1.000000
+    subtype: High-pass
+  }
+  voice {
+    volume: 0.950000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.150000
+    unison: 1.000000
+    unisonDetuning: 0.001000
+    unisonDetuningRandomSeeds: 1.000000, 4.000000
+    amplitudeModulator: 1.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 0.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 0.500000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 0.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Square
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 1.000000
+      }
+    }
+  }
+  modulator {
+    frequency: 0.500800
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: -1.000000
+    outputFM: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 0.100000
+    depthFM: 1.000000
+    waveform {
+      waveformParameters: 0.500000
+      phaseOffsets: 0.210000, 0.210000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Square
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  modulator {
+    frequency: 0.500000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: -1.000000
+    outputFM: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 0.100000
+    depthFM: 1.000000
+    waveform {
+      waveformParameters: 0.500000
+      phaseOffsets: 0.468000, 0.468000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Square
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  modulator {
+    frequency: 0.500500
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: -1.000000
+    outputFM: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 0.100000
+    depthFM: 1.000000
+    waveform {
+      waveformParameters: 0.500000
+      phaseOffsets: 0.755000, 0.755000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Square
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  modulator {
+    frequency: 10.000000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 0.000000
+    inputAM: 2.000000
+    inputFM: -1.000000
+    outputAM: 1.000000
+    outputFM: -1.000000
+    amplitudeEnvelope: -1.000000
+    frequencyEnvelope: 2.000000
+    depthAM: 1.000000
+    depthFM: 0.030000
+    waveform {
+      waveformParameters: 0.060000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Power
+      waveTableMode: Single
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: -0.900000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.060000, 0.000000, -6.000000
+    output: 0.000000
+    type: ahe
+  }
+  envelope {
+    parameters: 0.010000, 0.000000, -6.000000
+    output: 1.000000
+    type: ahe
+  }
+  envelope {
+    parameters: 2.000000, 0.400000, 1.000000, 0.000000, 1.000000, 0.000000, 1.000000, 0.080000
+    output: 2.000000
+    type: fourPoint
+  }
+}

@@ -1,0 +1,53 @@
+instrument {
+  name: Percussive 11
+  volume: 1.000000
+  biquadFilter {
+    subtype: Band-pass
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 88.000000
+    dbGain: 3.000000
+    bandwidth: 0.400000
+    qualityFactor: 1.000000
+  }
+  multiDelay {
+    gain: 1.100000
+    wet: 0.900000
+    out: 1, 1.000000
+    out: 0, 0.000000
+    out: 0, 0.000000
+    out: 0, 0.000000
+    out: 0, 0.000000
+  }
+  voice {
+    volume: 4.000000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.500000
+    unison: 1
+    unisonDetuning: 0.030000
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    waveform {
+      type: White noise
+      waveTableMode: None
+      phaseOffsets: 0.000000, 1.000000
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 1
+        usePattern: 0
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  envelope {
+    type: pad
+    parameters: 0.000000, 0.000000, 0.300000, 10.000000
+    output: 1
+  }
+}

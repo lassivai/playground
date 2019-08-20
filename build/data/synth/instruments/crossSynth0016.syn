@@ -1,0 +1,120 @@
+synth {
+  instrument {
+    name: Cross synth 16
+    volume: 1
+    biquadFilter {
+      subtype: High-pass
+      gain: 1
+      wet: 1
+      frequency: 20
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+    }
+    reverb {
+      subtype: MVerb
+      gain: 1.3
+      mix: 0.300000012
+      earlyMix: 1
+      size: 1
+      density: 0.5
+      decay: 1
+      preDelay: 0
+      dampingFrequency: 0.079999998
+      bandwidthFrequency: 0.100000001
+    }
+    multiDelay {
+      gain: 1
+      wet: 0.4
+      out: 40000, 0.5
+      out: 51000, 1
+    }
+    voice {
+      volume: 0.25
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    voice {
+      volume: 0.25
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      filterFrequencyModular: -1, 1, 40, 5000
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+      biquadFilter {
+        subtype: Low-pass
+        gain: 3
+        wet: 1
+        frequency: 40
+        dbGain: 3
+        bandwidth: 2
+        qualityFactor: 1
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.0002, -6, -6
+      output: 0
+    }
+    envelope {
+      type: ahe
+      parameters: 0, -60, -60
+      output: 1
+    }
+    voiceCrossModulation {
+      mode: Frequency modulation
+      numVoices: 2
+      amounts: 0, 0, 30, 0.08
+    }
+  }
+}

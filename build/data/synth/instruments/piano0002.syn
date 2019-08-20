@@ -1,0 +1,43 @@
+instrument {
+  volume: 1.000000
+  name: Piano 2
+  multiDelay {
+    gain: 0.910000
+    wet: 0.880000
+    out: 1.000000, 1.000000
+    out: 0.000000, 0.000000
+    out: 0.000000, 0.000000
+  }
+  voice {
+    volume: 0.600000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000400
+    unison: 2.000000
+    unisonDetuning: 0.006000
+    unisonDetuningRandomSeeds: 4.000000, 14.000000
+    amplitudeModulator: 0.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 3.000000
+      phaseOffsets: 0.634000, 0.634000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.002000
+      type: Wave05
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 1.000000
+        frequencyParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.500000, 1.000000
+        gainParameters: 1.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.000000, -1.000000, -2.000000
+    output: 1.000000
+    type: ahe
+  }
+}

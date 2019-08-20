@@ -1,0 +1,65 @@
+instrument {
+  name: Pad 2
+  volume: 1.000000
+  multiDelay {
+    gain: 1.090000
+    wet: 0.890000
+    out: 1, 1.000000
+    out: 0, 0.000000
+  }
+
+  voice {
+    volume: 0.250000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 6
+    unisonDetuning: 0.749153
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeEnvelope: 1
+    frequencyModulator: 1
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 1.000000
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.060000
+      partials {
+        count: 6
+        usePattern: 1
+        frequencyParameters: 1.000000, 2.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        gainParameters: 0.300000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  envelope {
+    output: 1
+    type: ahe
+    parameters: 0.700000, 0.000000, -3.000000
+  }
+  modulator {
+    depthFM: 1.000000
+    outputFM: 1
+    frequency: 0.500000
+    stereoPhaseOffset: 0.500000
+    stereoPhaseDifference: 5.000000
+    relativeMode: 1
+
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 9.000000
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 1
+        usePattern: 0
+        frequencies: 1.000000
+        gains: 1.000000
+      }
+    }
+  }
+}

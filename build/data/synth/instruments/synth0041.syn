@@ -1,0 +1,100 @@
+instrument {
+  name: Synth 41
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 100, 1000
+  voice {
+    volume: 0.7
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.006
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    filterFrequencyModular: -1, 1, 100, 1000
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 1000
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 29
+      }
+      factorDraggingGraph {
+        yRange: 1, 10
+        curve: 0, 1, 0.4, 0.37593985, 0.992481203, 0, 0.37593985, 0.781954887, 0, 0.576441103, 0.771929825, 0.5, 0.619047619, 0.035087719, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 29
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 0.446115288, 0.015037594, 0, 1, 0, 0
+      }
+    }
+  }
+  modulator {
+    frequency: 5
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 0
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
+    outputFM: 0
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 0.01
+    waveform {
+      type: Sin
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.04, 0, -20, -0.05
+    output: 0
+  }
+}

@@ -1,0 +1,42 @@
+instrument {
+  volume: 1.000000
+  name: Strings 1
+  multiDelay {
+    gain: 1.100000
+    wet: 0.900000
+    out: 1.000000, 1.000000
+    out: 0.000000, 0.000000
+  }
+  voice {
+    volume: 0.200000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 4.000000
+    unisonDetuning: 0.008000
+    unisonDetuningRandomSeeds: 6.000000, 50.000000
+    amplitudeModulator: 0.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 
+      phaseOffsets: 0.000000, 1.000000
+      lockedStereoPhase: 0.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.060000
+      type: Saw
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.200000, -0.020000, -7.000000
+    output: 1.000000
+    type: ahe
+  }
+}

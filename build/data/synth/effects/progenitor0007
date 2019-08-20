@@ -1,0 +1,21 @@
+reverb {
+  subtype: Progenitor
+  presetName: progenitor0007
+  gain: 1.000000
+  wet: 1.000000
+  dry: 0.500000
+  width: 1.000000
+  diffusion1: 0.450000
+  diffusion2: 0.870000
+  diffusion3: 0.970000
+  diffusion4: 0.790000
+  damp: 1000.000000
+  inputDamp: 4000.000000
+  outputDamp: 2000.000000
+  outputBandwidth: 4.000000
+  spin: 1.000000
+  decay1: 0.540000
+  decay2: 0.990000
+  decay3: 0.820000
+  decay4: 0.930000
+}

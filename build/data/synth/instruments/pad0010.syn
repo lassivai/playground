@@ -1,0 +1,130 @@
+synth {
+  instrument {
+    name: Pad 10
+    volume: 1
+    biquadFilter {
+      subtype: High-pass
+      gain: 1
+      wet: 1
+      frequency: 20
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+    }
+    reverb {
+      subtype: Progenitor
+      gain: 0.5
+      wet: 1
+      dry: 0.5
+      width: 1
+      diffusion1: 0.9
+      diffusion2: 0.87
+      diffusion3: 0.77
+      diffusion4: 0.85
+      damp: 7000
+      inputDamp: 2000
+      outputDamp: 900
+      outputBandwidth: 5
+      spin: 0.1
+      decay1: 0.99
+      decay2: 0.89
+      decay3: 0.89
+      decay4: 0.89
+    }
+    reverb {
+      subtype: Zita
+      gain: 0.7
+      wet: 1
+      dry: 1
+      width: 1
+      diffusion: 0.89
+      rt60: 3
+      rt60factorLow: 1
+      rt60factorHigh: 1
+      dcCutFrequency: 2.5
+      lfo1: 0.3
+      lfo2: 1
+      lfoFactor: 0.9
+      spin: 0.7
+      spinFactor: 0.5
+      xOverLow: 90
+      xOverHigh: 10000
+      apFeedback: 0.5
+      lowPass: 10000
+      highPass: 60
+    }
+    voice {
+      volume: 0.25
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single faster
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    voice {
+      volume: 0.25
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.06
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      filterFrequencyModular: -1, 1, 500, 40000
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.4, -0, -4
+      output: 0
+    }
+    voiceCrossModulation {
+      mode: Frequency modulation
+      numVoices: 2
+      amounts: 0.6, 0.2305, 0.38, 0
+    }
+  }
+}

@@ -1,0 +1,82 @@
+instrument {
+  name: Thunder 1
+  volume: 1
+  reverb {
+    subtype: Zita
+    gain: 0.7
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.49
+    rt60: 7
+    rt60factorLow: 1
+    rt60factorHigh: 0.1
+    dcCutFrequency: 1
+    lfo1: 0.8
+    lfo2: 0.7
+    lfoFactor: 0
+    spin: 0.2
+    spinFactor: 0.03
+    xOverLow: 1
+    xOverHigh: 3000
+    apFeedback: 0
+    lowPass: 1000
+    highPass: 200
+  }
+  voice {
+    volume: 2.05
+    tuning: 0.0005
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0
+    unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: 1
+    waveform {
+      type: Gradient noise
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Zeros in range
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Equation
+        count: 1
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 1, 0, 0, 0, 0, 0
+      }
+      fastNoise {
+        noiseType: 5
+        frequency: 2000
+        seed: 46789
+        interpolation: 0
+        fractalType: 0
+        fractalOctaves: 5
+        fractalLacunarity: 3
+        fractalGain: 0.7
+        cellularDistanceFunction: 0
+        cellularReturnType: 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -2, -2, -0.00001
+    output: 0
+  }
+}

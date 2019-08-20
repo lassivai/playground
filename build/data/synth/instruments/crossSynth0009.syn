@@ -1,0 +1,102 @@
+synth {
+  instrument {
+    name: Cross synth 9
+    volume: 1
+    biquadFilter {
+      subtype: High-pass
+      gain: 1
+      wet: 1
+      frequency: 20
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+    }
+    voice {
+      volume: 0.25
+      tuning: 1.024
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    voice {
+      volume: 0.25
+      tuning: 1.024
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.3
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      filterFrequencyModular: -1, 1, 8000, 90
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+      biquadFilter {
+        subtype: Low-pass
+        gain: 3
+        wet: 1
+        frequency: 8000
+        dbGain: 3
+        bandwidth: 2
+        qualityFactor: 1
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.0005, -0, -6
+      output: 0
+    }
+    envelope {
+      type: pad
+      parameters: 0, 0, 0.11, 0.2
+      output: 1
+    }
+    voiceCrossModulation {
+      mode: Frequency modulation
+      numVoices: 2
+      amounts: 0.2, 0, 7, 6
+    }
+  }
+}

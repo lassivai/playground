@@ -1,0 +1,142 @@
+instrument {
+  volume: 1.000000
+  name: String 1
+  biquadFilter {
+    gain: 0.100000
+    wet: 1.000000
+    frequency: 3607.000000
+    dbGain: 0.557000
+    bandwidth: 2.000000
+    qualityFactor: 2.000000
+    subtype: High shelving
+  }
+  biquadFilter {
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 50.000000
+    dbGain: 3.000000
+    bandwidth: 5.000000
+    qualityFactor: 1.000000
+    subtype: High-pass
+  }
+  voice {
+    volume: 0.200000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1.000000
+    unisonDetuning: 0.008000
+    unisonDetuningRandomSeeds: 6.000000, 50.000000
+    amplitudeModulator: -1.000000
+    frequencyModulator: -1.000000
+    amplitudeEnvelope: 0.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 
+      phaseOffsets: 0.000000, 1.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.070000
+      type: Saw
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 1.000000
+        frequencyParameters: 1.000000, 1.000000, 0.000000, 1.000000, 1.000000, 0.000000
+        gainParameters: 1.000000, 0.000000, 0.000000, 0.000000, 0.000000, 1.000000
+      }
+    }
+  }
+  voice {
+    volume: 0.200000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1.000000
+    unisonDetuning: 0.001000
+    unisonDetuningRandomSeeds: 0.000000, 0.000000
+    amplitudeModulator: -1.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 0.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Sin
+      waveTableMode: Single faster
+      partials {
+        count: 4.000000
+        usePattern: 0.000000
+        frequencies: 1.000000, 2.000000, 3.000000, 4.000000
+        gains: 0.500000, 0.250000, 0.125000, 0.062500
+      }
+    }
+  }
+  voice {
+    volume: 0.350000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1.000000
+    unisonDetuning: 0.001000
+    unisonDetuningRandomSeeds: 0.000000, 0.000000
+    amplitudeModulator: -1.000000
+    frequencyModulator: -1.000000
+    amplitudeEnvelope: 0.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 40.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Wave02
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  modulator {
+    frequency: 6.000000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 0.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: -1.000000
+    outputFM: 0.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 0.300000
+    depthFM: 0.008000
+    waveform {
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Sin
+      waveTableMode: Single
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.200000, -0.020000, -12.000000
+    output: 0.000000
+    type: ahe
+  }
+  envelope {
+    parameters: 2.000000, 0.000000, -6.000000
+    output: 1.000000
+    type: ahe
+  }
+}

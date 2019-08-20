@@ -1,0 +1,85 @@
+synth {
+  instrument {
+    name: Synth 27b
+    volume: 1
+    noteFilterFrequencyModular: -1, 1, 3000, 30000
+    reverb {
+      subtype: Zita
+      gain: 0.5
+      wet: 1
+      dry: 1
+      width: 1
+      diffusion: 0.78
+      rt60: 6
+      rt60factorLow: 1.3
+      rt60factorHigh: 0.3
+      dcCutFrequency: 2.5
+      lfo1: 0.9
+      lfo2: 1.3
+      lfoFactor: 0.31
+      spin: 2.4
+      spinFactor: 0.3
+      xOverLow: 500
+      xOverHigh: 3600
+      apFeedback: 0.6
+      lowPass: 10000
+      highPass: 4
+    }
+    voice {
+      volume: 0.35
+      tuning: 1
+      stereoPhaseOffset: 0.06
+      pan: 0
+      unison: 3
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Saw
+        waveTableMode: Single faster
+        waveformParameters: 
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 1
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: Equation
+          count: 6
+          frequencyParameters: 1, 1, 0, 0, 1, 0
+          gainParameters: 0, 0, 0, 0, 0, 0
+        }
+        pitchSmoothingsDraggingGraph {
+          numDataPoints: 128
+          xRange: 0, 0
+          yRange: 0, 1
+          curve: 0, 1, 0, 0.457429048, 0.984924623, 0, 1, 0.567839196, 0
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.0008, 0, -3, -0.05
+      output: 0
+    }
+    envelope {
+      type: ahe
+      parameters: 0.4, -3, -10, -0
+      output: 1
+    }
+    noteFilter {
+      subtype: Low-pass
+      gain: 1
+      wet: 1
+      frequency: 10420.178571429
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+    }
+  }
+}

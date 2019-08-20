@@ -1,0 +1,12 @@
+synth {
+  reverb {
+    subtype: FreeVerb
+    presetName: freeverb0003
+    gain: 0.5
+    wet: 0.6
+    dry: 1
+    width: 1
+    roomSize: 0.3
+    damp: 0.6
+  }
+}

@@ -1,0 +1,13 @@
+reverb {
+  subtype: Lexicon224
+  presetName: lexicon0001
+  wet: 1.000000
+  dry: 1.000000
+  width: 1.000000
+  diffusion: 0.500000
+  damp: 200.000000
+  inputDamp: 10000.000000
+  outputDamp: 10000.000000
+  rt60: 3.000000
+  dcCutFrequency: 3.000000
+}

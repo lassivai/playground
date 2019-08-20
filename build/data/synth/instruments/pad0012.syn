@@ -1,0 +1,127 @@
+synth {
+  instrument {
+    name: Pad 12
+    volume: 1
+    noteFilterFrequencyModular: -1, 1, 7000, 60
+    reverb {
+      subtype: MVerb
+      gain: 1.3
+      mix: 0.300000012
+      earlyMix: 1
+      size: 1
+      density: 0.5
+      decay: 0.800000012
+      preDelay: 0
+      dampingFrequency: 0.200000003
+      bandwidthFrequency: 1
+    }
+    biquadFilter {
+      subtype: High-pass
+      gain: 1
+      wet: 1
+      frequency: 25
+      dbGain: -5
+      bandwidth: 2
+      qualityFactor: 1
+    }
+    voice {
+      volume: 0.3
+      tuning: 0.25
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 4
+      unisonDetuning: 0.007
+      unisonDetuningRandomSeeds: 2, 6
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Wave13
+        waveTableMode: Single faster
+        waveformParameters: 1, 1, 2
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0.000001
+        partials {
+          pattern: Graphs
+          count: 15
+        }
+        factorDraggingGraph {
+          yRange: 1, 5
+          curve: 0, 1, 0.5, 0.395989975, 0.927318296, 0.5, 0.463659148, 0.085213033, 0.4, 1, 0, 0
+          roundDraggingFactors: 0
+          roundToNearestDraggingFraction: 1
+          clampMinDraggingFactor: 1
+        }
+        gainDraggingGraph {
+          numDataPoints: 15
+          xRange: 0, 0
+          yRange: 0, 1
+          curve: 0, 0, 0, 1, 0, 0
+        }
+      }
+    }
+    modulator {
+      frequency: 20
+      stereoPhaseOffset: 0
+      pan: 0
+      stereoPhaseDifference: 0
+      relativeMode: 0
+      inputAM: -1
+      inputFM: -1
+      outputAM: 0
+      outputFM: -1
+      amplitudeEnvelope: -1
+      frequencyEnvelope: 2
+      depthAM: 0.5
+      depthFM: 0.001
+      waveform {
+        type: Wave08
+        waveTableMode: Single
+        waveformParameters: 5
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 1
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.0002, -0.1, -8
+      output: 0
+    }
+    envelope {
+      type: ahe
+      parameters: 0, -0.06, -0.06
+      output: 1
+    }
+    envelope {
+      type: ahe
+      parameters: 0, -0.5, -0.5
+      output: 2
+    }
+    noteFilter {
+      subtype: Low-pass
+      gain: 1
+      wet: 1
+      frequency: 5415.612298456
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+    }
+  }
+}

@@ -1,0 +1,113 @@
+instrument {
+  name: Chip Synth 4
+  volume: 1
+  voice {
+    volume: 0.09
+    tuning: 2
+    stereoPhaseOffset: 0.25
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Square
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 0.5
+      phaseOffsets: 0.01, 0.01
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.50918197, 1, 0, 1, 0.502512563, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0.25
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 1
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+    }
+  }
+  modulator {
+    frequency: 6
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 0
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
+    outputFM: 0
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 0.007
+    waveform {
+      type: Sin
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 1
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, 0, -6, -0.05
+    output: 0
+  }
+}

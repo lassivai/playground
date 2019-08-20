@@ -1,0 +1,70 @@
+instrument {
+  name: Synth 38
+  volume: 1
+  reverb {
+    subtype: MVerb
+    gain: 1.3
+    mix: 0.300000012
+    earlyMix: 1
+    size: 1
+    density: 0.5
+    decay: 0.300000012
+    preDelay: 0
+    dampingFrequency: 0.200000003
+    bandwidthFrequency: 1
+  }
+  voice {
+    volume: 0.3
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 700
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 2
+      partials {
+        pattern: Graphs
+        count: 20
+      }
+      factorDraggingGraph {
+        yRange: 1, 20
+        curve: 0, 1, 0.5, 0.182957393, 0.796992481, 0.5, 0.303258145, 0.248120301, 0.5, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 3
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 20
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 1, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.05, 0, -20, -0.05
+    output: 0
+  }
+}

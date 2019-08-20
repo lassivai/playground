@@ -1,0 +1,169 @@
+instrument {
+  name: Pad 16
+  volume: 1
+  noteFilterFrequencyModular: 2, -1, 200, 3000
+  reverb {
+    subtype: FreeVerb
+    gain: 0.4
+    wet: 1
+    dry: 0.65
+    width: 1
+    roomSize: 1
+    damp: 0
+  }
+  multiDelay {
+    gain: 1
+    wet: 0.3
+    samplerate: 96000
+    out: 28800, 1
+    out: 48000, 1
+  }
+  voice {
+    volume: 0.4
+    tuning: 1
+    stereoPhaseOffset: 0.6
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.01
+    unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: -1
+    frequencyModulator: 1
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave05
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      waveformParameters: 20
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: Equation
+        count: 1
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 5, 0, 0, 0, 0, 0
+      }
+    }
+  }
+  modulator {
+    frequency: 20
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 1
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
+    outputFM: 1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 5
+    waveform {
+      type: Sin
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 1
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: Equation
+        count: 1
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 1.8, 0, 0, 0, 0, 0
+      }
+    }
+  }
+  modulator {
+    frequency: 10
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 0
+    inputAM: -1
+    inputFM: 3
+    outputAM: 2
+    outputFM: -1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 1
+    waveform {
+      type: Power
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      waveformParameters: 0.4
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: -0.5
+      }
+    }
+  }
+  modulator {
+    frequency: 0.8
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 0
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
+    outputFM: 3
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 1
+    waveform {
+      type: Sin
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 1
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.6, 0, -3, -0.05
+    output: 0
+  }
+  noteFilter {
+    subtype: Low-pass
+    gain: 1
+    wet: 1
+    frequency: 1885.29992245
+    dbGain: 3
+    bandwidth: 6
+    qualityFactor: 1
+  }
+}

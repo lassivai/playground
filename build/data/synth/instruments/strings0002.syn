@@ -1,0 +1,66 @@
+synth {
+  instrument {
+    name: Strings 2
+    volume: 1
+    reverb {
+      subtype: MVerb
+      gain: 1.3
+      mix: 0.300000012
+      earlyMix: 1
+      size: 1
+      density: 0.5
+      decay: 0.800000012
+      preDelay: 0
+      dampingFrequency: 0.200000003
+      bandwidthFrequency: 1
+    }
+    equalizer {
+      gain: 1
+      wet: 1
+      channel: 60, 7, 2
+      channel: 200, 4, 2
+      channel: 400, 0, 2
+      channel: 900, 8, 2
+      channel: 2000, -4, 2
+      channel: 4500, 0, 2
+      channel: 10000, 0, 2
+      channel: 15000, 0, 2
+    }
+    voice {
+      volume: 0.3
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 10
+      unisonDetuning: 0.01
+      unisonDetuningRandomSeeds: 3, 6
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Power
+        waveTableMode: Single faster
+        waveformParameters: 1
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0.03
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: Equation
+          count: 1
+          frequencyParameters: 1, 1, 0, 0, 2, 0
+          gainParameters: 3, 0, 0, 0, 0, 0
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.9, -0, -5
+      output: 0
+    }
+  }
+}

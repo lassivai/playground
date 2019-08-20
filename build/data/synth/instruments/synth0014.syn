@@ -1,0 +1,65 @@
+instrument {
+  volume: 0.600000
+  name: Synth 14
+  voice {
+    volume: 0.450000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.600000
+    unison: 1.000000
+    unisonDetuning: 0.010000
+    unisonDetuningRandomSeeds: 3.000000, 6.000000
+    amplitudeModulator: 1.000000
+    frequencyModulator: -1.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 8.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Wave01
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 1.000000
+      }
+    }
+  }
+  modulator {
+    frequency: 2.000000
+    stereoPhaseOffset: 0.500000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: 1.000000
+    outputFM: -1.000000
+    amplitudeEnvelope: -1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 2.000000
+    depthFM: 0.010000
+    waveform {
+      waveformParameters: 2.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Triangle
+      waveTableMode: Single faster
+      partials {
+        count: 3.000000
+        usePattern: 0.000000
+        frequencies: 1.000000, 2.000000, 3.000000
+        gains: 1.000000, 1.000000, 1.000000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.060000, 0.040000, 0.800000, 0.100000
+    output: 1.000000
+    type: adsr
+  }
+}

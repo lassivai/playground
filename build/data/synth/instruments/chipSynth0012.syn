@@ -1,0 +1,85 @@
+instrument {
+  name: Chip Synth 12
+  volume: 1
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0.25
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Saw
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 
+      phaseOffsets: 0.01, 0.01
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.535893155, 1, 0, 0.811352254, 0.864321608, 0, 1, 0.703517588, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.25
+    tuning: 1.01
+    stereoPhaseOffset: 0.25
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Saw
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      waveformParameters: 
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.535893155, 0.994974874, 0, 0.821368948, 0.869346734, 0, 1, 0.713567839, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.07, 0, -8, -0.03
+    output: 0
+  }
+}

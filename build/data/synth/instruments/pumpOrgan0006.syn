@@ -1,0 +1,59 @@
+instrument {
+  name: Pump organ 6
+  volume: 1
+  voice {
+    volume: 0.3
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single faster
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0.034332308, 0.034332308
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 300
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 3
+      partials {
+        pattern: Graphs
+        count: 10
+      }
+      factorDraggingGraph {
+        yRange: 1, 30
+        curve: 0, 1, 0, 0.210526316, 1, 0, 0.215538847, 0.957393484, 0, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 10
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.1, -1, -60, -0.00008
+    output: 0
+  }
+}
