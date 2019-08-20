@@ -773,10 +773,10 @@ struct Sketch
           console.onTextInput(events);
         }
         
-        if(events.sdlKeyCode == SDLK_h) {
+        if(events.sdlKeyCode == SDLK_h && events.lControlDown && events.lShiftDown) {
             hibernate();
         }
-        if(events.sdlKeyCode == SDLK_b) {
+        if(events.sdlKeyCode == SDLK_b && events.lControlDown && events.lShiftDown) {
             breakTimeMillis += 3;
             if(breakTimeMillis > 30) breakTimeMillis = 0;
             printf("Break time millis %d\n", breakTimeMillis);

@@ -35,18 +35,6 @@ instrument {
         frequencies: 1.000000
         gains: 1.000000
       }
-      fastNoiseWaveform {
-        noiseType: 0.000000
-        frequency: 100.000000
-        seed: 56789.000000
-        interpolation: 0.000000
-        fractalType: 0.000000
-        fractalOctaves: 3.000000
-        fractalLacunarity: 2.000000
-        fractalGain: 0.500000
-        cellularDistanceFunction: 0.000000
-        cellularReturnType: 0.000000
-      }
     }
   }
   modulator {
@@ -75,18 +63,6 @@ instrument {
         usePattern: 0.000000
         frequencies: 1.000000
         gains: 0.500000
-      }
-      fastNoiseWaveform {
-        noiseType: 0.000000
-        frequency: 100.000000
-        seed: 56789.000000
-        interpolation: 0.000000
-        fractalType: 0.000000
-        fractalOctaves: 3.000000
-        fractalLacunarity: 2.000000
-        fractalGain: 0.500000
-        cellularDistanceFunction: 0.000000
-        cellularReturnType: 0.000000
       }
     }
   }
@@ -117,18 +93,6 @@ instrument {
         frequencies: 1.000000
         gains: 0.500000
       }
-      fastNoiseWaveform {
-        noiseType: 0.000000
-        frequency: 100.000000
-        seed: 56789.000000
-        interpolation: 0.000000
-        fractalType: 0.000000
-        fractalOctaves: 3.000000
-        fractalLacunarity: 2.000000
-        fractalGain: 0.500000
-        cellularDistanceFunction: 0.000000
-        cellularReturnType: 0.000000
-      }
     }
   }
   modulator {
@@ -157,18 +121,6 @@ instrument {
         usePattern: 0.000000
         frequencies: 1.000000
         gains: 0.500000
-      }
-      fastNoiseWaveform {
-        noiseType: 0.000000
-        frequency: 100.000000
-        seed: 56789.000000
-        interpolation: 0.000000
-        fractalType: 0.000000
-        fractalOctaves: 3.000000
-        fractalLacunarity: 2.000000
-        fractalGain: 0.500000
-        cellularDistanceFunction: 0.000000
-        cellularReturnType: 0.000000
       }
     }
   }
