@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../FastNoise/FastNoise.h"
+//#include "../FastNoise/FastNoise.h"
 #include "waveform.h"
 #include "envelope.h"
 #include "modularparameter.h"

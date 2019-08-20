@@ -11,7 +11,7 @@
 #include "mathl.h"
 #include "sketch.h"
 #include "colors.h"
-#include "/home/lassi/github/lodepng/lodepng.h"
+#include "external/lodepng/lodepng.h"
 
 struct Image
 {

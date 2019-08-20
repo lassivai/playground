@@ -13,7 +13,7 @@
 #include <initializer_list>
 
 #include <eigen3/Eigen/Dense>
-#include "FastNoise/FastNoise.h"
+//#include "FastNoise/FastNoise.h"
 
 // TODO fix the include system (appropriate includes into each file)
 
@@ -32,7 +32,7 @@
 
 
 #include "texture.h"
-#include "image.h"
+//#include "image.h"
 #include "scene.h"
 #include "geometry.h"
 #include "geomath.h"
@@ -55,8 +55,8 @@
 #include "camera2d.h"
 #include "shape.h"
 #include "shapex.h"
-//#include "phys/simulation.h"
-//#include "phys/genprog_interface.h"
+#include "phys/simulation.h"
+#include "phys/genprog_interface.h"
 #include "gui/gui.h"
 #include "synth/synth.h"
 #include "synth/gui/synthgui.h"

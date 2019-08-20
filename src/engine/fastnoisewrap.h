@@ -1,4 +1,4 @@
-#include "FastNoise/FastNoise.h"
+#include "external/fastnoise/FastNoise.h"
 #include "textfileparser.h"
 
 struct FastNoise : public FastNoise_, public HierarchicalTextFileParser {

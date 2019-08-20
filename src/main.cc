@@ -2,7 +2,7 @@
 
 #include "engine/sketch.h"
 
-//#include "clockwork/clockwork_sketch.h"
+#include "clockwork/clockwork_sketch.h"
 #include "noise_sketch.h"
 #include "colors_sketch.h"
 #include "langton_sketch.h"
@@ -32,9 +32,9 @@ int main(int argc, char* argv[])
   Sketch *sketch = NULL;
 
   if(cliArgs.numValues("-x") > 0) {
-    /*if(cliArgs.getValues("-x")[0].compare("clock") == 0) {
+    if(cliArgs.getValues("-x")[0].compare("clock") == 0) {
       sketch = new ClockworkSketch();
-    }*/
+    }
     if(cliArgs.getValues("-x")[0].compare("noise") == 0) {
       sketch = new NoiseSketch();
     }
