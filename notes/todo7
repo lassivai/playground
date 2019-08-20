@@ -1,0 +1,175 @@
+My trouble is my knee actually. It made a big sound one day when I did one leg pushups. Now it hurts (not all the time, but in certain kind of movements). It started its troubles in 2013 and it has never been examined either. I have an appointment for specialist in wednesday. It might need operation. I am unable to exercise now the way I would need to. (whenever you see me cycling in the air on my back you see me doing maintenance stuff for knee support, without it I couldn't live at all.)
+
+TODO
+
+Modular connection panel not updated after loading.
+
+Modular filter connection not thread safe...? (FIXED)
+
+Fix the thread troubles... Sample editor creation/deletion causes crash... (probably FIXED)
+
+I started, also, doing a feature, which makes beautiful tones quite easily, "pad synth" algorithm from zynaddsubfx. The idea would be to transform wavetable into spectrum, apply a convolution to it and tranform the convoluted spectrum back to wavetable. I couldn't (yet) transform back and forth, but I implemented the pad synth algorithm in its basic form: sin partial bandwidths. Todo: Develop the interface further etc.
+
+Partial pattern equation crashed.
+
+Currently thinking about making more visualizations for the instrument.
+For preview note 
+  1) Full length envelope (almost done)
+  2) Full lenght spectrum heat map (done)
+
+We need sample/wavetable synth soon. (We have it)
+ - single cycle (done)
+ - full sample (todo)
+
+One thing this (going through single cycle wavetable library) convince me about is, that the sound of the instruments and other things is so much more complicated and timevarying thing than just a single waveform.
+
+New kind of synth idea! Synthesizer consisting of multiple waveforms, which can be enveloped/modulated/hand adjusted to be mixed in different proportions. Maybe for different voices.
+
+Resizable panels
+- especially for waveforms, file browser
+
+Vocoder (line in voice)
+ - stuck and unitialized note ghosting (probably happened in preview panel) (probably FIXED)
+
+[existence of such features tell you everything you need to know about my perfectionism]
+
+Put the "medical features" in to seperate waveform panel
+- pitch partial attenuation
+- pitch smoothing
+- pitch gain
+- value offset
+- seam wavetable ends
+(- new feature maybe: smooth wavetable ends, by percentage of wavetable smoothed starting from the seam point)
+
+Normalize pitch volumes
+- especially useful when using filters (we shall do it manually)
+
+Note biquad (and maybe voice biquads)
+ - modular frequency connection not working perfectly. Too high cut off frequency mutes whole instrument for good
+ - key tracking not working
+
+Threads
+ - stop and join before exit (such as midi update)
+
+Organizing, naming, categorizing sounds
+ - I start with synth file browser which visualizes the synth by a chosen pitch by waveform envelope and spectrum map.
+- few different option in categorizing stuff
+  - choosing by hand different tags for each instrument
+    - lead, pad, plucked, bass, ...
+    - bright, mellow, ...
+  - based on the parameters of each instrument
+    - envelopes: slow, fast, short, long, ...
+    - voices: number of voices...
+      - perhaps nature of sin (a single harmonic) vs. saw (very rich in harmonics) in a %
+    - frequency modulated, amplitude modulated, cross modulated
+    - filtered (reverb, delay)
+  - analyzing the spectrum
+    - number of harmonics
+    - transients
+    - constancy of harmonics
+    - machine learning methods
+
+Gui layout stuff
+ - Instrument
+   - close button (DONE)
+   - instrument index to title
+   - toggle boxes for voices, modulators, envelopes, effects,
+     final waveform
+ - voices, modulators, envelopes (-> similar as instruments)
+   - smaller titles, one row title, smaller boxes, check box
+     for subsequent guis
+ - synth title bar
+   - close, layout on the right
+   - power, preset, menu on the left
+   - menu
+   
+Knob/minimized gui layout progress
+  - reverb    99.9 %
+  - biquad    99.9 %
+  - eq        99.9 %
+  - pitchchanger 99.9 %
+  - delay     0 %
+  - voice     0 %
+  - waveform  0 %
+  - modulator 0 %
+  - envelope  0 %
+
+Progress not including mapping functions. Will do another project for it. It was actually very fast thing to do.
+
+The knob layout will make it more intuitive to associate the parameters with the actual knobs/sliders on the physical controllers. In addition to clearly visually reflecting the knob/parameter association, also because I will do appropriate (not only linear) mapping function from a given knob rotation to the parameter value.
+
+Modular connection channel boxes
+- lower transparency on non-connected (-1) boxes
+
+Sustain
+- update envelope length after release
+
+Envelope
+- fix AHE offset
+- get somehow overlayed, when changing/having multiple/modular connections (?)
+
+Waveform
+ - phase zero points for 128 pitches
+
+GUI
+- block mouse input from elements beneath other elements
+- raise activated panel on top of other panels
+- file browser global update at save
+- file saver, file loader, better info
+- textbox scrollable view for longer texts that can fit
+- different gui layouts (I am prototyping currently. I will probably later make automatic gui creation based on the approriate parameters. This prototyping takes less time than creating the automation, but this prototyping takes quite lot of time too, because I have so many parameters)
+  - minimal/only knobs
+  - expanded text box based
+  - minimized to title bar
+- button element (DONE)
+- slider element
+- knob element
+ - textures (DONE)
+   - background texture/knob movement area
+     - maybe little bit thinner border
+     - transparent fill and programmed fill highlight reflecting the angle
+ - limited (DONE)
+ - unlimited (not tested)
+   - very large limits or circular values
+   - different rotating speeds
+     - proportional to value
+ - list (DONE)
+- panel title bar (DONE)
+  - minimize/maximize to title bar
+  - power/active button to title bar (DONE)
+- effect track 
+  - name/wet/gain/preset
+  - effect volume gain graph 
+  - effect spectrum gain graph
+- fade in/out effects (DONE)
+  - not sure if I estetically want this or
+  not. Instant feedback is a nice feature too. Power on/off currently faded in/out
+  - I think I'll try putting fade ins/outs to the other input elements
+    - glow around text/check boxes
+    - background highlight shall do
+
+Draggin graphs
+ - incorrect memory access at the insertion sort stuff at initialization
+
+Waveform
+ - option to automatically seam the wavetable ends (we can do little bit of actual math! Harderst part is using that software. Makes things harder x10)
+  - I was thinking just applying a linear function all over the waveform accordingly. There is one and only one waveform to which this doesn't apply, unfortunately it is quite common and good sounding waveform, saw wave, so this can't be applied by default to everything. Good to have it optionable in any case. Very different effects can be achieved in both ways.
+   
+Texture
+ - apply textures to each other with various blending modes
+ 
+ ----
+ 
+Have to say that having the parameters in that knob form instead of numbers, made it easier to concentrate on listening to the actual sound.  
+ 
+ ----
+ 
+My head started working suddenly after watching the NASA video in youtube about sending new machines into the stars.
+ 
+I am tired and not in the best performance, but anyhow something critical happened in my brain chemistry, which makes everything "normal" again...
+ 
+(not the current reality... Above all I trust the reflection in the mirror. If my eyes aren't beautifully shining, there is something wrong - either insomnia, perfectionism, or something less out of my control)
+ 
+(12.7.2019. 16.00. Thus far the most healthy day today during the past about three weeks, what comes to the bad/nausea/weak mood. I have been able to think clearly and don't feel like dying all the time. Last night I felt probably none or very little of that weird muscle activity in various parts of the body, which would be my guess about the associations with that bad mood. Not perfectly healthy, I still have those bad vibes, maybe it started stronger just as I was writing this, or when we came back from the 5-hour car ride.)
+ 
+(The bad feeling is back again completely. Kind of tiredness which don't go away by any amount of rest.)

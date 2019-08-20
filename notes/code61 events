@@ -1,0 +1,93 @@
+// On the todo list now: take use of all those knobs and sliders and buttons on the new midi controllers
+// Have to explore what kind of midi event messages those devices are sending.
+
+// I don't know if there is anything on the code 61 keyboard that I could control by sending messages from the program to it
+// (those RBG backlights would be tempting to control), but on the M32 keyboard there definitely is, BUT it might be that the
+// information how to control that little display and other stuff on M32 isn't available in any way.
+
+// Update: Let's see if I can set the LCD text even. Controlling LEDs would be too good to be true. :>
+
+// So primarily exploring what sort of events those controllers are sending to my direction.
+
+// Code 61 has apparently both normal midi messages and "machui" type of midi messages.
+
+// I would like to make such a system, that whatever messages the midicontroller might be sending, my program could understand it.
+// Hopefully even the controllers I am not testing would adapt to my synth.
+
+// I will definitely do some sort of "midi learn" system, so that as many (preferably all synth instrument) param0eters as possible
+// could be associated with the knobs and stuff, including aftertouch in code 61!, easily.
+
+---- Code 61 midi events ----
+down arrow    control change, 0, 0, 0 + control change, 32, 0, 0 + program change 0, 0, 0 (same messages not usable...)
+up arrow      control change, 0, 0, 0 + control change, 32, 0, 0 + program change 0, 0, 0
+zone          control change, 0, 0, 0 + control change, 32, 0, 0 + program change 0, 0, 0
+1, 2, 3, 4    control change, 0, 0, 0 + control change, 32, 0, 0 + program change 0, 0, 0
+
+faders, encoders: ControlChange, 20+, 0-127
+xy-pad, ControlChange, 16/17, 0-127
+
+B buttons, depends on mode, either toggle buttons or press buttons or press+release button
+s
+ControlChange, databyte_1 15, databyte_2 32, channel 0
+ControlChange, databyte_1 15, databyte_2 49, channel 0
+ControlChange, databyte_1 15, databyte_2 62, channel 0
+ControlChange, databyte_1 15, databyte_2 127, channel 0
+ControlChange, databyte_1 24, databyte_2 14, channel 0
+ControlChange, databyte_1 24, databyte_2 49, channel 0
+ControlChange, databyte_1 24, databyte_2 62, channel 0
+ControlChange, databyte_1 24, databyte_2 127, channel 0
+ControlChange, databyte_1 29, databyte_2 27, channel 0
+
+or
+
+toggle A
+ControlChange, channel volume 64, channel 0
+ControlChange, databyte_1 70, databyte_2 64, channel 0
+ControlChange, databyte_1 75, databyte_2 64, channel 0
+ControlChange, databyte_1 74, databyte_2 64, channel 0
+ControlChange, databyte_1 71, databyte_2 64, channel 0
+ControlChange, databyte_1 76, databyte_2 64, channel 0
+ControlChange, databyte_1 73, databyte_2 64, channel 0
+ControlChange, databyte_1 74, databyte_2 64, channel 0
+ControlChange, databyte_1 77, databyte_2 64, channel 0
+toggle B
+ControlChange, channel volume 0, channel 0
+ControlChange, databyte_1 70, databyte_2 0, channel 0
+ControlChange, databyte_1 75, databyte_2 0, channel 0
+ControlChange, databyte_1 74, databyte_2 0, channel 0
+ControlChange, databyte_1 71, databyte_2 0, channel 0
+ControlChange, databyte_1 76, databyte_2 0, channel 0
+ControlChange, databyte_1 73, databyte_2 0, channel 0
+ControlChange, databyte_1 74, databyte_2 0, channel 0
+ControlChange, databyte_1 77, databyte_2 0, channel 0
+
+or "CODE61"
+
+ControlChange, databyte_1 3, databyte_2 127, channel 0    B1 pressed
+ControlChange, databyte_1 3, databyte_2 0, channel 0      B1 released
+ControlChange, databyte_1 9, databyte_2 127, channel 0    B2 pressed
+ControlChange, databyte_1 9, databyte_2 0, channel 0      B2 released
+ControlChange, databyte_1 14, databyte_2 127, channel 0   ...
+ControlChange, databyte_1 14, databyte_2 0, channel 0
+ControlChange, databyte_1 15, databyte_2 127, channel 0   
+ControlChange, databyte_1 15, databyte_2 0, channel 0
+ControlChange, databyte_1 16, databyte_2 127, channel 0
+ControlChange, databyte_1 16, databyte_2 0, channel 0
+ControlChange, databyte_1 17, databyte_2 127, channel 0
+ControlChange, databyte_1 17, databyte_2 0, channel 0
+ControlChange, databyte_1 18, databyte_2 127, channel 0
+ControlChange, databyte_1 18, databyte_2 0, channel 0
+ControlChange, databyte_1 19, databyte_2 127, channel 0
+ControlChange, databyte_1 19, databyte_2 0, channel 0
+ControlChange, databyte_1 20, databyte_2 127, channel 0
+ControlChange, databyte_1 20, databyte_2 0, channel 0
+
+or
+
+buttons acted as F1 - F8 keys at LM-PT/HID mode
+
+----
+
+Tesing different Midi inputs/outputs, Code 61 has Midi 1, Midi 2, Midi 3 and Midi 4
+Nothing received from Midi 4
+

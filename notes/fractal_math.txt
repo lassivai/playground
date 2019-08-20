@@ -1,0 +1,9 @@
+
+
+
+z = z^2 + c
+z*z = (a + bi)*(a + bi)
+= a * a + 2*abi - b*b
+
+real(z) = a*a - b*b
+imag(z) = 2*ab

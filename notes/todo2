@@ -1,0 +1,26 @@
+Todo
+- volumetric ray-tracing (start this thing today, get the code from the cell rendering app) (DONE)
+ - one thing I have dreamed for a long time would be 3D fractals, this will allow certain kind of those, and also other cool 3D effects,
+   next I need to implement that ray tracer with GPU (video card) to get interactive experience with decent resolution (DONE)
+ - I am pretty sure that flame fractal method could be extended into 3 dimensions very easily, don't really know how it will look like, but very exciting (DONE)
+  - this is why I have avoided 3D stuff, the math of 3D geometry isn't linearly harder than that of 2D, but more like exponentially
+  - for example that julia thing works in 2D by choosing randomly whether to turn 90 degrees left or right, but in 3D...
+- the song editor mode, save/load songs
+- different kind of audio tracks
+  - midi kind
+  - recorded
+- easy to use looper so I could control it, for example, with just a pedal in a kind of performance mode
+- I would need so much more synth instruments
+- I would like to have a feature that I could prototype algortihmic sounds (other than what I can do with my existing modular/additive/substractive/FM synth) without having to compile, or even restart the program. I was thinking to do try to synthesize sound with GPU (video card), because that code can be reloaded during program runtime. Those would not be low-latency enough for realtime playing, but rather some soundscapes, or possibly for realtime playing by recording samples for each note frequency
+- this engine I have been doing is very incomplete in many ways, the rendering engine should handle big data much better. I should study the newest methods of rendering huge amount of polygons with the current state of graphics hardware. I need 3D. Soon.
+  - I get motivated to take care of this kinf of fundamental building blocks of programs, by having applications where to apply it at once. I have for a long time wanted to create
+    a molecular visualization software. I think I'll start with that
+- better compilation method. Start using .cpp files for precompiled code? Precompile headers?
+- universal keyframe animation interface for fractals, scene3D...
+- 3D textures instead of 2D arrays
+- change coding editor?
+
+Everything I am writing about coding is "todo", building more and more tools for the future, but let's have a list of completed stuff
+- here is a modification of a so called julia fractal flame, kind of which I haven't never seen, and I feel this is my favourite fractal currently,
+  exceptionally plentiful
+- I am very happy how the transition of that voxel raytracer has gone from the bioimaging software to this playground

@@ -1,0 +1,54 @@
+Genetic programming - teaching a stick figure to jump
+
+Scheme A
+I'll give it some total time, say one second
+I will do countless variations on how the stick figure will spent that time
+For each movable joint in the body there will be three choises for every
+instant of time
+  1) reverse
+  2) go forward
+  3) don't do anything
+
+(Actually it might be wiser to go even simpler: teach the stick figure to balance, stand straight, at first)
+
+(The coding of that thing might be even a lot faster part than the actual evolution, if things go right)
+
+Thinking about the effects of the initial conditions (i.e. in which angles the limbs are initially) it might be better to have little bit different kind of primitive actions instead of those three above:
+  1) Go to an angle with specific speed and force
+
+I'll try with different constraints than that simple motor at first (I feel this is little bit cheating, but whatever)
+
+----
+
+This was actually pretty trivial stuff, the interesting thing, coming up next, will be the determination of what makes other genotypes better than the others. It depends on what kind of movement should be happening. I need some sort of scoring system. I think that could be splitted in to two categories: a) real time scoring and b) scoring after the whole supposed movement has finished
+
+(As I said, this has been one of my biggest geeky dreams ever. Already a decade ago I envisioned making whole procedurally generated living planets. I had an obsession with procedural plants back then. I think I now understand quite well how I got associated with those plant memes in the internet. It didn't have too much to do with the initial letters of my name I think, initially - at least that was just a part of the story.)
+
+----
+
+I want to make this thing as generic as possible. I don't want to hard code any too limiting conditions, but rather give the user the possibility to "train" whatever kind of movements one might imagine. Initially I will do probably some more limited case.
+
+If I would do things like the normal people do, I would do this thing first with only one entity, but I want the whole population simultaneously evolving. It will make possible, for example, "diploid recombination": the combination of two parent genotypes for progeny.
+
+Now that I have some sort of scores (really primitive ones at this point!) for the measure of fitness of each genotype, I think I will use those non-randomly to choose the distribution of next generation, i.e.
+
+num inviduals of genotype x = total num individuals * genotype x score / total population score
+
+I think my population sizes will be so small that random (and more realistic) sampling would be too random. (Will have options to do either way finally...)
+
+(I will have fun time debugging this mess... It would be a great idea not to implement the whole vision at once, but to do it piece-wise.)
+
+There are a lot of parameters to deal with. Do I want the individuals mutating at different (hereditary) rates? Yes I do. (I do it later.)
+
+As a biologist it is an interesting problem in my opinion, how to determine how fast should things (genotypes) change. It is quite pressing problem for me now at least. How to make something that has the ability to turn in to something better than the previous one, with much bigger probability to turn in to something worse, and at the same time maintain the working thing through all the generations. Apparently nature does that thing automatically.
+
+There might be at least three ways to check if an object is balancing.
+  1) check the angle (this fails if object is composed of flexible parts)
+  2) check if the center of mass is within the contact points supporting the object (this would seem like a nice idea, but it might be the most troublesome to implement, for example one should take in to concideration multiple contacts happening at different instants of time in different places. How should one determine which of those define the base, "foothold", of the object?)
+  3) choose parts of the body that are allowed to touch the ground and parts that are not, and give score accordingly (I think I'll go with this option initially)
+
+Two additional ways would be
+ 4) calculate (average) rotational velocity (I would need to implement a way to calculate this based on multiple rigid bodies connected by various joints. Maybe I could do that, this seems quite promising now, but it excludes flips from the list of things the stick figure could learn, as far as I can see. I think these must be combined in every case even to make the thing stand still. There are of course other ways, scoring methods, to make things more still and calm.)
+ 5) choose what part of the object that should be as close to the ground as possible, and part which should be as high as possible
+
+This thing can get truly fun if I have endurance to make all the aspects of the objects genetic. Practically that means I could put a little ecosystem with some kind of abstract creatures evolving together to make something I could probably not foresee.

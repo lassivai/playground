@@ -1,0 +1,43 @@
+This will be worth every minute I am spending on this stuff :)
+
+----
+
+I am learning things the hard way. I haven't used multipass rendering ever before. I think there are some things I should now better about it. It almost seems as the three passes would be splitted into several areas on the screen.
+
+In other words, I would expect things happen as the following:
+
+1) Run pixel shader for every pixel in the first pass. Wait until every pixel has finished.
+2) Run pixel shader for every pixel in the second pass. Wait until every pixel has finished.
+3) Run pixel shader for every pixel in the third pass. Wait until every pixel has finished.
+
+But those weird anomalies on the screen made me feel like there would be several sublineages.
+
+1.a)      1.b)      1.c)    etc.
+2.a)      2.b)      2.c)
+3.a)      3.b)      3.c)
+
+The problem is that I would need every pixel in the first pass to be finished before the second pass, because I am harvesting the overall minimum and maximum values on the whole screen to be used in the subsequent passes.
+
+----
+
+I might be messing things up in other ways too. :)
+
+Such as poor pseudo-random number generator design. Trial and error it takes.
+
+I must get rid of those annoying subregions. Those different shaded boxes in the beginning of sampling. The anomoly happens only in the first frame of rendering.
+
+----
+
+The problem isn't...
+
+-The min/max stuff
+-The pseudo-number generators
+-I haven't tested my buffer clearing funtion before this, it might be also the reason. Now I have.
+
+----
+
+I am using also for the first time that atomic image addition GLSL-feature. I could imagine that such thing would require some other hacky-ways from the OpenGL developers to optimize things, other than the normal way.
+
+Normally those image modification procedures don't care about what other pixels are doing for an image, which might cause unexpected image values in some cases. That atomic thing prevents things getting messed up even though multiple pixel shaders are accessing the same pixel of the image seemingly at the same time. From my observations it seems like the optimization is handled by creating multiple hierachical copies of that original image, which are combined as soon as each pixel shader has finished. But apparently the pixel shaders in the subsequent passes are allowed to use those cloned versions of the original image, before the final original picture is gathered together.
+
+At least my little multiple rendering iteration test is aligned with that assumption.

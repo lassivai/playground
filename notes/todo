@@ -1,0 +1,17 @@
+Playground TODO/FIXME
+- every action in the form of command line commands
+- possibility to invoke those together, and even from a script file
+- flame experiment causes a gui bug (FIXED!)
+- seperate spectrum trasform for the graph and map (DONE!)
+- the spectrums still don't match on the screen if not integer multiple of each other (FIXED!)
+- annoying blinking in the spectrum (better fit of frame time and spectrum transform length)
+- option to choose between left/right/stereo/combined waveform/envelope/spectrums
+- mandelbrot multisampling (progressively in the background) (DONE!)
+ - next time with automation :)
+- waveform and envelope speed control (as a time window which is visible on the screen)
+- more precise and adaptive note recognition from spectrum, especially from the lower end
+  - integration, curve fit, local maxs/mins...
+- something wrong with the variable binding (-Wall and stuff)
+- field for parent gui element, double click close panels
+
+I need to start experimenting with weirder sounds. I wonder what mandelbrot set would sound like turned into audio instead of pixels... Have to finish that todo list first. Not today.

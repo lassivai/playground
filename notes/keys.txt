@@ -1,0 +1,30 @@
+F1 - info
+F2 - synth
+F3 - shader fractal
+
+v - color mode
+
+# no flame
+v - mand mode
+
+# shader fractal
+a - post effect
+s - frozen time
+d - mapping mode
+
+# no shader
+x - soft mode
+
+# pixel visit
+z hist map mode
+
+# iter count
+r - rand dust
+
+# flame
+1,2,3...  rand -k..k
++ lctrl rand 0..k
++ lshift rand -10k..10k
++ lalt variation
++ lcrtl active par
++ lshift intensity

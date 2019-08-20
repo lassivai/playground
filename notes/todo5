@@ -1,0 +1,12 @@
+TODO
+audio player
+- mp4 loading (also video?!)
+ - I have no documentation or tutorial or examples how to use that mp4-library, let's see...
+- icons for play/pause/stop/rw/ff
+
+drum pad
+- effects
+- more drums
+
+launch pad
+- proper scale and its visualization when playing other instrument than drum pad

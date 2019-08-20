@@ -1,0 +1,25 @@
+// I don't know the exact math behind what I am trying to achieve, but I once tried out one online synth which had "some kind of" voice cross modulation matrix
+// which yielded quite interesting sounds. Experimenting currently...
+//
+// Now I got it working. That was probably the closest thing of actual FM synthesis I have attempted, because now I am able to connect the pieces in loops and
+// crossing the things from A to B and B to A. Not very interesting however. Yet. Didn't use actual modulators this time at all, even if FM stands for frequency
+// modulation. Only voices connected to each other.
+
+One thing one aims constantly in programming (just like in any other math) is simplicity. To reach the goal with as simple and abstract equations as possible. As abstract as possible meaning that the idea can be applied to as many specific cases as possible.
+
+I have now two kind of oscillators. Modulators and voices. It is a very common way of organizing oscillators in synthesizers. But now I have reached a situation, where I want to do pretty much the same things with the both oscillators, so I could just as well have only one kind of oscillator. Not excatly sure if I want to keep this thing in the state of growth all my life... x|
+
+I have created several instruments and saved those in files and it is a quite big mission to change all those files. I'll do that mission some other time.
+
+I'll make that voice class able to do everything that a modulator can do, so I can transition away from that modulator in the future.
+
+I made a decision not to put everything in one big matrix, or not getting rid of modulator and voice by replacing it by a more general oscillator class. Things can stay little less abstract.
+
+I'll keep amplitude and frequency modulator modular connections the way they have been, and I'll create a matrix for all the possible voice cross modulation combinations, and put rest of the modular connection stuff into one big matrix. I also need "learnable" midi connection stuff. For now...
+
+----
+
+I am in a state of doubt also in the way I would like to do (both in code and graphical user interface) the modular connections between different parts of the synthesizer.
+1) One big matrix which would have all the possible connection inputs and outputs
+2) Inputs and outputs associated with each particular oscillator/envelope/filter
+3) Both of those, as I currently have

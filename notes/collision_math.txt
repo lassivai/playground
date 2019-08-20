@@ -1,0 +1,32 @@
+
+
+
+
+avv + bww = aqq + bpp
+avv = aqq + bpp - bww
+vv = (aqq + bpp - bww)/a
+v = sqrt((aqq + bpp - bww)/a)
+
+av + bw = aq + bp
+v = (aq + bp - bw)/a
+
+av + bw = aq + bp
+bw = aq + bp - av
+w = (aq + bp - av)/b
+
+
+av + bw = aq + bp
+a*sqrt((aqq + bpp - bww)/a) + bw = aq + bp
+a*sqrt((aqq + bpp - bww)/a) = aq + bp - bw
+sqrt((aqq + bpp - bww)/a) = (aq + bp - bw) / a
+(aqq + bpp - bww)/a = ((aq + bp - bw) / a)^2
+qq + bpp/a - bww/a = ((aq + bp - bw) / a)^2
+qq + bpp/a - bww/a = (aq + bp - bw)^2 / a^2
+qqaa + bppa - bwwa = (aq + bp - bw)^2
+qqaa + bppa - bwwa = aqaq + aqbp -aqbw + aqbp + bpbp - bpbw - aqbw - bpbw + bwbw
+qqaa + bppa - bwwa = aqaq + 2aqbp - 2aqbw + bpbp - 2bpbw + bwbw
+-bbww - baww + 2bbpw + 2aqbw - 2aqbp - bpbp + bppa = 0
+ww(-bb - ba) + w(2bbp + 2abq) - 2abqp - bbpp + abpp = 0
+
+
+w = -(g+sqrt(gg-4fh)/2f)

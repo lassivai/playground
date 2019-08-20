@@ -1,0 +1,26 @@
+Few new feature ideas I have had in mind involve more elaborate graphical user interfaces (GUI).
+
+1) hand drawing of partial gains/factors (this interests me most, I'll start with this), SUCCESFULLY IMPLEMENTED
+2) hand drawing of envelope
+3) hand drawing of waveform
+4) drag and drop effect track (for input, synth master output, and for instruments) WORK ON PROGRESS
+
+I think I attempt to do graphically more elaboreta thing out of that effect track. Not only rectangles and text, but maybe looking like a front end of a real physical hardware, with knobs and stuff.
+
+1) and 4) interest me especially now. The gui system could be easily extended to have nicer looking components than just the textual ones. I will probably not change the number boxes to any sort of sliders or knobs as usually seen in synths (that would be easy thing to do), because I find those numerical representations very appropriate *), and I am not emulating any conventional synth in sound nor in look and feel.
+
+*) Because 1) one can input the exact value with keyboard, 2) one immediately sees the value, 3) those allow for hugely bigger dynamic range (very small, and very large numbers, and a lot of detail at either end of the spectrum) for the values than what a (normal) knob would.
+
+Making the parameter input through knobs would probably allow easier integration with external controllers. It would be straightforward to associate the knobs and sliders with physical counterparts in a midi-controller for example.
+
+I think I still do a more graphically minimal, or eye pleasing interface. Looking like more conventional synth interfaces. At least partially, the benefits mentioned above about the number boxes still hold.
+
+----
+
+Maybe I finish that "autotune" thing I had in mind. Not autotune, yet, but at least possibility to play external sound with the keyboard, with the new pitch scaler I made yesterday. This would involve quite big changes. But I might still try. For example own delay line for each note. So that one could e.g. sing a constant pitch into a microphone and play a big chord based on that one voice with the keyboard.
+
+This was one among the countless original (kind of which I haven't seen elsewhere, definitely not the first to do these) ideas I have designed with programming. This was very succesfull. I didn't expect, that it would fulfill my expectations. It was too easy to do. Works exactly as planned.
+
+Todo: try if averaging multiple samples would help bigger pitch scaling factor (more than 2) sound better
+
+Not exactly autotune the following, but in a similar spirit, let's try a fun automatic singing experience...

@@ -1,0 +1,117 @@
+TODO
+
+Haven't really polished my rendering system yet.
+
+Shadowed gui elements next. It wouldn't be too hard to create shader code for shadowing arbitrary shapes and sizes, but I think I do the fastest way: One shadow texture border that can be stretched for all the box shaped elements. I might try both of those. Started doing shader stuff, but starting with the easiest and fastest box case. For arbitrary shapes the rendered image would be applied for the shader quite easily, and be darkened to black and smoothed (this would be probably the fastest way to code, not to excecute, because no need to go through all the specifics of each gui element.). I think I don't want shadows for everything.
+
+Presampling of notes not working immeaditely at note input, but only when presampling all the notes simultaneously. might be fixed now
+
+There are only limited amount of notes that can be played simultaneously, and some instruments or perhpaps individual notes would be more important to be kept playing while the limit exceeds and previously started notes needs to be replaced by the new notes. It would be too detailed work for the user to start choosing individual note priorities. Maybe that priority could be automatically calculated based on e.g. the envelope shape and lenght (that could be done per each note then) - I think this is the way to go. (or fall back to the previous state...) GOOD ENOUGH
+
+11.6.2019. CPU usage unexpectedly went seemingly randomly up and down, when playing a loop track with 128 recorded notes and no live notes. At normal case about 65 notes could be played simultaneously, but at the random CPU peak only about 19 notes. Maybe a bug, or perhaps that was done by the hackers. Nothing of a sort happened yesterday or never before. The only difference today was little bit shorter exponential envelope. FIXED
+
+----
+
+Should minimize everything happening between intialization of note playing and actual starting of the note to play, because it introduces latency, and even click sounds perhaps rarely. (serious issue when there are a lot of sequenced notes started at the same instant, fps might drop 50 % momentarily).
+I need to make seperate thread for reading incoming midi events, instead of being read at only 16.6 ms interval! (with 60 fps)
+
+I will now check what is the actual latency in my own software...
+0.3 - 3.0 ms. These numbers of course don't include that up to 16.6 ms additional latency, before the message is being read.
+
+I'll do another latency test. This time the real world case: time between the sound heard from pressing the key to the time of the onset of synthesis. After that I'll try putting that midi event reading into seperate thread. Microphone need. I test with mouse, because mouse click sound is closer to the actual digital signal than the sound of piano keyboard key hitting the bottom (the event is sent little bit before, I think, before the key hits the bottom). I test with mouse and piano keys...
+
+From the beginning of mouse click to the beginning of filled output audio buffer: 24 ms - 44 ms
+Both sounds recorded with external device: 48-55 ms (mouse)
+Both sounds recorded with external device: 25 ms (midi keyboard)
+25 ms from the beginning of loudest key press wave shape (hitting the bed). Additional 6-9 ms time from the beginning of key press to the hit of the keybed with max speed.
+
+More accurate testing. Had 100 ms attack time before starting to play the note at all so the wave of the keypress didn't mix with the wave of the note. 17, 22, 29, 16, 29, 18, 30, 23, 26, 16, 13, 19 and 15 ms
+range = [13, 30], mean = 21 ms, std = 5.90 ms
+
+If my hypothesis is true, that range of latencies is caused by reading the midi messages only once per frame, with frame rate 60 fps, there is hypothetically max 16.6 ms additional latency. I try to make seperate thread for reading midi events, and if the hypothesis is correct have all latencies at around 13-16 ms.
+
+If I am lucky I will reduce the average latency about 6-8 ms. And max latency about 16 ms. The envelope attack is at amplitude zero rather than increasing gradually from 0-1 as usual, because I was testing the latency that way... I'll test what the latency is now with similar setup.
+
+I tested with the exact same setup, but had midi events read in the seperate thread (at 0.5 ms interval) instead of once per frame (at 16.6 ms interval).
+Results: 14, 15, 15, 14, 13, 15, 15, 13, 15, 13, 15, 15, 13 ms
+range = [13, 15], mean = 14.231 ms, std = 0.92681 ms
+
+Mean latency reduced 6.7692 ms and max latency 15 ms (halved!)
+
+Everything went according to the expectation. Cool.
+
+-----
+
+Notes not stopped much more often than previously. Debugging needed.
+Probably the initialization of the note not ready before, the midi note off is received. This appeared after putting midi event reading into seperate thread and was apparently caused by reading AND writing in std::vectors. For some reason the vectors didn't get passed all the time wholy through function parameters. Probably FIXED
+
+Managed to crash with an exceptional overload of midi events:
+
+Midi port 'Komplete Kontrol M32 Midi 1 32' received 99 midi messages
+SynthMidiListener::onMessages(), beginning
+Segmentation fault (core dumped)
+
+Might be fixed too
+
+----
+
+Presampled note buffer not working... Things stop working when changing instrument. FIXED
+
+Presampling of the whole instrument track would yield more processing power. E.g. drumpad takes surprisingly lot of processing power, because all the drums are different instruments...
+
+Dragging graphs not applied immediately after loading an instrument... FIXED
+
+Midi input/output (lot of boring work today :|)
+ ((fun really, in a geeky way))
+ - seperate midi input/output instance for each midi
+    device (DONE)
+ - recognise the controller (DONE) and the capabilities
+   automatically (a lot to do...)
+
+PAD and ADSR envelopes but not AHE envelope caused anomalies when associated with modular parameter filter frequency...
+
+Instrument classes/categories, instrument browser
+
+Effect track
+
+Sample synthesis
+ - different kind of voices/waveforms
+    - synth wavetable (done)
+    - input (voice parameters not yet applied)
+    - sample wavetable (file I/O, samples as .flac)
+      - one for all notes
+    - sample full note
+      - seperate for each note
+Editing of recordings
+ - cut, paste, move
+ - sample extractaction
+    - automatically recognise one waveform cycle
+    - averaging of several cycles
+ - recording view filling the screen horizontally, and
+   in a fixed vertical location
+Fractal flame
+ - file browser
+ - spectrum feedback for every parameter
+
+LaunchPad
+ - maybe visual help window of controls
+ - crashed when tried setting note length
+ - controls for other instruments than drumpad
+ 
+GUI features coming sooner or later
+ - mouse right click menus
+ - drop-down lists
+ - getting rid of the high contrast borders
+ - texts and numbers aligned at the right in the input fields
+ - input fields aligned at the right/left
+ - some sort of always (yet optionally automatically hidden) visible bar
+   or other Gui which would have all the other gui features accessible instead of making those visible with keys
+ - for all the panels: minimize to panel title (kept at same position)
+ - something to do to make the programming of guis easier. If I have a lot
+   of inspiration, I will make wysiwyg Gui designer and file I/O for gui
+   elements. One could edit and save/load the gui when the program is running
+ 
+Automation for GUI layouts
+ - currently the stupidity stems from my decision to not tell the font size before rendering, so they can't know their own sizes at the initialization.
+  Need to change that one day. Little change in the base class, but big change because I have hand-crafted all the gui positions the hard way already :|
+  One reason I am spending a lot of time taking good look how to implement everything, is this fact, that I want to do things usually the way, that it is easy to use also in the future, when a lot of stuff is already dependend on the stuff. They quick first prototype isn't many times the best idea concidering all the possible future directions. This is one remnant prototype case.

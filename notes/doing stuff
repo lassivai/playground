@@ -1,0 +1,21 @@
+Current mission: make visible midi note on and note off dynamics, so I could find out why sometimes (very rarely) some notes get stuck on 'on' state and not stopped.
+
+The numbers a/b indicate number of note on/note off messages in the lowest level. Blue boxes note on and red boxes note off messages received by the listeners of that low level midi message reader. Somehow the higher level listeners are receiving more messages than my program from the midi devices.
+
+TODO: stop previously started note if new note on message received
+
+----
+
+Never experienced such a bug before. It seems the parameter vector isn't copied everytime entirely... Might have something to do with having the things in seperate threads... I try with normal array - first with pointer elements...
+
+My guess would be that the vector class might be the cause of lot of head aches if there is written in threads. Now getting rid of all the vector writing.
+
+9 hours coded. 2 bugs fixed :) :| :(
+
+Lesson number one: always bring your own matrices into the parties.
+
+Lesson number two: allocate the heavy vector work for multiple threads to lighten your weights, and then gather the next hundred days all the items they have dropped along the way.
+
+----
+
+I couldn't care less if I don't manage to give entertainment for thirsty and empty souls. I need to follow my passion and dreams. It requires willingness to sacrifise one's time. After the day of heavy work, sleeping will be easy. Maybe :)
