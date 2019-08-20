@@ -1,0 +1,10 @@
+---- update files ----
+
+git push origin [branch]
+git pull origin [branch]
+
+---- add new files ----
+
+git add .
+git commit -m "Add existing file"
+git push origin [branch]
