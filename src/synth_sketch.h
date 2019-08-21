@@ -629,6 +629,7 @@ struct SynthSketch : public Sketch
     midiInterface.addMidiMessageListener(synth->getMidiMessageListener());
     midiInterface.addMidiMessageListener(synthGui.getMidiMessageListener());
     midiInterface.addMidiMessageListener(synthLaunchPad->getMidiMessageListener());
+    midiInterface.addMidiMessageListener(earTrainer.getMidiMessageListener());
   }
 
 
@@ -667,7 +668,7 @@ struct SynthSketch : public Sketch
 
     synthGui.onKeyDown(events);
 
-    if(events.sdlKeyCode == SDLK_INSERT) {
+    if(events.sdlKeyCode == SDLK_F11) {
       if(earTrainer.panel) {
         earTrainer.removePanel(&guiRoot);
         earTrainer.isActive = false;

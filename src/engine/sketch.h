@@ -472,7 +472,7 @@ struct Sketch
       while(!done) {
         pollSdlEvents(events);
         if(events.sdlKeyCode == SDLK_SPACE) done = true;
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
       }
       printf("Hibernation ended\n");
   }
