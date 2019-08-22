@@ -182,7 +182,7 @@ struct Sketch
 
   FpsPanel *fpsPanel = nullptr;
 
-  const std::string fftwWisdomFilename = "data/fftw_wisdom";
+  const std::string fftwWisdomFilename = "data/tmp/fftw_wisdom";
 
   virtual ~Sketch() {
     delete paInterface;
