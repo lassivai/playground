@@ -134,37 +134,43 @@ struct InstrumentPreviewPanel : public Panel {
       
       x += 57;
 
-      double minValue = 1e10, maxValue = -1e10;
-      if(leftDb <= 0) {
-        Note note;
-        instrument->preparePreviewNote(note);
-        
-        double dt = (double)1.0/waveForm.size()/note.frequency;
-        for(int i=0; i<waveForm.size(); i++) {
-          Vec2d sampleOut;
-          instrument->getSample(sampleOut, Vec2d(), dt, 0.1+dt*i, note);
-          //synth->inputDelayLine.getOutputSampleInSeconds((dt*i)/100.0).x
-          waveForm[i] = sampleOut;
-          minValue = min(waveForm[i].x, minValue);
-          maxValue = max(waveForm[i].x, maxValue);
-        }
+      if(instrument->isUpdating()) {
+        textRenderer.setColor(1, 1, 1, 0.4);
+        textRenderer.print("Updating...", absolutePos.x + x, absolutePos.y, 10);
       }
       else {
-        instrument->delayLine.getWaveForm(waveForm, 100, 0.8, 1.0/50.0, 1);
-        for(int i=0; i<waveForm.size(); i++) {
-          minValue = min(waveForm[i].x, minValue);
-          maxValue = max(waveForm[i].x, maxValue);
+        double minValue = 1e10, maxValue = -1e10;
+        if(leftDb <= 0) {
+          Note note;
+          instrument->preparePreviewNote(note);
+          
+          double dt = (double)1.0/waveForm.size()/note.frequency;
+          for(int i=0; i<waveForm.size(); i++) {
+            Vec2d sampleOut;
+            instrument->getSample(sampleOut, Vec2d(), dt, 0.1+dt*i, note);
+            //synth->inputDelayLine.getOutputSampleInSeconds((dt*i)/100.0).x
+            waveForm[i] = sampleOut;
+            minValue = min(waveForm[i].x, minValue);
+            maxValue = max(waveForm[i].x, maxValue);
+          }
         }
-      }
-      if(maxValue > minValue) {
-        for(int i=0; i<waveForm.size(); i++) {
-          waveForm[i].x = map(waveForm[i].x, minValue, maxValue, -1, 1);
+        else {
+          instrument->delayLine.getWaveForm(waveForm, 100, 0.8, 1.0/50.0, 1);
+          for(int i=0; i<waveForm.size(); i++) {
+            minValue = min(waveForm[i].x, minValue);
+            maxValue = max(waveForm[i].x, maxValue);
+          }
         }
-      }
-      geomRenderer.strokeColor.set(1, 1, 1, 0.7);
-      for(int i=1; i<waveForm.size(); i++) {
-        geomRenderer.drawLine(absolutePos.x + x + i-1, absolutePos.y + size.y*0.5-waveForm[i-1].x*(size.y*0.5-2),
-                              absolutePos.x + x + i,   absolutePos.y + size.y*0.5-waveForm[i].x*(size.y*0.5-2));
+        if(maxValue > minValue) {
+          for(int i=0; i<waveForm.size(); i++) {
+            waveForm[i].x = map(waveForm[i].x, minValue, maxValue, -1, 1);
+          }
+        }
+        geomRenderer.strokeColor.set(1, 1, 1, 0.7);
+        for(int i=1; i<waveForm.size(); i++) {
+          geomRenderer.drawLine(absolutePos.x + x + i-1, absolutePos.y + size.y*0.5-waveForm[i-1].x*(size.y*0.5-2),
+                                absolutePos.x + x + i,   absolutePos.y + size.y*0.5-waveForm[i].x*(size.y*0.5-2));
+        }
       }
     }
     else if(instrument->instrumentType == Instrument::InstrumentType::CompositePads) {

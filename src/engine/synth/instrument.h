@@ -483,6 +483,16 @@ public:
       else  instrumentPanel->stopUpdate();
     }
   }
+  
+  bool isUpdating() {
+    for(int i=0; i<numVoices; i++) {
+      if(voices[i].waveForm.isUpdating) return true;
+    }
+    for(int i=0; i<numModulators; i++) {
+      if(modulators[i].waveForm.isUpdating) return true;
+    }
+    return false;
+  }
 
   void reset() {
     
@@ -540,7 +550,7 @@ public:
       }
     }
 
-    note.biquadFilter.init(biquadFilter, note.frequency);
+    note.biquadFilter.init(biquadFilter, note.frequency, note.volume);
     //note.biquadFilter.print();
     printf("note biquad %f %f - %f %f %f %f %f %f\n", note.biquadFilter.frequency, note.biquadFilter.bandwidth, note.biquadFilter.a0, note.biquadFilter.a1, note.biquadFilter.a2, note.biquadFilter.b0, note.biquadFilter.b1, note.biquadFilter.b2);
     //note.voiceBiquadFilters[0].print();
@@ -552,7 +562,7 @@ public:
     // FIXME maybe
     for(int j=0; j<maxNumVoices; j++) {
       note.phasesVoiceNew[j].resize(maxUnison);
-      note.voiceBiquadFilters[j].init(voices[j].biquadFilter, note.frequency);
+      note.voiceBiquadFilters[j].init(voices[j].biquadFilter, note.frequency, note.volume);
       for(int k=0; k<maxUnison; k++) {
         if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
           double p = voices[j].waveForm.phaseStartLimits.getRandomDoubleFromTheRange();

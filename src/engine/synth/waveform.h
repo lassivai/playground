@@ -1086,7 +1086,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   double waveValueOffset = 0;
   
   std::vector<std::thread> *waveTablePreparingThreads = NULL;
-  
+  bool isUpdating = false;
   
   bool waveTablePreparationStopRequested = false;
 
@@ -1696,6 +1696,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     if(!readyToPrepareWaveTable) return;
 
     if(stoppingThreads) return;
+    
+    isUpdating = true;
+    
     preparationTimer.tic();
     
     stoppingThreads = true;
@@ -1934,6 +1937,8 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     else {
       printf("Wavetable preparation finished, %d samples in %f seconds\n", waveTableSize, preparationTimer.duration);
     }
+    
+    isUpdating = false;
     
     updateWaveTableGraphs();
   }

@@ -143,6 +143,9 @@ struct BiquadFilter : public PostProcessingEffect {
   std::vector<double> filterResponseGraphNormalized;
 
   bool showTrackingPanel = false;
+  enum KeyTrackingMode { NoKeyTracking, Pitch, Velocity };
+  std::vector<std::string> keyTrackingModeNames = { "No key tracking", "Pitch", "Velocity" };
+  KeyTrackingMode keyTrackingMode = Pitch;
   double frequencyKeyTracking = 0.0;
   double bandwidthKeyTracking = 0.0;
 
@@ -719,8 +722,10 @@ struct BiquadFilter : public PostProcessingEffect {
     
     NumberBox *frequencyKeyTrackingGui = NULL;
     NumberBox *bandwidthKeyTrackingGui = NULL;
+    ListBox *keyTrackingModeGui = NULL;
     RotaryKnob<double> *frequencyKeyTrackingKnob = NULL;
     RotaryKnob<double> *bandwidthKeyTrackingKnob = NULL;
+    RotaryKnob<long> *keyTrackingModeKnob = NULL;
     
     std::vector<SynthGuiLayout> layouts = std::vector<SynthGuiLayout>(BiquadFilter::numLayouts);
     
@@ -754,17 +759,29 @@ struct BiquadFilter : public PostProcessingEffect {
         addChildElement(layouts[i].gui = new GuiElement("Key tracking layout "+std::to_string(i)));
         layouts[i].gui->setVisible(i == biquadFilter->layout);
       }
-       // BOX LAYOUT
+      // BOX LAYOUT
+      layouts[0].gui->addChildElement(keyTrackingModeGui = new ListBox("Mode", 10, line+=lineHeight, 10));
+      keyTrackingModeGui->setItems(biquadFilter->keyTrackingModeNames);
+      keyTrackingModeGui->setValue(biquadFilter->keyTrackingMode);
+       
       layouts[0].gui->addChildElement(frequencyKeyTrackingGui = new NumberBox("Frequency key tracking", biquadFilter->frequencyKeyTracking, NumberBox::FLOATING_POINT, -1.0, 1.0, 10, line+=lineHeight, 7));
+      
       layouts[0].gui->addChildElement(bandwidthKeyTrackingGui = new NumberBox("Bandwidth key tracking", biquadFilter->bandwidthKeyTracking, NumberBox::FLOATING_POINT, -1.0, 1.0, 10, line+=lineHeight, 7));
+      
       layouts[0].gui->setSize(parentGuiElement->size.x, line + lineHeight + 10);
       layouts[0].size = layouts[0].gui->size;
 
       // KNOB LAYOUT
       RowColumnPlacer placer(parentGuiElement, 10, 5);
 
+      layouts[1].gui->addChildElement(keyTrackingModeKnob = new RotaryKnob<long>("Mode", placer.progressX(), placer.getY(), RotaryKnob<long>::ListKnob, 0, 1, (double)biquadFilter->keyTrackingMode/(biquadFilter->keyTrackingModeNames.size()-1)));
+      keyTrackingModeKnob->setItems(biquadFilter->keyTrackingModeNames);
+      keyTrackingModeKnob->setValue(biquadFilter->keyTrackingMode);
+      
       layouts[1].gui->addChildElement(frequencyKeyTrackingKnob = new RotaryKnob<double>("Frequency key tracking", placer.progressX(), placer.getY(), RotaryKnob<double>::LimitedKnob, -1.0, 1.0, biquadFilter->frequencyKeyTracking));
+      
       layouts[1].gui->addChildElement(bandwidthKeyTrackingKnob = new RotaryKnob<double>("Bandwidth key tracking", placer.progressX(), placer.getY(), RotaryKnob<double>::LimitedKnob, -1.0, 1.0, biquadFilter->bandwidthKeyTracking));
+      
       layouts[1].gui->setSize(parentGuiElement->size.x, placer.getY() + placer.knobSize);
       layouts[1].size = layouts[1].gui->size;
       
@@ -779,6 +796,10 @@ struct BiquadFilter : public PostProcessingEffect {
         this->oscillatorBiquadFilterPanel = oscillatorBiquadFilterPanel;
       }
       void onValueChange(GuiElement *guiElement) {
+        if(guiElement == oscillatorBiquadFilterPanel->keyTrackingModeGui || guiElement == oscillatorBiquadFilterPanel->keyTrackingModeKnob) {
+          guiElement->getValue((void*)&oscillatorBiquadFilterPanel->biquadFilter->keyTrackingMode);
+        }
+
         if(guiElement == oscillatorBiquadFilterPanel->frequencyKeyTrackingGui || guiElement == oscillatorBiquadFilterPanel->frequencyKeyTrackingKnob) {
           guiElement->getValue((void*)&oscillatorBiquadFilterPanel->biquadFilter->frequencyKeyTracking);
         }
@@ -1041,6 +1062,15 @@ struct BiquadFilter : public PostProcessingEffect {
     getNumericParameter("bandwidth", bandwidth);
     getNumericParameter("qualityFactor", qualityFactor);
     
+    std::string keyTrackingModeName;
+    getStringParameter("keyTrackingMode", keyTrackingModeName);
+    for(int i=0; i<keyTrackingModeNames.size(); i++) {
+      if(keyTrackingModeName == keyTrackingModeNames[i]) {
+        keyTrackingMode = (BiquadFilter::KeyTrackingMode)i;
+        break;
+      }
+    }
+
     getNumericParameter("frequencyKeyTracking", frequencyKeyTracking);
     getNumericParameter("bandwidthKeyTracking", bandwidthKeyTracking);
 
@@ -1074,7 +1104,8 @@ struct BiquadFilter : public PostProcessingEffect {
     putNumericParameter("bandwidth", bandwidth);
     putNumericParameter("qualityFactor", qualityFactor);
 
-    if(showTrackingPanel) {
+    if(keyTrackingMode != NoKeyTracking) {
+      putStringParameter("keyTrackingMode", keyTrackingModeNames[keyTrackingMode]);
       putNumericParameter("frequencyKeyTracking", frequencyKeyTracking);
       putNumericParameter("bandwidthKeyTracking", bandwidthKeyTracking);
     }

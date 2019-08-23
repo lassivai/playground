@@ -80,7 +80,7 @@ struct OscillatorBiquadFilter  {
     reset();
   }*/
   
-  void init(BiquadFilter *biquadFilter, double noteFrequency) {
+  void init(BiquadFilter *biquadFilter, double noteFrequency, double noteVelocity) {
     if(noteFrequency  < 1) {
       printf("note initialized inproperly!\n");
     }
@@ -93,19 +93,36 @@ struct OscillatorBiquadFilter  {
     bandwidth = biquadFilter->bandwidth;    
     
     //printf("at OscillatorBiquadFilter::init() 1, %f - %f\n", biquadFilter->frequencyKeyTracking, biquadFilter->bandwidthKeyTracking);
-        
-    if(biquadFilter->frequencyKeyTracking > 0) {
-      frequency = (1.0-biquadFilter->frequencyKeyTracking) * biquadFilter->frequency + biquadFilter->frequencyKeyTracking * (biquadFilter->frequency * noteFrequency / noteToFreq(60));
-    }
-    else {
-      frequency = (1.0+biquadFilter->frequencyKeyTracking) * biquadFilter->frequency - biquadFilter->frequencyKeyTracking * (biquadFilter->frequency * noteToFreq(60) / noteFrequency);
-    }
     
-    if(biquadFilter->bandwidthKeyTracking > 0) {
-      bandwidth = (1.0-biquadFilter->bandwidthKeyTracking) * biquadFilter->bandwidth + biquadFilter->bandwidthKeyTracking * (biquadFilter->bandwidth * noteFrequency / noteToFreq(60));
+    if(biquadFilter->keyTrackingMode == BiquadFilter::KeyTrackingMode::Pitch) {
+      if(biquadFilter->frequencyKeyTracking > 0) {
+        frequency = (1.0-biquadFilter->frequencyKeyTracking) * biquadFilter->frequency + biquadFilter->frequencyKeyTracking * (biquadFilter->frequency * noteFrequency / noteToFreq(60));
+      }
+      else {
+        frequency = (1.0+biquadFilter->frequencyKeyTracking) * biquadFilter->frequency - biquadFilter->frequencyKeyTracking * (biquadFilter->frequency * noteToFreq(60) / noteFrequency);
+      }
+      
+      if(biquadFilter->bandwidthKeyTracking > 0) {
+        bandwidth = (1.0-biquadFilter->bandwidthKeyTracking) * biquadFilter->bandwidth + biquadFilter->bandwidthKeyTracking * (biquadFilter->bandwidth * noteFrequency / noteToFreq(60));
+      }
+      else {
+        bandwidth = (1.0+biquadFilter->bandwidthKeyTracking) * biquadFilter->bandwidth - biquadFilter->bandwidthKeyTracking * (biquadFilter->bandwidth * noteToFreq(60) / noteFrequency);
+      }
     }
-    else {
-      bandwidth = (1.0+biquadFilter->bandwidthKeyTracking) * biquadFilter->bandwidth - biquadFilter->bandwidthKeyTracking * (biquadFilter->bandwidth * noteToFreq(60) / noteFrequency);
+    if(biquadFilter->keyTrackingMode == BiquadFilter::KeyTrackingMode::Velocity) {
+      if(biquadFilter->frequencyKeyTracking > 0) {
+        frequency = map(noteVelocity*noteVelocity, 0, 1, (1.0-biquadFilter->frequencyKeyTracking)*biquadFilter->frequency, biquadFilter->frequency);
+      }
+      else {
+        frequency = map(noteVelocity*noteVelocity, 0, 1, biquadFilter->frequency, (1.0+biquadFilter->frequencyKeyTracking)*biquadFilter->frequency);
+      }
+      
+      if(biquadFilter->bandwidthKeyTracking > 0) {
+        bandwidth = map(noteVelocity, 0, 1, (1.0-biquadFilter->frequencyKeyTracking)*(10-biquadFilter->bandwidth)+biquadFilter->bandwidth, biquadFilter->bandwidth);
+      }
+      else {
+        bandwidth = map(noteVelocity, 0, 1, biquadFilter->bandwidth, (1.0-biquadFilter->frequencyKeyTracking)*(10-biquadFilter->bandwidth)+biquadFilter->bandwidth);
+      }
     }
     
     //printf("at OscillatorBiquadFilter::init() 2,  %f -> %f   |   %f -> %f\n", biquadFilter->frequency, frequency, biquadFilter->bandwidth, bandwidth);
