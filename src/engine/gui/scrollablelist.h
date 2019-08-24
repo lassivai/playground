@@ -6,7 +6,7 @@
 struct ScrollableList : public GuiElement
 {
   std::vector<std::string> items;
-  int activeItemIndex = -1;
+  int activeItemIndex = 0;
   std::string labelText = "";
 
   int labelTextSize = 12, inputTextSize = 10;

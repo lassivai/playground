@@ -607,16 +607,16 @@ public:
     absoluteZLayer = parent ? zLayer + parent->absoluteZLayer : zLayer;
     //printf("%f, %f\n", pos.x, absolutePos.x);
     
+    for(GuiElement *childGuiElement : children) {
+      childGuiElement->prepare(geomRenderer, textRenderer);
+    }
+
     onPrepare(geomRenderer, textRenderer);
 
     onPrepareShadowTexture(geomRenderer);
 
     prerender(geomRenderer, textRenderer);
-    
-    for(GuiElement *childGuiElement : children) {
-      childGuiElement->prepare(geomRenderer, textRenderer);
-    }
-    
+        
     readyToReceiveEvents = true;
   }
   virtual void onPrepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {}

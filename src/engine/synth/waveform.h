@@ -2390,26 +2390,26 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       this->waveForm = waveForm;
 
       //waveFormArgsPanel = new 
-      double line = 10, lineHeight = 23;
+      /*double line = 10, lineHeight = 23;
 
-      line -= lineHeight;
+      line -= lineHeight;*/
+      ConstantWidthColumnPlacer layoutPlacer(250-20, 0, 10, 10);
 
-      addChildElement(minHarmonicSmoothingGui = new NumberBox("First partial bandwidth", waveForm->minHarmonicSmoothing, NumberBox::INTEGER, 1, 10000, 10, line += lineHeight, 7));
+      addChildElement(minHarmonicSmoothingGui = new NumberBox("First bandwidth", waveForm->minHarmonicSmoothing, NumberBox::INTEGER, 1, 10000, layoutPlacer, 7));
       
-      addChildElement(maxHarmonicSmoothingGui = new NumberBox("Last partial bandwidth", waveForm->maxHarmonicSmoothing, NumberBox::INTEGER, 1, 10000, 10, line += lineHeight, 7));
+      addChildElement(maxHarmonicSmoothingGui = new NumberBox("Last bandwidth", waveForm->maxHarmonicSmoothing, NumberBox::INTEGER, 1, 10000, layoutPlacer, 7));
       
-      addChildElement(harmonicSmoothingSlopeGui = new NumberBox("Bandwidth increase slope", waveForm->harmonicSmoothingSlope, NumberBox::FLOATING_POINT, 1, 1e10, 10, line += lineHeight, 6));
+      addChildElement(harmonicSmoothingSlopeGui = new NumberBox("Increase slope", waveForm->harmonicSmoothingSlope, NumberBox::FLOATING_POINT, 1, 1e10, layoutPlacer, 6));
       harmonicSmoothingSlopeGui->defaultIncrementModePowerShift = -1;
       
-      addChildElement(harmonicSmoothingPowerGui = new NumberBox("Bandwidth increase power", waveForm->harmonicSmoothingPower, NumberBox::FLOATING_POINT, 1e-6, 1e10, 10, line += lineHeight, 6));
+      addChildElement(harmonicSmoothingPowerGui = new NumberBox("Increase power", waveForm->harmonicSmoothingPower, NumberBox::FLOATING_POINT, 1e-6, 1e10, layoutPlacer, 6));
       //harmonicSmoothingPowerGui->defaultIncrementModePowerShift = -1;
       
-      addChildElement(bandwidthCurvePreview = new BandwidthCurvePreview(280, 40, 10, line+=lineHeight+3, waveForm));
-      line += bandwidthCurvePreview->size.y;
+      addChildElement(bandwidthCurvePreview = new BandwidthCurvePreview(230, 40, 10, layoutPlacer.getY()+3, waveForm));
       
       addGuiEventListener(new HarmonicSmoothingPanelListener(this));
 
-      setSize(300, line + 10);
+      setSize(250, layoutPlacer.getY() + bandwidthCurvePreview->size.y + 10);
 
 
       //panel->addChildElement(waveFormArgsPanel);
@@ -2868,17 +2868,18 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     if(waveFormArgsPanel) return;
 
     waveFormArgsPanel = new Panel("Waveform args panel", 350, 590, 10, 10);
-    double line = 10, lineHeight = 23;
+    //double line = 10, lineHeight = 23;
 
-    line -= lineHeight;
+    //line -= lineHeight;
+    ConstantWidthColumnPlacer layoutPlacer(250-20, 0, 10, 10);
 
     for(int i=0; i<numWaveFormArgs[type]; i++) {
-      argsGui[i] = new NumberBox("Arg "+std::to_string(i+1), waveFormArgs[type][i], NumberBox::FLOATING_POINT, -1e10, 1e10, 10, line += lineHeight, 8);
+      argsGui[i] = new NumberBox("Arg "+std::to_string(i+1), waveFormArgs[type][i], NumberBox::FLOATING_POINT, -1e10, 1e10, layoutPlacer, 8);
       waveFormArgsPanel->addChildElement(argsGui[i]);
     }
     waveFormArgsPanel->addGuiEventListener(new WaveFormArgsPanelListener(this));
 
-    waveFormArgsPanel->size.set(200, line + lineHeight + 10);
+    waveFormArgsPanel->size.set(250, layoutPlacer.getY() + 10);
 
 
     panel->addChildElement(waveFormArgsPanel);
@@ -3151,34 +3152,35 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     if(fastNoiseWaveFormPanel) return;
 
     fastNoiseWaveFormPanel = new Panel("Fastnoise waveform panel", 350, 590, 10, 10);
-    double line = 10, lineHeight = 23;
+    //double line = 10, lineHeight = 23;
 
+    ConstantWidthColumnPlacer layoutPlacer(250-20, 0, 10, 10);
 
-    fastNoiseTypeGui = new ListBox("Noise type", 10, line, 10);
+    fastNoiseTypeGui = new ListBox("Noise type", layoutPlacer, 10);
     fastNoiseTypeGui->setItems(fastNoiseTypeNames);
     fastNoiseTypeGui->setValue(fastNoise.GetNoiseType());
 
-    fastNoiseInterpolationTypeGui = new ListBox("Interpolation", 10, line += lineHeight, 10);
+    fastNoiseInterpolationTypeGui = new ListBox("Interpolation", layoutPlacer, 10);
     fastNoiseInterpolationTypeGui->setItems(fastNoiseInterpNames);
     fastNoiseInterpolationTypeGui->setValue(fastNoise.GetInterp());
 
-    fastNoiseFractalTypeGui = new ListBox("Fractal type", 10, line += lineHeight, 10);
+    fastNoiseFractalTypeGui = new ListBox("Fractal type", layoutPlacer, 10);
     fastNoiseFractalTypeGui->setItems(fastNoiseFractalTypeNames);
     fastNoiseFractalTypeGui->setValue(fastNoise.GetFractalType());
 
-    fastNoiseCellularDistanceFunctionGui = new ListBox("Cell dist. func.", 10, line += lineHeight, 10);
+    fastNoiseCellularDistanceFunctionGui = new ListBox("Cell dist. func.", layoutPlacer, 10);
     fastNoiseCellularDistanceFunctionGui->setItems(fastNoiseCellularDistanceFunctionNames);
     fastNoiseCellularDistanceFunctionGui->setValue(fastNoise.GetCellularDistanceFunction());
 
-    fastNoiseCellularReturnTypeGui = new ListBox("Cell ret.", 10, line += lineHeight, 10);
+    fastNoiseCellularReturnTypeGui = new ListBox("Cell ret.", layoutPlacer, 10);
     fastNoiseCellularReturnTypeGui->setItems(fastNoiseCellularReturnTypeNames);
     fastNoiseCellularReturnTypeGui->setValue(fastNoise.GetCellularReturnType());
 
-    fastNoiseSeedGui = new NumberBox("Seed", fastNoise.GetSeed(), NumberBox::INTEGER, 0, 1<<30, 10, line += lineHeight, 10);
-    fastNoiseFrequencyGui = new NumberBox("Frequency", fastNoise.GetFrequency(), NumberBox::FLOATING_POINT, 0, 1e10, 10, line += lineHeight, 10);
-    fastNoiseOctavesGui = new NumberBox("Octaves", fastNoise.GetFractalOctaves(), NumberBox::INTEGER, 0, 100, 10, line += lineHeight, 10);
-    fastNoiseLacunarityGui = new NumberBox("Lacunarity", fastNoise.GetFractalLacunarity(), NumberBox::FLOATING_POINT, 0, 1e10, 10, line += lineHeight, 10);
-    fastNoiseGainGui = new NumberBox("Gain", fastNoise.GetFractalGain(), NumberBox::FLOATING_POINT, 0, 1e10, 10, line += lineHeight, 10);
+    fastNoiseSeedGui = new NumberBox("Seed", fastNoise.GetSeed(), NumberBox::INTEGER, 0, 1<<30, layoutPlacer, 10);
+    fastNoiseFrequencyGui = new NumberBox("Frequency", fastNoise.GetFrequency(), NumberBox::FLOATING_POINT, 0, 1e10, layoutPlacer, 10);
+    fastNoiseOctavesGui = new NumberBox("Octaves", fastNoise.GetFractalOctaves(), NumberBox::INTEGER, 0, 100, layoutPlacer, 10);
+    fastNoiseLacunarityGui = new NumberBox("Lacunarity", fastNoise.GetFractalLacunarity(), NumberBox::FLOATING_POINT, 0, 1e10, layoutPlacer, 10);
+    fastNoiseGainGui = new NumberBox("Gain", fastNoise.GetFractalGain(), NumberBox::FLOATING_POINT, 0, 1e10, layoutPlacer, 10);
 
     fastNoiseWaveFormPanel->addChildElement(fastNoiseTypeGui);
     fastNoiseWaveFormPanel->addChildElement(fastNoiseInterpolationTypeGui);
@@ -3193,7 +3195,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     fastNoiseWaveFormPanel->addChildElement(fastNoiseGainGui);
 
     fastNoiseWaveFormPanel->addGuiEventListener(new FastNoiseWaveFormPanelListener(this));
-    fastNoiseWaveFormPanel->size.set(300, line + lineHeight + 10);
+    fastNoiseWaveFormPanel->size.set(250, layoutPlacer.getY() + 10);
     panel->addChildElement(fastNoiseWaveFormPanel);
     //setOscillatorSubPanelPositions();
   }

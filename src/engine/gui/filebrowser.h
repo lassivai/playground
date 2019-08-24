@@ -18,8 +18,8 @@ struct FileBrowser : public Panel
   bool showHiddenFiles = false;
   
   struct ScrollableListState {
-    int scrollPosition;
-    int activeItemIndex;
+    int scrollPosition = 0;
+    int activeItemIndex = 0;
     ScrollableListState(int scrollPosition = 0, int activeItemIndex = 0) {
       this->scrollPosition = scrollPosition;
       this->activeItemIndex = activeItemIndex;
