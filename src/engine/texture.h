@@ -174,7 +174,7 @@ struct Texture
     return create(w, h, useBottomRightUV, true);
   }
 
-  bool createTextureRenderTargetTesting(int w, int h) {
+  bool createRenderTarget(int w, int h) {
     return create(w, h, true, false, true);
   }
 

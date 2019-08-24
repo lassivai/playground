@@ -162,9 +162,7 @@ struct Button : public GuiElement
     isInputGrabbed = false;
   }
 
-  void prepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-    GuiElement::prepare(geomRenderer, textRenderer);
-
+  void onPrepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
     if(!hoverTexture) {
       hoverTexture = createSpriteShadowTexture(geomRenderer, *texture, 15, 7, 2, Vec4d(1, 1, 1, 1), true);
     }

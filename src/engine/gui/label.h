@@ -41,9 +41,7 @@ struct Label : public GuiElement
     prerenderingNeeded = true;
   }
 
-  void prepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-    GuiElement::prepare(geomRenderer, textRenderer);
-
+  void onPrepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
     size = textRenderer.getDimensions(text, textSize) + padding * 2.0;
   }
 

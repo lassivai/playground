@@ -606,7 +606,13 @@ public:
     absolutePos = parent ? pos + parent->absolutePos : pos;
     absoluteZLayer = parent ? zLayer + parent->absoluteZLayer : zLayer;
     //printf("%f, %f\n", pos.x, absolutePos.x);
+    
     onPrepare(geomRenderer, textRenderer);
+
+    onPrepareShadowTexture(geomRenderer);
+
+    prerender(geomRenderer, textRenderer);
+    
     for(GuiElement *childGuiElement : children) {
       childGuiElement->prepare(geomRenderer, textRenderer);
     }
@@ -621,7 +627,7 @@ public:
     if(isVisible && prerenderingNeeded && size.x > 0 && size.y > 0) {
 
       if(prerenderedGuiElement.w != size.x || prerenderedGuiElement.h != size.y) {
-        prerenderedGuiElement.createTextureRenderTargetTesting(size.x, size.y);
+        prerenderedGuiElement.createRenderTarget(size.x, size.y);
         prerenderedGuiElement.enableFiltering(false);
       }
 
@@ -687,7 +693,8 @@ public:
     }
   }
 
-    virtual void render(GeomRenderer &geomRenderer, TextGl &textRenderer, double currentZLayer, double &nextZLayer) {
+
+  virtual void render(GeomRenderer &geomRenderer, TextGl &textRenderer, double currentZLayer, double &nextZLayer) {
     if(!isVisible) return;
     if(absoluteZLayer > currentZLayer) {
       if(currentZLayer == nextZLayer) {
@@ -696,31 +703,12 @@ public:
       else {
         nextZLayer = min(nextZLayer, absoluteZLayer);
       }
-      //nextZLayer = max(currentZLayer, min(nextZLayer, absoluteZLayer));
-      //return;
     }
-    /*if(absoluteZLayer < currentZLayer) {
-      //return;
-    }*/
-    //std::vector<GuiElement*> sorted = sortChildrenByZLayer();
-    
     if(absoluteZLayer == currentZLayer) {
-      onPrepareShadowTexture(geomRenderer);
-
-      if(prerenderingNeeded) {
-        prerender(geomRenderer, textRenderer);
-      }
-      
-      //geomRenderer.setZLayer(absoluteZLayer);
-      
       if(prerenderedGuiElement.w > 0 && prerenderedGuiElement.h > 0) {
         prerenderedGuiElement.render(absolutePos+size*0.5, overlayColor);
       }
       onRender(geomRenderer, textRenderer);
-
-
-      
-      //geomRenderer.resetZLayer();
     }
     for(GuiElement *childGuiElement : children) {
       if(childGuiElement->absoluteZLayer == currentZLayer) {
@@ -728,92 +716,17 @@ public:
       }
     }
     
-    //std::vector<GuiElement*> sorted = sortChildrenByZLayer();
-    //for(GuiElement *childGuiElement : sorted) {
-    //  childGuiElement->render(geomRenderer, textRenderer);
-    //}
     for(GuiElement *childGuiElement : children) {
       childGuiElement->render(geomRenderer, textRenderer, currentZLayer, nextZLayer);
     }
   }
-  /*virtual void render(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-    if(!isVisible) return;
-
-    
-    onPrepareShadowTexture(geomRenderer);
-
-    if(prerenderingNeeded) {
-      prerender(geomRenderer, textRenderer);
-    }
-    
-    geomRenderer.setZLayer(absoluteZLayer);
-    
-    if(prerenderedGuiElement.w > 0 && prerenderedGuiElement.h > 0) {
-      prerenderedGuiElement.render(absolutePos+size*0.5, overlayColor);
-    }
-    onRender(geomRenderer, textRenderer);
 
 
-    for(GuiElement *childGuiElement : children) {
-      childGuiElement->renderShadow();
-    }
-    
-    geomRenderer.resetZLayer();
-    
-    
-    //std::vector<GuiElement*> sorted = sortChildrenByZLayer();
-    //for(GuiElement *childGuiElement : sorted) {
-    //  childGuiElement->render(geomRenderer, textRenderer);
-    //}
-    for(GuiElement *childGuiElement : children) {
-      childGuiElement->render(geomRenderer, textRenderer);
-    }
-  }*/
-  
-  virtual void renderXXX(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-    if(!isVisible) return;
-
-    //geomRenderer.setZLayer(absoluteZLayer);
-    
-    onPrepareShadowTexture(geomRenderer);
-
-    if(prerenderingNeeded) {
-      prerender(geomRenderer, textRenderer);
-    }
-    /*if(prerenderedGuiElement.w > 0 && prerenderedGuiElement.h > 0) {
-      prerenderedGuiElement.render(absolutePos+size*0.5, overlayColor);
-    }
-    onRender(geomRenderer, textRenderer);*/
-/*
-    for(GuiElement *childGuiElement : children) {
-      childGuiElement->renderShadow();
-    }*/
-    
-    //geomRenderer.resetZLayer();
-        
-    for(GuiElement *childGuiElement : children) {
-    //  childGuiElement->render(geomRenderer, textRenderer);
-    }
-  }
   
   
   
   virtual void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) {}
   
-  /*virtual void render(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-    if(drawBackground || drawBorder) {
-      geomRenderer.texture = NULL;
-      geomRenderer.fillColor = drawBackground ? backgroundColor : Vec4d::Zero;
-      geomRenderer.strokeColor = borderColor;
-      geomRenderer.strokeType = drawBorder ? 1 : 0;
-      geomRenderer.strokeWidth = borderWidth;
-      geomRenderer.drawRect(size, absolutePos + size*0.5);
-    }
-
-    for(GuiElement *childGuiElement : children) {
-      childGuiElement->render(geomRenderer, textRenderer);
-    }
-  }*/
 
   virtual bool isPointWithin(const Vec2d &p) {
     return isVisible && p.x >= absolutePos.x && p.x <= absolutePos.x + size.x && p.y >= absolutePos.y && p.y <= absolutePos.y + size.y;

@@ -182,6 +182,12 @@ struct Sketch
 
   FpsPanel *fpsPanel = nullptr;
 
+
+  Texture renderTargetTextureForPostEffects;
+  Texture postEffectTexture;
+  GlShader postEffectShader;
+  Quadx quadScreen;
+  
   const std::string fftwWisdomFilename = "data/tmp/fftw_wisdom";
 
   virtual ~Sketch() {
@@ -427,7 +433,7 @@ struct Sketch
     time = timer.time;
     dt = timer.dt;
     pollSdlEvents(events);
-    midiInterface.update();
+    //midiInterface.update();
     paInterface->update();
 
     if(fpsPanel->isVisible) {
@@ -435,9 +441,7 @@ struct Sketch
     }
 
     onUpdate();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-    onDraw();
-    //glLoadIdentity();
+    
     if(guiRoot.checkInputGrab() || console.inputGrabbed) {
       if(!events.textInput.inputGrabbed) {
         events.startTextInput();
@@ -449,6 +453,20 @@ struct Sketch
     // FIXME get rid of prepare()
     guiRoot.update(time, dt);
     guiRoot.prepare(geomRenderer, textRenderer);
+
+    if(renderTargetTextureForPostEffects.w != screenW || renderTargetTextureForPostEffects.h != screenH) {
+      renderTargetTextureForPostEffects.createRenderTarget(screenW, screenH);
+      renderTargetTextureForPostEffects.enableFiltering(true);
+      postEffectTexture.load("data/textures/texture.png");
+      postEffectShader.create("data/glsl/texture.vert", "data/glsl/postEffectShader.frag");
+      quadScreen.create(screenW, screenH);
+    }
+    renderTargetTextureForPostEffects.setRenderTarget();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+    onDraw();
+    //glLoadIdentity();
+    
     
     double currentZLayer = 0, nextZLayer = 0;
     while(true) {
@@ -459,7 +477,22 @@ struct Sketch
       }
     }
     
+    renderTargetTextureForPostEffects.unsetRenderTarget();
     
+    postEffectShader.activate();
+    postEffectShader.setUniform1f("time", time);
+    postEffectShader.setUniform2f("screenSize", screenW, screenH);
+    renderTargetTextureForPostEffects.activate(postEffectShader, "texture1", 0);
+    postEffectTexture.activate(postEffectShader, "texture2", 1);
+
+    //renderTargetTextureForPostEffects.render();
+    quadScreen.render(screenW/2, screenH/2);
+    
+    postEffectShader.deActivate();
+    renderTargetTextureForPostEffects.inactivate(0);
+    postEffectTexture.inactivate(1);
+
+
     updateScreen(sdlInterface);
     messageQueue.update();
     
@@ -498,6 +531,7 @@ struct Sketch
     return (basicNoise.GetNoise(d * 432.446, d + time*freq) + 1.0) * 0.5;
   }
   void reloadShaders() {
+    postEffectShader.create("data/glsl/texture.vert", "data/glsl/postEffectShader.frag");
     geomRenderer.reloadShaders();
     initBoxShadowShader(true);
     initSpriteShadowShader(true);

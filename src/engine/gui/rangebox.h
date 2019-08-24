@@ -43,8 +43,7 @@ struct RangeBox : public GuiElement
     layoutPlacer.setPosition(this);
   }
   
-  void prepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-    GuiElement::prepare(geomRenderer, textRenderer);
+  void onPrepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
     if(!initialized) {
       if(absoluteInputTextWidth) {
         Vec2d labelSize = rangeMinGui->labelText.size() == 0 ? Vec2d(0, 0) : textRenderer.getDimensions(rangeMinGui->labelText, rangeMinGui->labelTextSize);

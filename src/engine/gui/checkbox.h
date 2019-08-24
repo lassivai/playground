@@ -100,9 +100,7 @@ struct CheckBox : public GuiElement
     isInputGrabbed = false;
   }
 
-  void prepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-    GuiElement::prepare(geomRenderer, textRenderer);
-
+  virtual void onPrepare(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
     labelSize = textRenderer.getDimensions(label, textSize) + padding * 2.0;
     boxSize.set(labelSize.y*0.5, labelSize.y*0.5);
     size.set(labelSize.x + boxSize.x*1.5 + gap, labelSize.y);

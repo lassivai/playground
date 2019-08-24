@@ -72,7 +72,7 @@ struct PostSketch : public Sketch
     printf("%d x %d\n", texture.w, texture.h);
     quadx.create(texture.w, texture.h, false);
 
-    texture3.createTextureRenderTargetTesting(screenW, screenH);
+    texture3.createRenderTarget(screenW, screenH);
     quadScreen.create(screenW, screenH);
 
     //clear(0, 0, 0, 1);
