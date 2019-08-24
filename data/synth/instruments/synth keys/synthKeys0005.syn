@@ -1,7 +1,7 @@
 instrument {
   name: Synth keys 5
   volume: 1
-  noteFilterFrequencyModular: -1, 2, 1000, 10000
+  noteFilterFrequencyModular: -1, 2, 400, 10000
   reverb {
     subtype: MVerb
     gain: 1.3
@@ -133,16 +133,17 @@ instrument {
   }
   envelope {
     type: ahe
-    parameters: 0, -8, -8, -0.05
+    parameters: 0, -6, -6, -0.05
     output: 1
   }
   envelope {
     type: ahe
-    parameters: 0, -10, -10, -0.05
+    parameters: 0, -3, -3, -0.05
     output: 2
   }
   noteFilter {
     subtype: Low-pass
+    keyTrackingMode: Pitch
     gain: 1
     wet: 1
     frequency: 2000
