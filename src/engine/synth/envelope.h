@@ -104,6 +104,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
     this->ahdAttackDuration = a.ahdAttackDuration;
     this->ahdHoldDecayExponent = a.ahdHoldDecayExponent;
     this->ahdReleaseDecayExponent = a.ahdReleaseDecayExponent;
+    this->ahdOffset = a.ahdOffset;
     //this->keyHoldEnabled = a.keyHoldEnabled;
     this->adsrAttackDuration = a.adsrAttackDuration;
     this->adsrDecayDuration = a.adsrDecayDuration;

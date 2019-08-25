@@ -850,162 +850,60 @@ public:
 
 
   struct VoicesPanel : public Panel {
-    struct VoicePreviewPanel : public Panel {
-      int voiceIndex = 0;
-      Instrument *instrument = NULL;
-      std::vector<double> waveForm;
-      
-      VoicePreviewPanel(Instrument *instrument, int voiceIndex) : Panel("Voice preview panel") {
-        drawBorder = false;
-        drawBackground = false;
-        draggable = false;
-        this->instrument = instrument;
-        this->voiceIndex = voiceIndex;
-        setSize(70, 23);
-        waveForm.resize(70, 0);
-      }
-            
-      virtual void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) {
-        if(!isVisible) return;
-        
-        Voice &voice = instrument->voices[voiceIndex];
-        
-        geomRenderer.texture = NULL;
-        geomRenderer.strokeType = 1;
-        geomRenderer.strokeWidth = 1;        
-        //geomRenderer.fillColor.set(1, 1, 1, 0.5);
-        if(waveForm.size() != (int)size.x) {
-          waveForm.assign(size.x, 0);
-        }
-        
-        double minValue = 0, maxValue = 0;
-        for(int x=0; x<size.x; x++) {
-          //int i = ((double)(x/(size.x-1)) * voice.waveForm.waveTableSizeM1);
-          double t = (double)x/(size.x-1.0);
-          //waveForm[x] = voice.waveForm.waveTable[i];
-          waveForm[x] = voice.waveForm.getSample(t);
-          minValue = min(minValue, waveForm[x]);
-          maxValue = max(maxValue, waveForm[x]);
-        }
-        if(minValue < maxValue && minValue != -1 && maxValue != 1) {
-          for(int x=0; x<size.x; x++) {
-            waveForm[x] = map(waveForm[x], minValue, maxValue, -1, 1);
-          }
-        }
-        geomRenderer.strokeColor.set(1, 1, 1, 0.5);
-        for(int x=1; x<size.x; x++) {
-          geomRenderer.drawLine(x-1, size.y*0.36 * (1.0 - waveForm[x-1]), x, size.y*0.36 * (1.0 - waveForm[x]), absolutePos);
-        }
-      }
-    };
-    
-    
-    
-    NumberBox *numVoicesGui = NULL;
-    std::vector<Button*> voiceOpenGuiGuis = std::vector<Button*>(maxNumVoices, NULL);
-    std::vector<Label*> voiceLabels = std::vector<Label*>(maxNumVoices, NULL);
-    std::vector<VoicePreviewPanel*> voicePreviewPanels = std::vector<VoicePreviewPanel*>(maxNumVoices, NULL);
-    std::vector<NumberBox*> voiceAmplitudeModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
-    std::vector<NumberBox*> voiceFrequencyModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
-    std::vector<NumberBox*> voiceAmplitudeEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
-    std::vector<NumberBox*> voiceFrequencyEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
-    
-    Instrument *instrument = NULL;
-    GuiElement *parentGuiElement = NULL;
-
-    double lineHeight = 23;
-    int width = 40, widthA = 25, widthB = 100;
-    int columnA = 10, columnB = 10+widthA, columnC = 10+widthA+widthB, columnD = 10+widthA+widthB+width, columnE = 10+widthA+widthB+width*2;
-    int columnF = 10+widthA+widthB+width*3;
-
-    VoicesPanel(Instrument *instrument, GuiElement *parentGuiElement) : Panel("Voices panel") {
-      init(instrument, parentGuiElement);
-    }
-
-    void init(Instrument *instrument, GuiElement *parentGuiElement) {
-      this->instrument = instrument;
-      this->parentGuiElement = parentGuiElement;
-      
-      double line = 10;
-      this->addGuiEventListener(new VoicesPanelListener(this));
-      parentGuiElement->addChildElement(this);
-
-      addChildElement(numVoicesGui = new NumberBox("Voices", instrument->numVoices, NumberBox::INTEGER, 0, maxNumVoices, 10, line, 2));
-      numVoicesGui->incrementMode = NumberBox::IncrementMode::Linear;
-      numVoicesGui->setTextSize(10);
-      numVoicesGui->labelColor.set(1, 1, 1, 0.9);
-
-
-      addChildElement(new Label("AM", columnC, line, 10, Vec4d(1, 1, 1, 0.9)));
-      addChildElement(new Label("FM", columnD, line, 10, Vec4d(1, 1, 1, 0.9)));
-      addChildElement(new Label("Amp", columnE, line, 10, Vec4d(1, 1, 1, 0.9)));
-      addChildElement(new Label("Frq", columnF, line, 10, Vec4d(1, 1, 1, 0.9)));
-
-      //this->setPosition(instrumentPanel->pos + Vec2d(0, 80));
-
-      for(int i=0; i<maxNumVoices; i++) {
-        line += lineHeight;
-        addChildElement(voiceLabels[i] = new Label(std::to_string(i+1), columnA, line));
-        
-        addChildElement(voicePreviewPanels[i] = new VoicePreviewPanel(instrument, i));
-        voicePreviewPanels[i]->setPosition(columnB, line+4);
-
-        addChildElement(voiceOpenGuiGuis[i] = new Button("Open voice GUI", "data/synth/textures/gui.png", columnC-20, line+2, Button::ToggleButton));
-        voiceOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
-        
-        voiceAmplitudeModulatorInputIndexGuis[i] = new NumberBox("", instrument->voices[i].inputAM, NumberBox::INTEGER, -1, maxNumModulators, columnC, line, 2);
-        voiceAmplitudeModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        voiceAmplitudeModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
-        this->addChildElement(voiceAmplitudeModulatorInputIndexGuis[i]);
-        
-
-        voiceFrequencyModulatorInputIndexGuis[i] = new NumberBox("", instrument->voices[i].inputFM, NumberBox::INTEGER, -1, maxNumModulators, columnD, line, 2);
-        voiceFrequencyModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        voiceFrequencyModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
-        this->addChildElement(voiceFrequencyModulatorInputIndexGuis[i]);
-
-        voiceAmplitudeEnvelopeIndexGuis[i] = new NumberBox("", instrument->voices[i].inputAmplitudeEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnE, line, 2);
-        voiceAmplitudeEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        voiceAmplitudeEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
-        this->addChildElement(voiceAmplitudeEnvelopeIndexGuis[i]);
-
-        voiceFrequencyEnvelopeIndexGuis[i] = new NumberBox("", instrument->voices[i].inputFrequencyEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnF, line, 2);
-        voiceFrequencyEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        voiceFrequencyEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
-        this->addChildElement(voiceFrequencyEnvelopeIndexGuis[i]);
-      }
-      
-      update();
-    }
-
-    void update() {
-      
-      numVoicesGui->setValue(instrument->numVoices);
-      
-      for(int i=0; i<maxNumVoices; i++) {
-        voiceAmplitudeModulatorInputIndexGuis[i]->setValue(instrument->voices[i].inputAM);
-        voiceFrequencyModulatorInputIndexGuis[i]->setValue(instrument->voices[i].inputFM);
-        voiceAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputAmplitudeEnvelope);
-        voiceFrequencyEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputFrequencyEnvelope);
-        
-        voiceLabels[i]->setVisible(i < instrument->numVoices);
-        voicePreviewPanels[i]->setVisible(i < instrument->numVoices);
-        voiceOpenGuiGuis[i]->setVisible(i < instrument->numVoices);
-        voiceAmplitudeModulatorInputIndexGuis[i]->setVisible(i < instrument->numVoices);
-        voiceFrequencyModulatorInputIndexGuis[i]->setVisible(i < instrument->numVoices);
-        voiceAmplitudeEnvelopeIndexGuis[i]->setVisible(i < instrument->numVoices);
-        voiceFrequencyEnvelopeIndexGuis[i]->setVisible(i < instrument->numVoices);
-      }
-      setSize(columnF + width + 5, 10 + lineHeight * (instrument->numVoices+1) + 10);
-    }
-
-
     struct VoicesPanelListener : public GuiEventListener {
       VoicesPanel *voicesPanel;
       VoicesPanelListener(VoicesPanel *voicesPanel) {
         this->voicesPanel = voicesPanel;
       }
 
+      bool draggingVoiceOrderSwap = false;
+      int voiceOrderSwapIndexA = 0;
+      int voiceOrderSwapIndexB = 0;
+      
+      void onMousePressed(GuiElement *guiElement, Events &events) override {
+        for(int i=0; i<voicesPanel->instrument->numVoices; i++) {
+          if(voicesPanel->voicePreviewPanels[i]->isPointWithin(events.m)) {
+            draggingVoiceOrderSwap = true;
+            voiceOrderSwapIndexA = i;
+            voiceOrderSwapIndexB = i;
+          }
+        }
+      }
+      void onMouseReleased(GuiElement *guiElement, Events &events) override {
+        if(draggingVoiceOrderSwap) {
+          for(int i=0; i<voicesPanel->instrument->numVoices; i++) {
+            if(voicesPanel->voicePreviewPanels[i]->isPointWithin(events.m)) {
+              voiceOrderSwapIndexB = i;
+            }
+          }
+          if(voiceOrderSwapIndexA != voiceOrderSwapIndexB) {
+            Voice tmpVoice;
+            tmpVoice = voicesPanel->instrument->voices[voiceOrderSwapIndexA];
+            voicesPanel->instrument->voices[voiceOrderSwapIndexA] = voicesPanel->instrument->voices[voiceOrderSwapIndexB];
+            voicesPanel->instrument->voices[voiceOrderSwapIndexB] = tmpVoice;
+            voicesPanel->update();
+            //voicesPanel->instrument->voices[voiceOrderSwapIndexA].updatePanel();
+            //voicesPanel->instrument->voices[voiceOrderSwapIndexB].updatePanel();
+            if(voicesPanel->instrument->voices[voiceOrderSwapIndexA].getPanel()) {
+              voicesPanel->instrument->voices[voiceOrderSwapIndexA].removePanel(voicesPanel);
+            }
+            if(voicesPanel->instrument->voices[voiceOrderSwapIndexB].getPanel()) {
+              voicesPanel->instrument->voices[voiceOrderSwapIndexB].removePanel(voicesPanel);
+            }
+
+          }
+          draggingVoiceOrderSwap = false;
+        }
+      }
+      void onMouseMotion(GuiElement *guiElement, Events &events) override {
+        if(draggingVoiceOrderSwap) {
+          for(int i=0; i<voicesPanel->instrument->numVoices; i++) {
+            if(voicesPanel->voicePreviewPanels[i]->isPointWithin(events.m)) {
+              voiceOrderSwapIndexB = i;
+            }
+          }
+        }
+      }
       void onValueChange(GuiElement *guiElement) {
         if(guiElement == voicesPanel->numVoicesGui) {
           //instrument->currentInitializeID++;
@@ -1070,22 +968,18 @@ public:
         }
       }
     };
-  };
-
-
-
-  struct ModulatorsPanel : public Panel {
-    struct ModulatorPreviewPanel : public Panel {
-      int modulatorIndex = 0;
+    struct VoicePreviewPanel : public Panel {
+      int voiceIndex = 0;
       Instrument *instrument = NULL;
       std::vector<double> waveForm;
+      long currentWaveCycle = 0;
       
-      ModulatorPreviewPanel(Instrument *instrument, int modulatorIndex) : Panel("Voice preview panel") {
+      VoicePreviewPanel(Instrument *instrument, int voiceIndex) : Panel("Voice preview panel") {
         drawBorder = false;
         drawBackground = false;
         draggable = false;
         this->instrument = instrument;
-        this->modulatorIndex = modulatorIndex;
+        this->voiceIndex = voiceIndex;
         setSize(70, 23);
         waveForm.resize(70, 0);
       }
@@ -1093,7 +987,7 @@ public:
       virtual void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) {
         if(!isVisible) return;
         
-        GenericModulator &modulator = instrument->modulators[modulatorIndex];
+        Voice &voice = instrument->voices[voiceIndex];
         
         geomRenderer.texture = NULL;
         geomRenderer.strokeType = 1;
@@ -1104,11 +998,13 @@ public:
         }
         
         double minValue = 0, maxValue = 0;
+        double k = voice.waveForm.cyclesPerWaveTable > 1 ? ((currentWaveCycle++) % long(voice.waveForm.cyclesPerWaveTable)) : 0
+        ;
         for(int x=0; x<size.x; x++) {
           //int i = ((double)(x/(size.x-1)) * voice.waveForm.waveTableSizeM1);
-          double t = (double)x/(size.x-1.0);
+          double t = k + (double)x/(size.x-1.0);
           //waveForm[x] = voice.waveForm.waveTable[i];
-          waveForm[x] = modulator.waveForm.getSample(t);
+          waveForm[x] = voice.waveForm.getSample(t);
           minValue = min(minValue, waveForm[x]);
           maxValue = max(maxValue, waveForm[x]);
         }
@@ -1125,129 +1021,180 @@ public:
     };
     
     
-    NumberBox *numModulatorsGui = NULL;//, *numEnvelopesGui = NULL;
-    std::vector<Button*> modulatorOpenGuiGuis = std::vector<Button*>(maxNumModulators, NULL);
-    std::vector<Label*> modulatorLabels = std::vector<Label*>(maxNumModulators, NULL);
-    std::vector<ModulatorPreviewPanel*> modulatorPreviewPanels = std::vector<ModulatorPreviewPanel*>(maxNumModulators, NULL);
     
-    std::vector<NumberBox*> genericModulatorAmplitudeModulatorOutputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
-    std::vector<NumberBox*> genericModulatorFrequencyModulatorOutputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
-    std::vector<NumberBox*> genericModulatorAmplitudeModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
-    std::vector<NumberBox*> genericModulatorFrequencyModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
-    std::vector<NumberBox*> genericModulatorAmplitudeEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumEnvelopes, NULL);
-    std::vector<NumberBox*> genericModulatorFrequencyEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumEnvelopes, NULL);
-
+    NumberBox *numVoicesGui = NULL;
+    std::vector<Button*> voiceOpenGuiGuis = std::vector<Button*>(maxNumVoices, NULL);
+    std::vector<Label*> voiceLabels = std::vector<Label*>(maxNumVoices, NULL);
+    std::vector<VoicePreviewPanel*> voicePreviewPanels = std::vector<VoicePreviewPanel*>(maxNumVoices, NULL);
+    std::vector<NumberBox*> voiceAmplitudeModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
+    std::vector<NumberBox*> voiceFrequencyModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
+    std::vector<NumberBox*> voiceAmplitudeEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
+    std::vector<NumberBox*> voiceFrequencyEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumVoices, NULL);
+    
     Instrument *instrument = NULL;
     GuiElement *parentGuiElement = NULL;
 
     double lineHeight = 23;
     int width = 40, widthA = 25, widthB = 100;
     int columnA = 10, columnB = 10+widthA, columnC = 10+widthA+widthB, columnD = 10+widthA+widthB+width, columnE = 10+widthA+widthB+width*2;
-    int columnF = 10+widthA+widthB+width*3, columnG = 10+widthA+widthB+width*4, columnH = 10+widthA+widthB+width*5;
+    int columnF = 10+widthA+widthB+width*3;
 
-    ModulatorsPanel(Instrument *instrument, GuiElement *parentGuiElement) : Panel("Modulators panel") {
+    VoicesPanelListener *voicesPanelListener = NULL;
+
+    VoicesPanel(Instrument *instrument, GuiElement *parentGuiElement) : Panel("Voices panel") {
       init(instrument, parentGuiElement);
     }
 
     void init(Instrument *instrument, GuiElement *parentGuiElement) {
       this->instrument = instrument;
       this->parentGuiElement = parentGuiElement;
+      
       double line = 10;
-
-      this->addGuiEventListener(new ModulatorsPanelListener(this));
+      this->addGuiEventListener(voicesPanelListener = new VoicesPanelListener(this));
       parentGuiElement->addChildElement(this);
 
-      numModulatorsGui = new NumberBox("Modulators", instrument->numModulators, NumberBox::INTEGER, 0, maxNumModulators, 10, line, 2);
-      numModulatorsGui->incrementMode = NumberBox::IncrementMode::Linear;
-      numModulatorsGui->setTextSize(10);
-      numModulatorsGui->labelColor.set(1, 1, 1, 0.9);
-      this->addChildElement(numModulatorsGui);
+      addChildElement(numVoicesGui = new NumberBox("Voices", instrument->numVoices, NumberBox::INTEGER, 0, maxNumVoices, 10, line, 2));
+      numVoicesGui->incrementMode = NumberBox::IncrementMode::Linear;
+      numVoicesGui->setTextSize(10);
+      numVoicesGui->labelColor.set(1, 1, 1, 0.9);
 
-      this->addChildElement(new Label("AM→", columnC, line, 10, Vec4d(1, 1, 1, 0.9)));
-      this->addChildElement(new Label("FM→", columnD, line, 10, Vec4d(1, 1, 1, 0.9)));
-      this->addChildElement(new Label("AM", columnE, line, 10, Vec4d(1, 1, 1, 0.9)));
-      this->addChildElement(new Label("FM", columnF, line, 10, Vec4d(1, 1, 1, 0.9)));
-      this->addChildElement(new Label("Amp", columnG, line, 10, Vec4d(1, 1, 1, 0.9)));
-      this->addChildElement(new Label("Frq", columnH, line, 10, Vec4d(1, 1, 1, 0.9)));
 
-      //modulatorsPanel->setPosition(instrumentPanel->pos + Vec2d(-columnF - width - 10, 0));
+      addChildElement(new Label("AM", columnC, line, 10, Vec4d(1, 1, 1, 0.9)));
+      addChildElement(new Label("FM", columnD, line, 10, Vec4d(1, 1, 1, 0.9)));
+      addChildElement(new Label("Amp", columnE, line, 10, Vec4d(1, 1, 1, 0.9)));
+      addChildElement(new Label("Frq", columnF, line, 10, Vec4d(1, 1, 1, 0.9)));
 
-      for(int i=0; i<maxNumModulators; i++) {
+      //this->setPosition(instrumentPanel->pos + Vec2d(0, 80));
+
+      for(int i=0; i<maxNumVoices; i++) {
         line += lineHeight;
+        addChildElement(voiceLabels[i] = new Label(std::to_string(i+1), columnA, line));
         
-        addChildElement(modulatorLabels[i] = new Label(std::to_string(i+1), columnA, line));
+        addChildElement(voicePreviewPanels[i] = new VoicePreviewPanel(instrument, i));
+        voicePreviewPanels[i]->setPosition(columnB, line+4);
+
+        addChildElement(voiceOpenGuiGuis[i] = new Button("Open voice GUI", "data/synth/textures/gui.png", columnC-20, line+2, Button::ToggleButton));
+        voiceOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
         
-        addChildElement(modulatorPreviewPanels[i] = new ModulatorPreviewPanel(instrument, i));
-        modulatorPreviewPanels[i]->setPosition(columnB, line+4);
+        voiceAmplitudeModulatorInputIndexGuis[i] = new NumberBox("", instrument->voices[i].inputAM, NumberBox::INTEGER, -1, maxNumModulators, columnC, line, 2);
+        voiceAmplitudeModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        voiceAmplitudeModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
+        this->addChildElement(voiceAmplitudeModulatorInputIndexGuis[i]);
+        
 
-        addChildElement(modulatorOpenGuiGuis[i] = new Button("Open modulator GUI", "data/synth/textures/gui.png", columnC-20, line+2, Button::ToggleButton));
-        modulatorOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
+        voiceFrequencyModulatorInputIndexGuis[i] = new NumberBox("", instrument->voices[i].inputFM, NumberBox::INTEGER, -1, maxNumModulators, columnD, line, 2);
+        voiceFrequencyModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        voiceFrequencyModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
+        this->addChildElement(voiceFrequencyModulatorInputIndexGuis[i]);
 
-        genericModulatorAmplitudeModulatorOutputIndexGuis[i] = new NumberBox("", instrument->modulators[i].outputAM, NumberBox::INTEGER, -1, maxNumModulators, columnC, line, 2);
-        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->setValidValueRange(0, 16);
-        this->addChildElement(genericModulatorAmplitudeModulatorOutputIndexGuis[i]);
+        voiceAmplitudeEnvelopeIndexGuis[i] = new NumberBox("", instrument->voices[i].inputAmplitudeEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnE, line, 2);
+        voiceAmplitudeEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        voiceAmplitudeEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
+        this->addChildElement(voiceAmplitudeEnvelopeIndexGuis[i]);
 
-        genericModulatorFrequencyModulatorOutputIndexGuis[i] = new NumberBox("", instrument->modulators[i].outputFM, NumberBox::INTEGER, -1, maxNumModulators, columnD, line, 2);
-        genericModulatorFrequencyModulatorOutputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        genericModulatorFrequencyModulatorOutputIndexGuis[i]->setValidValueRange(0, 16);
-        this->addChildElement(genericModulatorFrequencyModulatorOutputIndexGuis[i]);
-
-        genericModulatorAmplitudeModulatorInputIndexGuis[i] = new NumberBox("", instrument->modulators[i].inputAM, NumberBox::INTEGER, -1, maxNumModulators, columnE, line, 2);
-        genericModulatorAmplitudeModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        genericModulatorAmplitudeModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
-        this->addChildElement(genericModulatorAmplitudeModulatorInputIndexGuis[i]);
-
-        genericModulatorFrequencyModulatorInputIndexGuis[i] = new NumberBox("", instrument->modulators[i].inputFM, NumberBox::INTEGER, -1, maxNumModulators, columnF, line, 2);
-        genericModulatorFrequencyModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
-        genericModulatorFrequencyModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        this->addChildElement(genericModulatorFrequencyModulatorInputIndexGuis[i]);
-
-        genericModulatorAmplitudeEnvelopeIndexGuis[i] = new NumberBox("", instrument->modulators[i].amplitudeEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnG, line, 2);
-        genericModulatorAmplitudeEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
-        genericModulatorAmplitudeEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        this->addChildElement(genericModulatorAmplitudeEnvelopeIndexGuis[i]);
-
-        genericModulatorFrequencyEnvelopeIndexGuis[i] = new NumberBox("", instrument->modulators[i].frequencyEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnH, line, 2);
-        genericModulatorFrequencyEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
-        genericModulatorFrequencyEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
-        this->addChildElement(genericModulatorFrequencyEnvelopeIndexGuis[i]);
+        voiceFrequencyEnvelopeIndexGuis[i] = new NumberBox("", instrument->voices[i].inputFrequencyEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnF, line, 2);
+        voiceFrequencyEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        voiceFrequencyEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
+        this->addChildElement(voiceFrequencyEnvelopeIndexGuis[i]);
       }
-
+      
       update();
+    }
+
+    void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
+      if(voicesPanelListener->draggingVoiceOrderSwap && voicesPanelListener->voiceOrderSwapIndexA != voicesPanelListener->voiceOrderSwapIndexB) {
+        geomRenderer.strokeColor.set(1, 1, 1, 0.75);
+        geomRenderer.fillColor.set(1, 1, 1, 0.75);
+        geomRenderer.strokeType = 1;
+        geomRenderer.strokeWidth = 1;
+        double x = absolutePos.x + voicePreviewPanels[0]->pos.x -2;
+        double y1 = absolutePos.y + voicePreviewPanels[voicesPanelListener->voiceOrderSwapIndexA]->pos.y + voicePreviewPanels[0]->size.y * 0.33;
+        double y2 = absolutePos.y + voicePreviewPanels[voicesPanelListener->voiceOrderSwapIndexB]->pos.y + voicePreviewPanels[0]->size.y * 0.33;
+        geomRenderer.drawLine(x, y1, x, y2);
+        geomRenderer.drawRect(7, 7, x, y1);
+        geomRenderer.drawRect(7, 7, x, y2);
+      }
     }
 
     void update() {
       
-      numModulatorsGui->setValue(instrument->numModulators);
+      numVoicesGui->setValue(instrument->numVoices);
       
-      for(int i=0; i<maxNumModulators; i++) {
-        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->setValue(instrument->modulators[i].outputAM);
-        genericModulatorFrequencyModulatorOutputIndexGuis[i]->setValue(instrument->modulators[i].outputFM);
-        genericModulatorAmplitudeModulatorInputIndexGuis[i]->setValue(instrument->modulators[i].inputAM);
-        genericModulatorFrequencyModulatorInputIndexGuis[i]->setValue(instrument->modulators[i].inputFM);
-        genericModulatorAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].amplitudeEnvelope);
-        genericModulatorFrequencyEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].frequencyEnvelope);
+      for(int i=0; i<maxNumVoices; i++) {
+        voiceAmplitudeModulatorInputIndexGuis[i]->setValue(instrument->voices[i].inputAM);
+        voiceFrequencyModulatorInputIndexGuis[i]->setValue(instrument->voices[i].inputFM);
+        voiceAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputAmplitudeEnvelope);
+        voiceFrequencyEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputFrequencyEnvelope);
         
-        modulatorLabels[i]->setVisible(i < instrument->numModulators);
-        modulatorPreviewPanels[i]->setVisible(i < instrument->numModulators);
-        modulatorOpenGuiGuis[i]->setVisible(i < instrument->numModulators);
-
-        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->setVisible(i < instrument->numModulators);
-        genericModulatorFrequencyModulatorOutputIndexGuis[i]->setVisible(i < instrument->numModulators);
-        genericModulatorAmplitudeModulatorInputIndexGuis[i]->setVisible(i < instrument->numModulators);
-        genericModulatorFrequencyModulatorInputIndexGuis[i]->setVisible(i < instrument->numModulators);
-        genericModulatorAmplitudeEnvelopeIndexGuis[i]->setVisible(i < instrument->numModulators);
-        genericModulatorFrequencyEnvelopeIndexGuis[i]->setVisible(i < instrument->numModulators);
+        voiceLabels[i]->setVisible(i < instrument->numVoices);
+        voicePreviewPanels[i]->setVisible(i < instrument->numVoices);
+        voiceOpenGuiGuis[i]->setVisible(i < instrument->numVoices);
+        voiceAmplitudeModulatorInputIndexGuis[i]->setVisible(i < instrument->numVoices);
+        voiceFrequencyModulatorInputIndexGuis[i]->setVisible(i < instrument->numVoices);
+        voiceAmplitudeEnvelopeIndexGuis[i]->setVisible(i < instrument->numVoices);
+        voiceFrequencyEnvelopeIndexGuis[i]->setVisible(i < instrument->numVoices);
       }
-      
-      setSize(columnH + width + 5, 10 + lineHeight * (instrument->numModulators+1) + 10);
+      setSize(columnF + width + 5, 10 + lineHeight * (instrument->numVoices+1) + 10);
     }
 
+
+
+  };
+
+
+
+  struct ModulatorsPanel : public Panel {
     struct ModulatorsPanelListener : public GuiEventListener {
       ModulatorsPanel *modulatorsPanel;
       ModulatorsPanelListener(ModulatorsPanel *modulatorsPanel) {
         this->modulatorsPanel = modulatorsPanel;
+      }
+      bool draggingModulatorOrderSwap = false;
+      int modulatorOrderSwapIndexA = 0;
+      int modulatorOrderSwapIndexB = 0;
+      
+      void onMousePressed(GuiElement *guiElement, Events &events) override {
+        for(int i=0; i<modulatorsPanel->instrument->numModulators; i++) {
+          if(modulatorsPanel->modulatorPreviewPanels[i]->isPointWithin(events.m)) {
+            draggingModulatorOrderSwap = true;
+            modulatorOrderSwapIndexA = i;
+            modulatorOrderSwapIndexB = i;
+          }
+        }
+      }
+      void onMouseReleased(GuiElement *guiElement, Events &events) override {
+        if(draggingModulatorOrderSwap) {
+          for(int i=0; i<modulatorsPanel->instrument->numModulators; i++) {
+            if(modulatorsPanel->modulatorPreviewPanels[i]->isPointWithin(events.m)) {
+              modulatorOrderSwapIndexB = i;
+            }
+          }
+          if(modulatorOrderSwapIndexA != modulatorOrderSwapIndexB) {
+            GenericModulator tmpModulator;
+            tmpModulator = modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA];
+            modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA] = modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB];
+            modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB] = tmpModulator;
+            modulatorsPanel->update();
+            //modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].updatePanel();
+            //modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB].updatePanel();
+            if(modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].getPanel()) {
+              modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].removePanel(modulatorsPanel);
+            }
+            if(modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB].getPanel()) {
+              modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB].removePanel(modulatorsPanel);
+            }
+          }
+          draggingModulatorOrderSwap = false;
+        }
+      }
+      void onMouseMotion(GuiElement *guiElement, Events &events) override {
+        if(draggingModulatorOrderSwap) {
+          for(int i=0; i<modulatorsPanel->instrument->numModulators; i++) {
+            if(modulatorsPanel->modulatorPreviewPanels[i]->isPointWithin(events.m)) {
+              modulatorOrderSwapIndexB = i;
+            }
+          }
+        }
       }
 
       void onValueChange(GuiElement *guiElement) {
@@ -1320,10 +1267,303 @@ public:
       }
 
     };
+    struct ModulatorPreviewPanel : public Panel {
+      int modulatorIndex = 0;
+      Instrument *instrument = NULL;
+      std::vector<double> waveForm;
+      long currentWaveCycle = 0;
+      
+      ModulatorPreviewPanel(Instrument *instrument, int modulatorIndex) : Panel("Voice preview panel") {
+        drawBorder = false;
+        drawBackground = false;
+        draggable = false;
+        this->instrument = instrument;
+        this->modulatorIndex = modulatorIndex;
+        setSize(70, 23);
+        waveForm.resize(70, 0);
+      }
+            
+      virtual void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) {
+        if(!isVisible) return;
+        
+        GenericModulator &modulator = instrument->modulators[modulatorIndex];
+        
+        geomRenderer.texture = NULL;
+        geomRenderer.strokeType = 1;
+        geomRenderer.strokeWidth = 1;        
+        //geomRenderer.fillColor.set(1, 1, 1, 0.5);
+        if(waveForm.size() != (int)size.x) {
+          waveForm.assign(size.x, 0);
+        }
+        
+        double minValue = 0, maxValue = 0;
+        double k = modulator.waveForm.cyclesPerWaveTable > 1 ? ((currentWaveCycle++) % long(modulator.waveForm.cyclesPerWaveTable)) : 0;
+
+        for(int x=0; x<size.x; x++) {
+          //int i = ((double)(x/(size.x-1)) * voice.waveForm.waveTableSizeM1);
+          double t = k + (double)x/(size.x-1.0);
+          //waveForm[x] = voice.waveForm.waveTable[i];
+          waveForm[x] = modulator.waveForm.getSample(t);
+          minValue = min(minValue, waveForm[x]);
+          maxValue = max(maxValue, waveForm[x]);
+        }
+        if(minValue < maxValue && minValue != -1 && maxValue != 1) {
+          for(int x=0; x<size.x; x++) {
+            waveForm[x] = map(waveForm[x], minValue, maxValue, -1, 1);
+          }
+        }
+        geomRenderer.strokeColor.set(1, 1, 1, 0.5);
+        for(int x=1; x<size.x; x++) {
+          geomRenderer.drawLine(x-1, size.y*0.36 * (1.0 - waveForm[x-1]), x, size.y*0.36 * (1.0 - waveForm[x]), absolutePos);
+        }
+      }
+    };
+    
+    
+    NumberBox *numModulatorsGui = NULL;//, *numEnvelopesGui = NULL;
+    std::vector<Button*> modulatorOpenGuiGuis = std::vector<Button*>(maxNumModulators, NULL);
+    std::vector<Label*> modulatorLabels = std::vector<Label*>(maxNumModulators, NULL);
+    std::vector<ModulatorPreviewPanel*> modulatorPreviewPanels = std::vector<ModulatorPreviewPanel*>(maxNumModulators, NULL);
+    
+    std::vector<NumberBox*> genericModulatorAmplitudeModulatorOutputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
+    std::vector<NumberBox*> genericModulatorFrequencyModulatorOutputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
+    std::vector<NumberBox*> genericModulatorAmplitudeModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
+    std::vector<NumberBox*> genericModulatorFrequencyModulatorInputIndexGuis = std::vector<NumberBox*>(maxNumModulators, NULL);
+    std::vector<NumberBox*> genericModulatorAmplitudeEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumEnvelopes, NULL);
+    std::vector<NumberBox*> genericModulatorFrequencyEnvelopeIndexGuis = std::vector<NumberBox*>(maxNumEnvelopes, NULL);
+
+    ModulatorsPanelListener *modulatorsPanelListener = NULL;
+
+    Instrument *instrument = NULL;
+    GuiElement *parentGuiElement = NULL;
+
+    double lineHeight = 23;
+    int width = 40, widthA = 25, widthB = 100;
+    int columnA = 10, columnB = 10+widthA, columnC = 10+widthA+widthB, columnD = 10+widthA+widthB+width, columnE = 10+widthA+widthB+width*2;
+    int columnF = 10+widthA+widthB+width*3, columnG = 10+widthA+widthB+width*4, columnH = 10+widthA+widthB+width*5;
+
+    ModulatorsPanel(Instrument *instrument, GuiElement *parentGuiElement) : Panel("Modulators panel") {
+      init(instrument, parentGuiElement);
+    }
+
+    void init(Instrument *instrument, GuiElement *parentGuiElement) {
+      this->instrument = instrument;
+      this->parentGuiElement = parentGuiElement;
+      double line = 10;
+
+      this->addGuiEventListener(modulatorsPanelListener = new ModulatorsPanelListener(this));
+      parentGuiElement->addChildElement(this);
+
+      numModulatorsGui = new NumberBox("Modulators", instrument->numModulators, NumberBox::INTEGER, 0, maxNumModulators, 10, line, 2);
+      numModulatorsGui->incrementMode = NumberBox::IncrementMode::Linear;
+      numModulatorsGui->setTextSize(10);
+      numModulatorsGui->labelColor.set(1, 1, 1, 0.9);
+      this->addChildElement(numModulatorsGui);
+
+      this->addChildElement(new Label("AM→", columnC, line, 10, Vec4d(1, 1, 1, 0.9)));
+      this->addChildElement(new Label("FM→", columnD, line, 10, Vec4d(1, 1, 1, 0.9)));
+      this->addChildElement(new Label("AM", columnE, line, 10, Vec4d(1, 1, 1, 0.9)));
+      this->addChildElement(new Label("FM", columnF, line, 10, Vec4d(1, 1, 1, 0.9)));
+      this->addChildElement(new Label("Amp", columnG, line, 10, Vec4d(1, 1, 1, 0.9)));
+      this->addChildElement(new Label("Frq", columnH, line, 10, Vec4d(1, 1, 1, 0.9)));
+
+      //modulatorsPanel->setPosition(instrumentPanel->pos + Vec2d(-columnF - width - 10, 0));
+
+      for(int i=0; i<maxNumModulators; i++) {
+        line += lineHeight;
+        
+        addChildElement(modulatorLabels[i] = new Label(std::to_string(i+1), columnA, line));
+        
+        addChildElement(modulatorPreviewPanels[i] = new ModulatorPreviewPanel(instrument, i));
+        modulatorPreviewPanels[i]->setPosition(columnB, line+4);
+
+        addChildElement(modulatorOpenGuiGuis[i] = new Button("Open modulator GUI", "data/synth/textures/gui.png", columnC-20, line+2, Button::ToggleButton));
+        modulatorOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
+
+        genericModulatorAmplitudeModulatorOutputIndexGuis[i] = new NumberBox("", instrument->modulators[i].outputAM, NumberBox::INTEGER, -1, maxNumModulators, columnC, line, 2);
+        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->setValidValueRange(0, 16);
+        this->addChildElement(genericModulatorAmplitudeModulatorOutputIndexGuis[i]);
+
+        genericModulatorFrequencyModulatorOutputIndexGuis[i] = new NumberBox("", instrument->modulators[i].outputFM, NumberBox::INTEGER, -1, maxNumModulators, columnD, line, 2);
+        genericModulatorFrequencyModulatorOutputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        genericModulatorFrequencyModulatorOutputIndexGuis[i]->setValidValueRange(0, 16);
+        this->addChildElement(genericModulatorFrequencyModulatorOutputIndexGuis[i]);
+
+        genericModulatorAmplitudeModulatorInputIndexGuis[i] = new NumberBox("", instrument->modulators[i].inputAM, NumberBox::INTEGER, -1, maxNumModulators, columnE, line, 2);
+        genericModulatorAmplitudeModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        genericModulatorAmplitudeModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
+        this->addChildElement(genericModulatorAmplitudeModulatorInputIndexGuis[i]);
+
+        genericModulatorFrequencyModulatorInputIndexGuis[i] = new NumberBox("", instrument->modulators[i].inputFM, NumberBox::INTEGER, -1, maxNumModulators, columnF, line, 2);
+        genericModulatorFrequencyModulatorInputIndexGuis[i]->setValidValueRange(0, 16);
+        genericModulatorFrequencyModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        this->addChildElement(genericModulatorFrequencyModulatorInputIndexGuis[i]);
+
+        genericModulatorAmplitudeEnvelopeIndexGuis[i] = new NumberBox("", instrument->modulators[i].amplitudeEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnG, line, 2);
+        genericModulatorAmplitudeEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
+        genericModulatorAmplitudeEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        this->addChildElement(genericModulatorAmplitudeEnvelopeIndexGuis[i]);
+
+        genericModulatorFrequencyEnvelopeIndexGuis[i] = new NumberBox("", instrument->modulators[i].frequencyEnvelope, NumberBox::INTEGER, -1, maxNumEnvelopes, columnH, line, 2);
+        genericModulatorFrequencyEnvelopeIndexGuis[i]->setValidValueRange(0, 16);
+        genericModulatorFrequencyEnvelopeIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
+        this->addChildElement(genericModulatorFrequencyEnvelopeIndexGuis[i]);
+      }
+
+      update();
+    }
+    
+    void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
+      if(modulatorsPanelListener->draggingModulatorOrderSwap && modulatorsPanelListener->modulatorOrderSwapIndexA != modulatorsPanelListener->modulatorOrderSwapIndexB) {
+        geomRenderer.strokeColor.set(1, 1, 1, 0.75);
+        geomRenderer.fillColor.set(1, 1, 1, 0.75);
+        geomRenderer.strokeType = 1;
+        geomRenderer.strokeWidth = 1;
+        double x = absolutePos.x + modulatorPreviewPanels[0]->pos.x - 2;
+        double y1 = absolutePos.y + modulatorPreviewPanels[modulatorsPanelListener->modulatorOrderSwapIndexA]->pos.y + modulatorPreviewPanels[0]->size.y * 0.33;
+        double y2 = absolutePos.y + modulatorPreviewPanels[modulatorsPanelListener->modulatorOrderSwapIndexB]->pos.y + modulatorPreviewPanels[0]->size.y * 0.33;
+        geomRenderer.drawLine(x, y1, x, y2);
+        geomRenderer.drawRect(7, 7, x, y1);
+        geomRenderer.drawRect(7, 7, x, y2);
+      }
+    }
+
+    void update() {
+      
+      numModulatorsGui->setValue(instrument->numModulators);
+      
+      for(int i=0; i<maxNumModulators; i++) {
+        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->setValue(instrument->modulators[i].outputAM);
+        genericModulatorFrequencyModulatorOutputIndexGuis[i]->setValue(instrument->modulators[i].outputFM);
+        genericModulatorAmplitudeModulatorInputIndexGuis[i]->setValue(instrument->modulators[i].inputAM);
+        genericModulatorFrequencyModulatorInputIndexGuis[i]->setValue(instrument->modulators[i].inputFM);
+        genericModulatorAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].amplitudeEnvelope);
+        genericModulatorFrequencyEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].frequencyEnvelope);
+        
+        modulatorLabels[i]->setVisible(i < instrument->numModulators);
+        modulatorPreviewPanels[i]->setVisible(i < instrument->numModulators);
+        modulatorOpenGuiGuis[i]->setVisible(i < instrument->numModulators);
+
+        genericModulatorAmplitudeModulatorOutputIndexGuis[i]->setVisible(i < instrument->numModulators);
+        genericModulatorFrequencyModulatorOutputIndexGuis[i]->setVisible(i < instrument->numModulators);
+        genericModulatorAmplitudeModulatorInputIndexGuis[i]->setVisible(i < instrument->numModulators);
+        genericModulatorFrequencyModulatorInputIndexGuis[i]->setVisible(i < instrument->numModulators);
+        genericModulatorAmplitudeEnvelopeIndexGuis[i]->setVisible(i < instrument->numModulators);
+        genericModulatorFrequencyEnvelopeIndexGuis[i]->setVisible(i < instrument->numModulators);
+      }
+      
+      setSize(columnH + width + 5, 10 + lineHeight * (instrument->numModulators+1) + 10);
+    }
+
+
   };
 
 
   struct EnvelopesPanel : public Panel {
+    struct EnvelopesPanelListener : public GuiEventListener {
+      EnvelopesPanel *envelopesPanel;
+      EnvelopesPanelListener(EnvelopesPanel *envelopesPanel) {
+        this->envelopesPanel = envelopesPanel;
+      }
+      
+      bool draggingEnvelopeOrderSwap = false;
+      int envelopeOrderSwapIndexA = 0;
+      int envelopeOrderSwapIndexB = 0;
+      
+      void onMousePressed(GuiElement *guiElement, Events &events) override {
+        for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
+          if(envelopesPanel->envelopePreviewPanels[i]->isPointWithin(events.m)) {
+            draggingEnvelopeOrderSwap = true;
+            envelopeOrderSwapIndexA = i;
+            envelopeOrderSwapIndexB = i;
+          }
+        }
+      }
+      void onMouseReleased(GuiElement *guiElement, Events &events) override {
+        if(draggingEnvelopeOrderSwap) {
+          for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
+            if(envelopesPanel->envelopePreviewPanels[i]->isPointWithin(events.m)) {
+              envelopeOrderSwapIndexB = i;
+            }
+          }
+          if(envelopeOrderSwapIndexA != envelopeOrderSwapIndexB) {
+            GenericEnvelope tmpEnvelope;
+            tmpEnvelope = envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA];
+            envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA] = envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB];
+            envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB] = tmpEnvelope;
+            envelopesPanel->update();
+            //envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA].updatePanel();
+            //envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].updatePanel();
+            if(envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA].getPanel()) {
+              envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA].removePanel(envelopesPanel);
+            }
+            if(envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].getPanel()) {
+              envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].removePanel(envelopesPanel);
+            }
+
+          }
+          draggingEnvelopeOrderSwap = false;
+        }
+      }
+      void onMouseMotion(GuiElement *guiElement, Events &events) override {
+        if(draggingEnvelopeOrderSwap) {
+          for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
+            if(envelopesPanel->envelopePreviewPanels[i]->isPointWithin(events.m)) {
+              envelopeOrderSwapIndexB = i;
+            }
+          }
+        }
+      }
+      
+
+      void onValueChange(GuiElement *guiElement) {
+        if(guiElement == envelopesPanel->numEnvelopesGui) {
+          //instrument->currentInitializeID++;
+          //instrument->stopAllNotesRequested = true;
+          guiElement->getValue((void*)&envelopesPanel->instrument->numEnvelopes);
+
+          for(int i=envelopesPanel->instrument->numEnvelopes; i<maxNumEnvelopes; i++) {
+            if(envelopesPanel->instrument->envelopes[i].getPanel()) {
+              envelopesPanel->instrument->envelopes[i].removePanel(envelopesPanel);
+            }
+          }
+          envelopesPanel->update();
+        }
+
+        for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
+          if(guiElement == envelopesPanel->envelopeOpenGuiGuis[i]) {
+            if(envelopesPanel->instrument->envelopes[i].getPanel()) {
+              envelopesPanel->instrument->envelopes[i].removePanel(envelopesPanel);
+            }
+            else {
+              envelopesPanel->instrument->envelopes[i].addPanel(envelopesPanel, "Envelope " + std::to_string(i+1));
+              envelopesPanel->instrument->envelopes[i].setPreviousPanelPosition();
+            }
+          }
+          
+          if(guiElement == envelopesPanel->genericEnvelopeOutputGuis[i]) {
+            guiElement->getValue((void*)&envelopesPanel->instrument->envelopes[i].outputIndex);
+          }
+        }
+      }
+
+      void onKeyDown(GuiElement *guiElement, Events &events) {
+        if(events.sdlKeyCode == SDLK_HOME) {
+          for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
+            if(guiElement == envelopesPanel->genericEnvelopeOutputGuis[i]) {
+              if(envelopesPanel->instrument->envelopes[i].getPanel()) {
+                envelopesPanel->instrument->envelopes[i].removePanel(envelopesPanel);
+              }
+              else {
+                envelopesPanel->instrument->envelopes[i].addPanel(envelopesPanel, "Envelope " + std::to_string(i+1));
+                envelopesPanel->instrument->envelopes[i].setPreviousPanelPosition();
+              }
+            }
+          }
+        }
+      }
+    };
     struct EnvelopePreviewPanel : public Panel {
       int envelopeIndex = 0;
       Instrument *instrument = NULL;
@@ -1383,6 +1623,8 @@ public:
 
     std::vector<NumberBox*> genericEnvelopeOutputGuis = std::vector<NumberBox*>(maxNumEnvelopes, NULL);
 
+    EnvelopesPanelListener *envelopesPanelListener = NULL;
+
     Instrument *instrument = NULL;
     GuiElement *parentGuiElement = NULL;
 
@@ -1401,7 +1643,7 @@ public:
 
       double line = 10;
 
-      this->addGuiEventListener(new EnvelopesPanelListener(this));
+      this->addGuiEventListener(envelopesPanelListener = new EnvelopesPanelListener(this));
       parentGuiElement->addChildElement(this);
 
       numEnvelopesGui = new NumberBox("Envelopes", instrument->numEnvelopes, NumberBox::INTEGER, 0, maxNumEnvelopes, 10, line, 2);
@@ -1436,6 +1678,21 @@ public:
       update();
     }
 
+    void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
+      if(envelopesPanelListener->draggingEnvelopeOrderSwap && envelopesPanelListener->envelopeOrderSwapIndexA != envelopesPanelListener->envelopeOrderSwapIndexB) {
+        geomRenderer.strokeColor.set(1, 1, 1, 0.75);
+        geomRenderer.fillColor.set(1, 1, 1, 0.75);
+        geomRenderer.strokeType = 1;
+        geomRenderer.strokeWidth = 1;
+        double x = absolutePos.x + envelopePreviewPanels[0]->pos.x - 2;
+        double y1 = absolutePos.y + envelopePreviewPanels[envelopesPanelListener->envelopeOrderSwapIndexA]->pos.y + envelopePreviewPanels[0]->size.y * 0.33;
+        double y2 = absolutePos.y + envelopePreviewPanels[envelopesPanelListener->envelopeOrderSwapIndexB]->pos.y + envelopePreviewPanels[0]->size.y * 0.33;
+        geomRenderer.drawLine(x, y1, x, y2);
+        geomRenderer.drawRect(7, 7, x, y1);
+        geomRenderer.drawRect(7, 7, x, y2);
+      }
+    }
+
     void update() {
       numEnvelopesGui->setValue(instrument->numEnvelopes);
       
@@ -1451,59 +1708,7 @@ public:
       setSize(columnD + 5, 10 + lineHeight * (instrument->numEnvelopes+1) + 10);
     }
 
-    struct EnvelopesPanelListener : public GuiEventListener {
-      EnvelopesPanel *envelopesPanel;
-      EnvelopesPanelListener(EnvelopesPanel *envelopesPanel) {
-        this->envelopesPanel = envelopesPanel;
-      }
 
-      void onValueChange(GuiElement *guiElement) {
-        if(guiElement == envelopesPanel->numEnvelopesGui) {
-          //instrument->currentInitializeID++;
-          //instrument->stopAllNotesRequested = true;
-          guiElement->getValue((void*)&envelopesPanel->instrument->numEnvelopes);
-
-          for(int i=envelopesPanel->instrument->numEnvelopes; i<maxNumEnvelopes; i++) {
-            if(envelopesPanel->instrument->envelopes[i].getPanel()) {
-              envelopesPanel->instrument->envelopes[i].removePanel(envelopesPanel);
-            }
-          }
-          envelopesPanel->update();
-        }
-
-        for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
-          if(guiElement == envelopesPanel->envelopeOpenGuiGuis[i]) {
-            if(envelopesPanel->instrument->envelopes[i].getPanel()) {
-              envelopesPanel->instrument->envelopes[i].removePanel(envelopesPanel);
-            }
-            else {
-              envelopesPanel->instrument->envelopes[i].addPanel(envelopesPanel, "Envelope " + std::to_string(i+1));
-              envelopesPanel->instrument->envelopes[i].setPreviousPanelPosition();
-            }
-          }
-          
-          if(guiElement == envelopesPanel->genericEnvelopeOutputGuis[i]) {
-            guiElement->getValue((void*)&envelopesPanel->instrument->envelopes[i].outputIndex);
-          }
-        }
-      }
-
-      void onKeyDown(GuiElement *guiElement, Events &events) {
-        if(events.sdlKeyCode == SDLK_HOME) {
-          for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
-            if(guiElement == envelopesPanel->genericEnvelopeOutputGuis[i]) {
-              if(envelopesPanel->instrument->envelopes[i].getPanel()) {
-                envelopesPanel->instrument->envelopes[i].removePanel(envelopesPanel);
-              }
-              else {
-                envelopesPanel->instrument->envelopes[i].addPanel(envelopesPanel, "Envelope " + std::to_string(i+1));
-                envelopesPanel->instrument->envelopes[i].setPreviousPanelPosition();
-              }
-            }
-          }
-        }
-      }
-    };
   };
 
   struct InstrumentPanel : public Panel {  

@@ -56,8 +56,6 @@ struct RangeBox : public GuiElement
       rangeMaxGui->setPosition(rangeMinGui->pos.x + rangeMinGui->size.x + 4, rangeMinGui->pos.y);
       
       initialized = true;
-      prerenderingNeeded = true;
-      printf("Prepared range box!, rangeMinGui->pos.x %f, rangeMinGui->size.x %f\n", rangeMinGui->pos.x, rangeMinGui->size.x);
     }
   }
 

@@ -36,6 +36,7 @@ struct FileLoader : public Panel {
   FileLoader(HierarchicalTextFileParser *whereToLoadFile) : Panel("File loader") {
     init(whereToLoadFile);
     onFileLoaded = [](HierarchicalTextFileParser *loadedFile){};
+    zLayer = 1;
   }
   
   void init(HierarchicalTextFileParser *whereToLoadFile) {

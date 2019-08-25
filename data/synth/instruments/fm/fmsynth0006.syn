@@ -1,0 +1,58 @@
+instrument {
+  name: FM synth 6
+  volume: 0.900000
+
+  voice {
+    volume: 0.250000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 3
+    unisonDetuning: 1.000000
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeEnvelope: 1
+    frequencyModulator: 1
+    waveform {
+      type: Square
+      waveTableMode: Single faster
+      waveformParameters: 0.500000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 1
+        usePattern: 1
+        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+        gainParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  envelope {
+    output: 1
+    type: ahe
+    parameters: 0.000000, 0.000000, -5.000000
+  }
+  modulator {
+    depthFM: 1.000000
+    outputFM: 1
+    frequency: 0.500000
+    stereoPhaseOffset: 0.500000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1
+    waveform {
+      type: Wave05
+      waveTableMode: Single faster
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 5
+        usePattern: 1
+        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+        gainParameters: 8.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+}

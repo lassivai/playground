@@ -58,11 +58,13 @@ struct SynthTitleMenu : public Menu
       if(guiElement == synthTitleMenu->saveGui) {
         if(!synthTitleMenu->fileSaver) {
           synthTitleMenu->parent->addChildElement(synthTitleMenu->fileSaver = new FileSaver(synthTitleMenu->fileToBeSaved));
-          synthTitleMenu->fileSaver->setPosition(-synthTitleMenu->fileSaver->size.x - 5, 0);
+          synthTitleMenu->fileSaver->setPosition(synthTitleMenu->parent->size.x + 5, 20);
+          //synthTitleMenu->fileSaver->setAbsolutePosition(GuiElement::screenW*0.5 - synthTitleMenu->fileSaver->size.x*0.5 - 10,
+          //                                               GuiElement::screenH*0.5 - synthTitleMenu->fileSaver->size.y*0.5 - 10);
 
-          if(synthTitleMenu->fileLoader) {
+          /*if(synthTitleMenu->fileLoader) {
             synthTitleMenu->fileSaver->setPosition(synthTitleMenu->fileSaver->pos.x, synthTitleMenu->fileSaver->pos.y + synthTitleMenu->fileLoader->pos.y + synthTitleMenu->fileLoader->size.y +5);
-          }
+          }*/
 
         }
         synthTitleMenu->closeRequested = true;
@@ -70,11 +72,14 @@ struct SynthTitleMenu : public Menu
       if(guiElement == synthTitleMenu->loadGui) {
         if(!synthTitleMenu->fileLoader) {
           synthTitleMenu->parent->addChildElement(synthTitleMenu->fileLoader = new FileLoader(synthTitleMenu->whereToLoadFile));
-          synthTitleMenu->fileLoader->setPosition(-synthTitleMenu->fileLoader->size.x - 5, 0);
+          synthTitleMenu->fileLoader->setPosition(synthTitleMenu->parent->size.x + 25, 40);
+          //synthTitleMenu->fileLoader->setAbsolutePosition(GuiElement::screenW*0.5 - synthTitleMenu->fileLoader->size.x*0.5 + 10,
+          //                                                GuiElement::screenH*0.5 - synthTitleMenu->fileLoader->size.y*0.5 + 10);
+
           
-          if(synthTitleMenu->fileSaver) {
+          /*if(synthTitleMenu->fileSaver) {
             synthTitleMenu->fileLoader->setPosition(synthTitleMenu->fileLoader->pos.x, synthTitleMenu->fileLoader->pos.y + synthTitleMenu->fileSaver->pos.y + synthTitleMenu->fileSaver->size.y +5);
-          }
+          }*/
           
            // FIXME
           if(synthTitleMenu->fileLoaderListener) {

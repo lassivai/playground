@@ -1,0 +1,193 @@
+instrument {
+  volume: 1.000000
+  name: Synth 4
+  biquadFilter {
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 1.000000
+    dbGain: 3.000000
+    bandwidth: 2.000000
+    qualityFactor: 1.000000
+    subtype: High-pass
+  }
+  voice {
+    volume: 0.100000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1.000000
+    unisonDetuning: 0.001000
+    unisonDetuningRandomSeeds: 0.000000, 0.000000
+    amplitudeModulator: 0.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 0.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 0.500000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Square
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  voice {
+    volume: 0.200000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 6.000000
+    unisonDetuning: 1.000000
+    unisonDetuningRandomSeeds: 1.000000, 3.000000
+    amplitudeModulator: 2.000000
+    frequencyModulator: -1.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 80.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Sinc
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 1.000000
+        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+        gainParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  modulator {
+    frequency: 0.500000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: 1.000000
+    inputFM: -1.000000
+    outputAM: -1.000000
+    outputFM: 0.000000
+    amplitudeEnvelope: -1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 1.000000
+    depthFM: 2.000000
+    waveform {
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Sin
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  modulator {
+    frequency: 0.500000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: 1.000000
+    inputFM: -1.000000
+    outputAM: -1.000000
+    outputFM: 0.000000
+    amplitudeEnvelope: -1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 1.000000
+    depthFM: 2.000000
+    waveform {
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Sin
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 1.000000
+        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+        gainParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  modulator {
+    frequency: 2.000000
+    stereoPhaseOffset: 0.500000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 0.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: 1.000000
+    outputFM: -1.000000
+    amplitudeEnvelope: -1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 1.000000
+    depthFM: 0.000300
+    waveform {
+      waveformParameters: 
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Saw
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: -1.000000
+      }
+    }
+  }
+  modulator {
+    frequency: 7.000000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 0.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: 2.000000
+    outputFM: -1.000000
+    amplitudeEnvelope: -1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 2.000000
+    depthFM: 0.001000
+    waveform {
+      waveformParameters: 
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000001
+      type: Gradient noise
+      waveTableMode: None
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.000000, 0.000000, -6.000000
+    output: 0.000000
+    type: ahe
+  }
+  envelope {
+    parameters: 0.000000, 0.000000, -2.000000
+    output: 1.000000
+    type: ahe
+  }
+}

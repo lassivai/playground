@@ -1,0 +1,138 @@
+instrument {
+  name: Synth keys 2
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 200, 5000
+  reverb {
+    subtype: MVerb
+    gain: 1.3
+    mix: 0.300000012
+    earlyMix: 1
+    size: 1
+    density: 0.5
+    decay: 0.400000006
+    preDelay: 0
+    dampingFrequency: 0.200000003
+    bandwidthFrequency: 1
+  }
+  voice {
+    volume: 0.3
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave09
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0.00048852, 0.00048852
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 6
+        frequencies: 1, 2, 3, 4, 5, 6
+        gains: 1, 1, 0.125, 0.0625, 0.03125, 0.015625
+      }
+    }
+  }
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave06
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 11
+      }
+      factorDraggingGraph {
+        yRange: 1, 20
+        curve: 0, 1, 0.5, 0.370927318, 0.84962406, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 11
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.547579299, 1, 0, 1, 0.432160804, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -1, -6, -0.000006
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -5, -5, -0.05
+    output: 1
+  }
+  noteFilter {
+    subtype: Low-pass
+    gain: 1
+    wet: 1
+    frequency: 2000
+    dbGain: 3
+    bandwidth: 1.167083333
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+  voiceCrossModulation {
+    mode: Frequency modulation
+    numVoices: 2
+    amounts: 0, 0, 0, 0
+  }
+}

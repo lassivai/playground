@@ -1,0 +1,76 @@
+synth {
+  instrument {
+    name: Synth 31
+    volume: 1
+    reverb {
+      subtype: Zita
+      gain: 0.55
+      wet: 1
+      dry: 1
+      width: 1
+      diffusion: 0.39
+      rt60: 4
+      rt60factorLow: 1
+      rt60factorHigh: 0.2
+      dcCutFrequency: 2.5
+      lfo1: 3
+      lfo2: 2
+      lfoFactor: 0.5
+      spin: 0.7
+      spinFactor: 0.09
+      xOverLow: 0.07
+      xOverHigh: 2000
+      apFeedback: 0
+      lowPass: 10000
+      highPass: 4
+    }
+    voice {
+      volume: 0.25
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 2
+      unisonDetuning: 0.01
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 0
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single faster
+        waveTableSeamMode: Linear seam
+        waveformParameters: 1
+        phaseOffsets: 0.08, 3
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: Graphs
+          count: 4
+        }
+        factorDraggingGraph {
+          yRange: 1, 20
+          curve: 0, 0.992481203, 1, 0.646622807, 0.756892231, 0.5, 0.814536341, 0.172932331, 0.5, 1, 0.020050125, 0
+          roundDraggingFactors: 0
+          roundToNearestDraggingFraction: 1
+          clampMinDraggingFactor: 1
+        }
+        gainDraggingGraph {
+          numDataPoints: 4
+          xRange: 0, 0
+          yRange: 0, 1
+          curve: 0, 0, 0, 1, 0, 0
+        }
+      }
+    }
+    envelope {
+      type: ahe
+      parameters: 0.06, -0.5, -3, -0.001
+      output: 0
+    }
+  }
+}

@@ -248,8 +248,8 @@ struct Sketch
     sdlInterface = new SDLInterface();
 
     sdlInterface->setup(screenW, screenH, fullScreen, useOpenGL, frameless, 0, inputGrabbed, alwaysOnTop);
-    screenW = sdlInterface->screenW;
-    screenH = sdlInterface->screenH;
+    GuiElement::screenW = screenW = sdlInterface->screenW;
+    GuiElement::screenH = screenH = sdlInterface->screenH;
     screenS = sdlInterface->screenS;
     aspectRatio = sdlInterface->aspectRatio;
 
@@ -457,7 +457,7 @@ struct Sketch
     if(renderTargetTextureForPostEffects.w != screenW || renderTargetTextureForPostEffects.h != screenH) {
       renderTargetTextureForPostEffects.createRenderTarget(screenW, screenH);
       renderTargetTextureForPostEffects.enableFiltering(true);
-      postEffectTexture.load("data/textures/texture.png");
+      postEffectTexture.load("data/textures/texture.png", false);
       postEffectShader.create("data/glsl/texture.vert", "data/glsl/postEffectShader.frag");
       quadScreen.create(screenW, screenH);
     }

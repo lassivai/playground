@@ -166,6 +166,8 @@ struct GuiEventListener {
 
 struct GuiElement
 {
+  static int screenW, screenH;
+  
   Texture *shadowTexture = NULL;
   bool drawShadow = false;
   int shadowWidth = 10;
@@ -362,6 +364,16 @@ struct GuiElement
   }
   virtual void setPosition(double x, double y) {
     this->pos.set(x, y);
+  }
+  
+  virtual Vec2d updateAbsolutePosition() {
+    absolutePos = parent ? pos + parent->updateAbsolutePosition() : pos;
+    return absolutePos;
+  }
+
+  virtual void setAbsolutePosition(double x, double y) {
+    updateAbsolutePosition();
+    this->pos.set(x-absolutePos.x, y-absolutePos.y);
   }
 
   virtual void setVisible(bool isVisible) {

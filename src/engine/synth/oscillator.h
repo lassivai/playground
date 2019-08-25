@@ -638,14 +638,9 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     panel->addGuiEventListener(new VoicePanelListener(this));
     parentElement->addChildElement(panel);
 
-
-    double line = 0, lineHeight = 23;
-
     titleBar = new SynthTitleBar(title, panel, isActive);
     //titleBar->addPresetsKnob(presets);
-    line += titleBar->size.y;
-    //line += titleBar->size.y + 5;
-    
+
     ConstantWidthColumnPlacer layoutPlacer(250-20, 0, 10, titleBar->size.y+5);
 
     panel->addChildElement(waveSourceGui = new ListBox("Audio source", layoutPlacer, 7));
@@ -667,28 +662,6 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
 
     showBiquadFilterGui = new CheckBox("Show filter", biquadFilter->isActive, layoutPlacer);
     
-    /*panel->addChildElement(waveSourceGui = new ListBox("Audio source", 10, line, 7));
-    waveSourceGui->setItems(audioSourceNames);
-    waveSourceGui->setValue(audioSource);
-    
-    volumeGui = new NumberBox("Volume", volume, NumberBox::FLOATING_POINT, 0.0, 1e12, 10, line += lineHeight);
-    tuningGui = new NumberBox("Tuning", tuning, NumberBox::FLOATING_POINT, 0.0, 1e12, 10, line += lineHeight);
-
-    stereoPhaseOffsetGui = new NumberBox("Stereo phase offset", stereoPhaseOffset, NumberBox::FLOATING_POINT, 0, 1e12, 10, line+=lineHeight, 9);
-    panel->addChildElement(panGui = new NumberBox("Pan", pan, NumberBox::FLOATING_POINT, -1, 1, 10, line+=lineHeight, 9));
-    panGui->incrementMode = NumberBox::IncrementMode::Linear;
-    panGui->linearIncrementAmount = 0.1;
-    unisonGui = new NumberBox("Unison", unison, NumberBox::INTEGER, 1, maxUnison, 10, line += lineHeight);
-
-    unisonDetuningGui = new NumberBox("Unison detuning", unisonDetuning, NumberBox::FLOATING_POINT, 0.0, 1e12, 10, line += lineHeight, 10);
-    unisonDetuningRandomSeedLeftGui = new NumberBox("Detuning random left", unisonDetuningRandomSeedLeft, NumberBox::INTEGER, 0, 1<<30, 10, line += lineHeight, 7);
-    unisonDetuningRandomSeedRightGui = new NumberBox("Detuning random right", unisonDetuningRandomSeedRight, NumberBox::INTEGER, 0, 1<<30, 10, line += lineHeight, 7);
-
-    showBiquadFilterGui = new CheckBox("Show filter", biquadFilter->isActive, 10, line+=lineHeight);*/
-
-    //panel->addChildElement(fmAlgorithmGui = new ListBox("FM algorithm", 10, line+=lineHeight, 10));
-    //fmAlgorithmGui->setItems(frequencyModulationAlgorithmNames);
-    //fmAlgorithmGui->setValue(frequencyModulationAlgorithm);
 
     panel->addChildElement(volumeGui);
     panel->addChildElement(tuningGui);
@@ -699,7 +672,6 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     panel->addChildElement(unisonDetuningRandomSeedRightGui);
     panel->addChildElement(showBiquadFilterGui);
 
-    //panel->setSize(300, line + lineHeight + 10);
     panel->setSize(250, layoutPlacer.getY() + 10);
 
     waveForm.addPanel(panel);
@@ -718,7 +690,17 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
 
   void updatePanel() {
     if(panel) {
-      addPanel(NULL);
+      //addPanel(NULL);
+      volumeGui->setValue(volume);
+      tuningGui->setValue(tuning);
+      panGui->setValue(pan);
+      stereoPhaseOffsetGui->setValue(stereoPhaseOffset);
+      unisonGui->setValue(unison);
+      unisonDetuningGui->setValue(unisonDetuning);
+      unisonDetuningRandomSeedLeftGui->setValue(unisonDetuningRandomSeedLeft);
+      unisonDetuningRandomSeedRightGui->setValue(unisonDetuningRandomSeedRight);
+      showBiquadFilterGui->setValue(biquadFilter->isActive);
+      waveForm.updatePanel();
     }
     if(biquadFilter->getPanel()) {
       biquadFilter->updatePanel();
@@ -1194,7 +1176,14 @@ struct GenericModulator : public PanelInterface, public HierarchicalTextFilePars
 
   void updatePanel() {
     if(panel) {
-      addPanel(NULL);
+      frequencyGui->setValue(frequency);
+      stereoFrequencySeparationGui->setValue(stereoFrequencySeparation);
+      panGui->setValue(pan);
+      stereoPhaseOffsetGui->setValue(stereoPhaseOffset);
+      amplitudeModulationDepthMinGui->setValue(amplitudeModulationDepthMin);
+      frequencyModulationDepthMinGui->setValue(frequencyModulationDepthMin);
+      isFrequencyRelativeToCarrierFrequencyGui->setValue(isFrequencyRelativeToCarrierFrequency);
+      waveForm.updatePanel();
     }
   }
 

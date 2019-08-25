@@ -112,9 +112,6 @@ struct SynthSketch : public Sketch
       volumeUnitGui->setValue(synthSketch->volumeUnit);
       this->addChildElement(volumeUnitGui);
 
-      //spectrumAveragingGui = new NumberBox("Spectrum averaging", synthSketch->spectrumGraphDepth, NumberBox::INTEGER, 1, 1024, 10, line += lineHeight, 8);
-      //spectrumAveragingGui->incrementMode = NumberBox::IncrementMode::Linear;
-
       spectrumGraphFeedbackGui = new NumberBox("Spectrum feedback", synthSketch->spectrumGraphFeedback, NumberBox::FLOATING_POINT, 0, 1, 10, line += lineHeight, 8);
 
       spectrumAsNotesGui = new CheckBox("Spectrum as notes", synthSketch->spectrumAsNotes, 10, line += lineHeight);
@@ -315,9 +312,6 @@ struct SynthSketch : public Sketch
           guiControlPanel->synthSketch->mandelbrotVisualizer.setActive(guiControlPanel->synthSketch->backgroundVisualization == 2);
           guiControlPanel->synthSketch->flameVisualizer.setActive(guiControlPanel->synthSketch->backgroundVisualization == 4);
         }
-        /*if(guiElement == guiControlPanel->spectrumAveragingGui) {
-          guiElement->getValue((void*)&guiControlPanel->synthSketch->spectrumGraphDepth);
-        }*/
 
         if(guiElement == guiControlPanel->volumeUnitGui) {
           guiElement->getValue((void*)&guiControlPanel->synthSketch->volumeUnit);
@@ -459,10 +453,7 @@ struct SynthSketch : public Sketch
   Vec4d spectrumGraphColor = Vec4d(1, 1, 1, 0.33);
   
   
-  
-  //std::vector<std::vector<double>> spectrumGraphs;
   std::vector<double> spectrumGraph, spectrumGraphPrevious;
-  //int spectrumGraphDepth = 1, spectrumGraphOffset = 0;
   
   bool spectrumAsNotes = false;
 
@@ -480,7 +471,7 @@ struct SynthSketch : public Sketch
   WaveformMode waveformMode = LeftWaveform;
   //bool showWaveform = true;
   bool showStereoOscilloscope = false;
-  double waveformScaling = 1.0;
+  double waveformScaling = 0.6;
   double waveFormLowestFrequency = 40;
   double waveFormFeedback = 0.8;
   std::vector<Vec2d> waveForm;
@@ -1115,29 +1106,7 @@ struct SynthSketch : public Sketch
 
 
   void updateSpectrumGraph() {
-    /*if(spectrumGraphs.size() != spectrumGraphDepth) {
-      spectrumGraphs.resize(spectrumGraphDepth);
-      spectrumGraphPrevious.assign(spectrumGraphDepth, 0);
-      if(spectrumGraphOffset >= spectrumGraphDepth) {
-        spectrumGraphOffset = 0;
-      }
-    }
-    for(int i=0; i<spectrumGraphs.size(); i++) {
-      if(spectrumGraphs[i].size() != spectrumGraph.size()) {
-        spectrumGraphs[i].resize(spectrumGraph.size());
-      }
-    }*/
-    
-    //spectrumGraphs[spectrumGraphOffset] = spectrumGraph;
-
-    //spectrumGraphOffset = (spectrumGraphOffset + 1) % spectrumGraphDepth;
-
     for(int i=0; i<spectrumGraph.size(); i++) {
-      /*double d = 0;
-      for(int k=0; k<spectrumGraphDepth; k++) {
-        d += spectrumGraphs[k][i];
-      }
-      spectrumGraph[i] = d / spectrumGraphDepth  * (1.0-spectrumGraphFeedback) + spectrumGraphPrevious[i] * spectrumGraphFeedback;*/
       spectrumGraph[i] = spectrumGraph[i] * (1.0-spectrumGraphFeedback) + spectrumGraphPrevious[i] * spectrumGraphFeedback;
     }
   }
@@ -1160,6 +1129,7 @@ struct SynthSketch : public Sketch
     if(b >= srcArr.size()) return srcArr[srcArr.size()-1];
     return (1.0 - f) * srcArr[a] + f * srcArr[b];
   }
+  
 
   void onDraw() {
     clear(0, 0, 0, 1);
@@ -1364,7 +1334,7 @@ struct SynthSketch : public Sketch
 
     Vec4d colorMeterDefaultColor = isDarkGraphColors ? Vec4d(0, 0, 0, 1) : Vec4d(1.0, 1.0, 1.0, 1);
     Vec4d colorMeterTooLoudColor = isDarkGraphColors ? Vec4d(0.4, 0, 0, 1) : Vec4d(0.4, .0, .0, 1);
-    Vec4d colorMeterMaxDefaultColor = isDarkGraphColors ? Vec4d(0, 0, 0, 0.5) : Vec4d(1.0, 1.0, 1.0, 0.5);
+    Vec4d colorMeterMaxDefaultColor = isDarkGraphColors ? Vec4d(0, 0, 0, 0.5) : Vec4d(0.5, 0.5, 0.5, 0.5);
     Vec4d colorMeterMaxTooLoudColor = isDarkGraphColors ? Vec4d(0.3, 0, 0, 0.5) : Vec4d(0.3, 0, 0, 0.5);
 
     if(volumeLevelMode > 0) {

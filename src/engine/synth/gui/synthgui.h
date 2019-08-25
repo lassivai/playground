@@ -40,10 +40,10 @@ struct CurrentlyPlayingNotePanel : public Panel {
   
   void init(Synth *synth) {
     this->synth = synth;
-    setSize(50, 200);
+    setSize(40, 200);
   }
 
-  void renderNoteInfo(const Vec2d &pos, Note &note, GeomRenderer &geomRenderer, TextGl &textRenderer) {
+  void renderNoteInfo(Vec2d pos, Note &note, GeomRenderer &geomRenderer, TextGl &textRenderer) {
     geomRenderer.texture = NULL;
     geomRenderer.strokeType = 1;
     geomRenderer.strokeWidth = 1;
@@ -54,8 +54,13 @@ struct CurrentlyPlayingNotePanel : public Panel {
                                   note.instrumentName.c_str(), note.pitch, note.frequency, note.volume);
     
     Vec2d noteStrSize = textRenderer.getDimensions(noteStr, 10);
-    
+
     Vec2d size = noteStrSize + Vec2d(10, 10);
+    
+    if(pos.x+15 + size.x >= geomRenderer.screenW) {
+      pos.x = pos.x - 30 - size.x;
+    }
+    
     geomRenderer.drawRectCorner(size.x, size.y, pos.x+15, pos.y);
     textRenderer.setColor(1, 1, 1, 0.9);
     textRenderer.print(noteStr, pos.x+3+15, pos.y+5, 10);
@@ -501,11 +506,11 @@ struct SynthGui
     this->parentGuiElement = parentGuiElement;
     
     instrumentTrackPanel = new InstrumentTrackPanel(synth, midiInterface, parentGuiElement);
-    instrumentTrackPanel->setPosition(10, 10);
+    instrumentTrackPanel->setPosition(6, 6);
     instrumentTrackPanel->setVisible(true);
 
     synthPanel = new SynthPanel(synth, parentGuiElement); 
-    synthPanel->setPosition(10, instrumentTrackPanel->pos.y + instrumentTrackPanel->size.y + 5);
+    synthPanel->setPosition(6, instrumentTrackPanel->pos.y + instrumentTrackPanel->size.y + 5);
     synthPanel->setVisible(false);
     
     
@@ -517,13 +522,16 @@ struct SynthGui
     recordingPanel->setPosition(250, 90);
     recordingPanel->setVisible(false);
     
-    infoPanel = new InfoPanel();
+    parentGuiElement->addChildElement(infoPanel = new InfoPanel());
     infoPanel->setVisible(true);
-    infoPanel->setPosition(instrumentTrackPanel->pos.x + instrumentTrackPanel->size.x + 15, 10);
-    parentGuiElement->addChildElement(infoPanel);
+    infoPanel->setPosition(screenW - infoPanel->size.x - 6, 6);
+    
+    parentGuiElement->addChildElement(synth->stereoOscilloscope.getPanel());
+    synth->stereoOscilloscope.getPanel()->setVisible(true);
+    synth->stereoOscilloscope.getPanel()->setPosition(screenW - synth->stereoOscilloscope.getPanel()->size.x - 6, infoPanel->pos.y + infoPanel->size.y + 6);
     
     audioRecordingTrackPanel = new AudioRecordingTrackPanel(synth, parentGuiElement);
-    audioRecordingTrackPanel->setPosition(400, 10);
+    audioRecordingTrackPanel->setPosition(400, 6);
     audioRecordingTrackPanel->setVisible(false);
     
     /*parentGuiElement->addChildElement(midiEventPanel = new MidiEventPanel(midiInterface));
@@ -532,7 +540,7 @@ struct SynthGui
     
     parentGuiElement->addChildElement(currentlyPlayingNotePanel = new CurrentlyPlayingNotePanel(synth));
     currentlyPlayingNotePanel->setVisible(true);
-    currentlyPlayingNotePanel->setPosition(10, instrumentTrackPanel->pos.y + instrumentTrackPanel->size.y + 40);
+    currentlyPlayingNotePanel->setPosition(screenW - currentlyPlayingNotePanel->size.x - 6, synth->stereoOscilloscope.getPanel()->pos.y + synth->stereoOscilloscope.getPanel()->size.y + 6);
   }
   
   void onQuit() {
@@ -616,6 +624,9 @@ struct SynthGui
       if(recordingPanel) {
         recordingPanel->toggleVisibility();
       }
+    }
+    if(events.sdlKeyCode == SDLK_F7 && events.numModifiersDown == 0) {
+      synth->stereoOscilloscope.getPanel()->toggleVisibility();
     }
   }
   

@@ -14,3 +14,5 @@ const Vec4d Vec4d::Zero = {0, 0, 0, 0};
 int Instrument::instrumentCounter = 0;
 
 
+int GuiElement::screenW = 1;
+int GuiElement::screenH = 1;

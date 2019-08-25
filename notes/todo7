@@ -2,6 +2,10 @@ My trouble is my knee actually. It made a big sound one day when I did one leg p
 
 TODO
 
+Update wavetable without the clicks (halt) on currently playing notes.
+ - SDL event poller in seperate thread with at least 60 fps (global fps might be quite low when updating things)
+ - instead of spawning new threads for wavetable creation, have eternal loop, which to restart in the preparation threads
+
 Modular connection panel not updated after loading.
 
 Modular filter connection not thread safe...? (FIXED)

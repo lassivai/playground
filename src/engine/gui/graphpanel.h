@@ -19,7 +19,7 @@ struct GraphPanel : public Panel {
   std::string horizontalAxisUnit = "", verticalAxisUnit = "";
 
   Vec4d graphColor = Vec4d(0, 0, 0, 1);
-  Vec4d graphColor2 = Vec4d(0, 0, 0, 1);
+  Vec4d graphColor2 = Vec4d(0.1, 0.1, 0.1, 1);
   //Vec4d graphColor2 = Vec4d(0.15, 0.15, 0.15, 1);
 
   Vec4d labelColor;
@@ -93,9 +93,9 @@ struct GraphPanel : public Panel {
         for(int i=0; i<data2->size(); i++) {
           a.x = map(i, 0, data2->size()-1, 6, size.x-6);
           a.y = map(data2->at(i), verticalAxisLimits.x, verticalAxisLimits.y, size.y - 6, 6);
-          if(i % 24 == 0) {
+          /*if(i % 24 == 0) {
             geomRenderer.drawRect(5, 5, displacement.x+a.x, displacement.y+a.y, PI*0.25);
-          }
+          }*/
           if(i > 0) {
             if(interpolation == Linear) {
               geomRenderer.drawLine(a, b, displacement);

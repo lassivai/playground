@@ -33,6 +33,7 @@ struct FileSaver : public Panel {
   
   FileSaver(HierarchicalTextFileParser *fileToBeSaved) : Panel("File saver") {
     init(fileToBeSaved);
+    zLayer = 1;
   }
   
   void init(HierarchicalTextFileParser *fileToBeSaved) {

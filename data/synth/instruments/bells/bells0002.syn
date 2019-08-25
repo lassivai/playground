@@ -41,9 +41,10 @@ instrument {
       type: Sin bands
       waveTableMode: Single
       waveTableSeamMode: No seam
+      phaseMode: Zeros in range
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0, 0
+      phaseOffsets: 0, 1
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0

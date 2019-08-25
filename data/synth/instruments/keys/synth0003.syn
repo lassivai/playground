@@ -1,0 +1,42 @@
+instrument {
+  name: Synth 3
+  volume: 1.000000
+  multiDelay {
+    gain: 1.100000
+    wet: 0.830000
+    out: 1, 1.000000
+    out: 0, 0.000000
+  }
+  voice {
+    volume: 0.350000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 5
+    unisonDetuning: 0.009000
+    unisonDetuningRandomSeeds: 4, 20
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    waveform {
+      type: Triangle
+      waveTableMode: Single faster
+      waveformParameters: 2.000000
+      phaseOffsets: 0.250000, 0.250000
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.000000
+      partials {
+        count: 1
+        usePattern: 0
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.000000, -0.500000, -6.000000
+    output: 1
+  }
+}

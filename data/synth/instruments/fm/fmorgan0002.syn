@@ -1,0 +1,88 @@
+instrument {
+  name: FM Organ 2
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 100, 1000
+  reverb {
+    subtype: MVerb
+    gain: 1
+    mix: 1
+    earlyMix: 1
+    size: 0.600000024
+    density: 0
+    decay: 1
+    preDelay: 0
+    dampingFrequency: 0.200000003
+    bandwidthFrequency: 0.200000003
+  }
+  voice {
+    volume: 0.27
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 3
+    unisonDetuning: 0.749153
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 1
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      waveformParameters: 1
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.05
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 11
+        frequencies: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024
+        gains: 1, 0.960732, 0.917315, 0.868488, 0.812252, 0.745091, 0.659754, 0.535887, 0.517282, 0.501187, 0.48706
+      }
+    }
+  }
+  modulator {
+    frequency: 2.745
+    stereoPhaseOffset: 0.5
+    pan: 0
+    stereoPhaseDifference: 1
+    relativeMode: 1
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
+    outputFM: 1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 1
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      waveformParameters: 1
+      phaseOffsets: 0, 9
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      waveValueOffset: 0
+      partials {
+        pattern: None
+        count: 2
+        frequencies: 1, 1.5
+        gains: 1, 1
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.05, 0, -20, -0.05
+    output: 1
+  }
+}

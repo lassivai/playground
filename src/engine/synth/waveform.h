@@ -978,8 +978,11 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     }
     virtual void onMouseMotion(GuiElement *guiElement, Events &events) {
       if(draggingPitch) {
+        int prevIndex = waveForm->graphPitchhWaveTableIndex;
         waveForm->graphPitchhWaveTableIndex = (int)clamp(map(events.m.x, graphPanel->absolutePos.x, graphPanel->absolutePos.x + graphPanel->size.x-1, 0, 128), 0, 127);
-        waveForm->updateWaveTableGraphs();
+        if(waveForm->graphPitchhWaveTableIndex != prevIndex) {
+          waveForm->updateWaveTableGraphs();
+        }
       }
     }
     virtual void onMouseWheel(GuiElement *guiElement, Events &events) {
@@ -1263,9 +1266,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   
   //AudioRecordingTrack sampleRecording;
 
-  enum SampleWaveTableMode { OneCycle, SeveralCycles };
+  /*enum SampleWaveTableMode { OneCycle, SeveralCycles };
   SampleWaveTableMode sampleWaveTableMode = OneCycle;
-  double sampleWaveTableSpeed = 1.0;
+  double sampleWaveTableSpeed = 1.0;*/
   
   /*void setGraphPitchhWaveTableIndex(int graphPitchhWaveTableIndex) {
     this->graphPitchhWaveTableIndex = graphPitchhWaveTableIndex;
@@ -1294,6 +1297,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   }
   
   virtual ~WaveForm() {
+    waveTablePreparationStopRequested = true;
     for(int i=0; i<waveTablePreparingThreads->size(); i++) {
       waveTablePreparingThreads->at(i).join();
     }
@@ -1412,6 +1416,15 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   }
 
   WaveForm &operator=(const WaveForm &w) {
+    if(!waveTablePreparingThreads) {
+      waveTablePreparingThreads = new std::vector<std::thread>();
+    }
+    waveTablePreparationStopRequested = true;
+    for(int i=0; i<waveTablePreparingThreads->size(); i++) {
+      waveTablePreparingThreads->at(i).join();
+    }
+    waveTablePreparingThreads->clear();
+    
     type = w.type;
     waveTableFrequency = w.waveTableFrequency;
     waveTableSize = w.waveTableSize;
@@ -1424,6 +1437,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     updateWaveTablesOnBackground = w.updateWaveTablesOnBackground;
     preparationTimer = w.preparationTimer;
     waveFormArgs = w.waveFormArgs;
+    numWaveFormArgs =w.numWaveFormArgs;
     waveTableGraphLeft = w.waveTableGraphLeft;
     waveTableGraphRight = w.waveTableGraphRight;
     phaseStartLimits = w.phaseStartLimits;
@@ -1447,6 +1461,14 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     graphPitchhWaveTableIndex = w.graphPitchhWaveTableIndex;
     showPitchWaveTable = w.showPitchWaveTable;
     readyToPrepareWaveTable = w.readyToPrepareWaveTable;
+    
+    cyclesPerWaveTable = w.cyclesPerWaveTable;
+    
+    waveTableSeamMode = w.waveTableSeamMode;
+    minHarmonicSmoothing = w.minHarmonicSmoothing;
+    maxHarmonicSmoothing = w.maxHarmonicSmoothing;
+    harmonicSmoothingSlope = w.harmonicSmoothingSlope;
+    harmonicSmoothingPower = w.harmonicSmoothingPower;
     
     return *this;
   }
@@ -1491,7 +1513,6 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         phaseStartMinGui->setValue(phaseZeroPoints[0]);
         phaseStartMaxGui->setValue(phaseZeroPoints[0]);
       }
-      updateWaveTableGraphs();
     }
   }
 
@@ -1739,6 +1760,8 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     waveTablePreparationStopRequested = false;
     mainTablePrepared = false;
 
+    printf("Time to stop previous wavetable preparation: %f µs\n", preparationTimer.toc() * 10e6);
+
     if(type == SinBands) {
       waveTablePreparingThreads->push_back(std::thread(WaveForm::prepareHarmonicBandWaveTable, this));
     }
@@ -1766,8 +1789,13 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       }
     }
     
+    printf("Time to start new wavetable preparation: %f µs\n", preparationTimer.toc() * 10e6);
+    
     if(type == WaveForm::Type::SinBands) {
       cyclesPerWaveTable = harmonicBandCyclesPerWaveTable;
+    }
+    else if(type == WaveForm::Type::GradientNoise) {
+      cyclesPerWaveTable = fastNoise.GetFrequency();
     }
     else {
       cyclesPerWaveTable = 1;
@@ -2417,7 +2445,13 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       //setOscillatorSubPanelPositions();
     }
 
-    
+    void update() {
+      minHarmonicSmoothingGui->setValue(waveForm->minHarmonicSmoothing);
+      maxHarmonicSmoothingGui->setValue(waveForm->maxHarmonicSmoothing);
+      harmonicSmoothingSlopeGui->setValue(waveForm->harmonicSmoothingSlope);
+      harmonicSmoothingPowerGui->setValue(waveForm->harmonicSmoothingPower);
+      bandwidthCurvePreview->prerenderingNeeded = true;
+    }
 
     struct HarmonicSmoothingPanelListener : public GuiEventListener {
       HarmonicSmoothingPanel *harmonicSmoothingPanel;
@@ -2489,8 +2523,8 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
 
     waveFormTypeGui = new ListBox("Waveform", layoutPlacer, 12);
     waveFormTypeGui->setItems(typeNames);
-
     waveFormTypeGui->setValue(type);
+    
     waveTableModeGui = new ListBox("Wavetable", layoutPlacer, 12);
     waveTableModeGui->setItems(waveTableModeNames);
     waveTableModeGui->setValue(waveTableMode);
@@ -2582,6 +2616,35 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   }
 
   void updatePanel() {
+    if(panel) {
+      waveFormTypeGui->setValue(type);
+      waveTableModeGui->setValue(waveTableMode);
+      waveTableSizeGui->setValue(waveTableSize);
+      numStepsGui->setValue(numSteps);
+      numPartialsGui->setValue(partialSet.numPartials);
+      partialPatternGui->setValue(partialSet.pattern);
+      pitchDependendPartialAttenuationGui->setValue(usePitchDependendPartialAttenuation);
+      pitchDependendSmoothingGui->setValue(usePitchDependendGaussianSmoothing);
+      pitchDependendGainGui->setValue(usePitchDependendGain);
+      gaussianSmoothingGui->setValue(smoothingWindowLengthInCycles);
+      phaseStartMinGui->setValue(phaseStartLimits.x);
+      phaseStartMaxGui->setValue(phaseStartLimits.y);
+      phaseModeGui->setValue(phaseMode);    
+      sameLeftAndRightPhaseGui->setValue(sameLeftAndRightPhase);
+      panel->addChildElement(sameLeftAndRightPhaseGui);
+      waveTableSeamModeGui->setValue(waveTableSeamMode);
+      
+      //updateWaveTableGraphs();
+      
+      if(harmonicBandPanel) {
+        harmonicBandPanel->update();
+      }
+      
+      updateWaveFormArgsPanel();
+      updatePartialsPanel();
+      updatePartialPatternPanel();
+      updateFastNoiseWaveFormPanel();
+    }
   }
 
   Panel *getPanel() {
@@ -2887,6 +2950,14 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     //setOscillatorSubPanelPositions();
   }
 
+  void updateWaveFormArgsPanel() {
+    if(waveFormArgsPanel) {
+      for(int i=0; i<numWaveFormArgs[type]; i++) {
+        argsGui[i]->setValue(waveFormArgs[type][i]);
+      }
+    }
+  }
+
   void removeWaveFormArgsPanel() {
     if(!waveFormArgsPanel) return;
     panel->deleteChildElement(waveFormArgsPanel);
@@ -2955,6 +3026,17 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
 
     //guiRoot.addChildElement(modulatorPanel);
     //setOscillatorSubPanelPositions();
+  }
+
+  void updatePartialPatternPanel() {
+    if(partialPatternPanel) {
+      for(int i=0; i<PartialSet::numPartialFactorPatternArgs; i++) {
+        partialFactorPatternArgsGui[i]->setValue(partialSet.factorParameters[i]);
+      }
+      for(int i=0; i<PartialSet::numPartialGainPatternArgs; i++) {
+        partialGainPatternArgsGui[i]->setValue(partialSet.gainParameters[i]);
+      }
+    }
   }
 
   void removePartialPatternPanel() {
@@ -3084,6 +3166,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
           partialsPanel->addChildElement(partialFactorsGui[i]);
           partialsPanel->addChildElement(partialGainsGui[i]);
         }
+        else {
+          partialFactorsGui[i]->setValue(partialSet.factors[i]);
+          partialGainsGui[i]->setValue(partialSet.gains[i]);
+        }
       }
       if(i >= partialSet.numPartials && partialFactorsGui[i] != NULL) {
         partialsPanel->deleteChildElement(partialFactorsGui[i]);
@@ -3100,6 +3186,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     /*if(partialSet.pattern == PartialSet::Pattern::Equation1) {
       addPartialPatternPanel();
     }*/
+  }
+
+  void updatePartialsPanel() {
+    addPartialsPanel(true);
   }
 
   void removePartialsPanel() {
@@ -3198,6 +3288,19 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     fastNoiseWaveFormPanel->size.set(250, layoutPlacer.getY() + 10);
     panel->addChildElement(fastNoiseWaveFormPanel);
     //setOscillatorSubPanelPositions();
+  }
+
+  void updateFastNoiseWaveFormPanel() {
+    fastNoiseTypeGui->setValue(fastNoise.GetNoiseType());
+    fastNoiseInterpolationTypeGui->setValue(fastNoise.GetInterp());
+    fastNoiseFractalTypeGui->setValue(fastNoise.GetFractalType());
+    fastNoiseCellularDistanceFunctionGui->setValue(fastNoise.GetCellularDistanceFunction());
+    fastNoiseCellularReturnTypeGui->setValue(fastNoise.GetCellularReturnType());
+    fastNoiseSeedGui->setValue(fastNoise.GetSeed());
+    fastNoiseFrequencyGui->setValue(fastNoise.GetFrequency());
+    fastNoiseOctavesGui->setValue(fastNoise.GetFractalOctaves());
+    fastNoiseLacunarityGui->setValue(fastNoise.GetFractalLacunarity());
+    fastNoiseGainGui->setValue(fastNoise.GetFractalGain());
   }
 
   void removeFastNoiseWaveFormPanel() {

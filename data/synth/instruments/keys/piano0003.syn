@@ -1,0 +1,108 @@
+instrument {
+  volume: 1.000000
+  name: Piano 3
+  biquadFilter {
+    gain: 1.000000
+    wet: 1.000000
+    frequency: 2500.000000
+    dbGain: 3.000000
+    bandwidth: 2.000000
+    qualityFactor: 1.000000
+    subtype: Low-pass
+  }
+  voice {
+    volume: 0.350000
+    tuning: 1.000000
+    stereoPhaseOffset: 0.000000
+    unison: 1.000000
+    unisonDetuning: 0.004000
+    unisonDetuningRandomSeeds: 3.000000, 20.000000
+    amplitudeModulator: 0.000000
+    frequencyModulator: 0.000000
+    amplitudeEnvelope: 2.000000
+    frequencyEnvelope: -1.000000
+    waveform {
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Sin
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 1.000000
+        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+        gainParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+      }
+    }
+  }
+  modulator {
+    frequency: 1.000000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: 0.000000
+    outputFM: -1.000000
+    amplitudeEnvelope: -1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 2.000000
+    depthFM: 0.001000
+    waveform {
+      waveformParameters: 1.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Wave02
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  modulator {
+    frequency: 1.000000
+    stereoPhaseOffset: 0.000000
+    stereoPhaseDifference: 0.000000
+    relativeMode: 1.000000
+    inputAM: -1.000000
+    inputFM: -1.000000
+    outputAM: 0.000000
+    outputFM: -1.000000
+    amplitudeEnvelope: 1.000000
+    frequencyEnvelope: -1.000000
+    depthAM: 3.000000
+    depthFM: 0.001000
+    waveform {
+      waveformParameters: 20.000000
+      phaseOffsets: 0.000000, 0.000000
+      lockedStereoPhase: 1.000000
+      numSteps: 1.000000
+      gaussianSmoothing: 0.000000
+      type: Wave05
+      waveTableMode: Single faster
+      partials {
+        count: 1.000000
+        usePattern: 0.000000
+        frequencies: 1.000000
+        gains: 0.500000
+      }
+    }
+  }
+  envelope {
+    parameters: 0.000006, -0.900000, -2.000000
+    output: 2.000000
+    type: ahe
+  }
+  envelope {
+    parameters: 0.000000, 0.000000, 1.000000, 0.300000, 0.000000, 0.000000, 1.000000, 0.600000
+    output: 1.000000
+    type: fourPoint
+  }
+}
