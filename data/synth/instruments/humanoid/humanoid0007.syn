@@ -1,35 +1,25 @@
 instrument {
-  name: Bells 3
+  name: Humanoid 7
   volume: 1
   reverb {
-    subtype: Zita
-    gain: 0.9
-    wet: 1
-    dry: 1
-    width: 1
-    diffusion: 0.99
-    rt60: 50
-    rt60factorLow: 1
-    rt60factorHigh: 0.1
-    dcCutFrequency: 1
-    lfo1: 0.8
-    lfo2: 0.7
-    lfoFactor: 0
-    spin: 0.7
-    spinFactor: 0.09
-    xOverLow: 1
-    xOverHigh: 40
-    apFeedback: 0
-    lowPass: 200
-    highPass: 20
+    subtype: MVerb
+    gain: 1.3
+    mix: 0.300000012
+    earlyMix: 1
+    size: 1
+    density: 0.5
+    decay: 0.300000012
+    preDelay: 0
+    dampingFrequency: 0.200000003
+    bandwidthFrequency: 1
   }
   voice {
-    volume: 0.7
+    volume: 0.3
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
     unison: 1
-    unisonDetuning: 0.006
+    unisonDetuning: 0.001
     unisonDetuningRandomSeeds: 0, 0
     amplitudeModulator: 0
     frequencyModulator: 0
@@ -49,23 +39,23 @@ instrument {
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
-      minHarmonicSmoothing: 30
-      maxHarmonicSmoothing: 3000
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 700
       harmonicSmoothingSlope: 1
       harmonicSmoothingPower: 2
       partials {
         pattern: Graphs
-        count: 32
+        count: 20
       }
       factorDraggingGraph {
-        yRange: 1, 30
-        curve: 0, 1, 0.4, 0.390977444, 0.98245614, 0.5, 0.669172932, 0.541353383, 0.5, 1, 0, 0
-        roundDraggingFactors: 0
-        roundToNearestDraggingFraction: 1
+        yRange: 1, 20
+        curve: 0, 1, 0.4, 0.22556391, 0.952380952, 0.5, 0.258145363, 0.182957393, 0.5, 0.639097744, 0.609022556, 0.5, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 2
         clampMinDraggingFactor: 1
       }
       gainDraggingGraph {
-        numDataPoints: 32
+        numDataPoints: 20
         xRange: 0, 0
         yRange: 0, 1
         curve: 0, 0, 0, 1, 0, 0
@@ -74,7 +64,7 @@ instrument {
   }
   envelope {
     type: ahe
-    parameters: 0.0008, -0.5, -3, -0.05
+    parameters: 0.05, 0, -20, -0.05
     output: 0
   }
 }

@@ -453,7 +453,7 @@ struct SynthSketch : public Sketch
   Vec4d spectrumGraphColor = Vec4d(1, 1, 1, 0.33);
   
   
-  std::vector<double> spectrumGraph, spectrumGraphPrevious;
+  std::vector<double> spectrumGraph, spectrumGraphPrevious, spectrumGraphOriginal;
   
   bool spectrumAsNotes = false;
 
@@ -1103,15 +1103,6 @@ struct SynthSketch : public Sketch
 
 
 
-
-
-  void updateSpectrumGraph() {
-    for(int i=0; i<spectrumGraph.size(); i++) {
-      spectrumGraph[i] = spectrumGraph[i] * (1.0-spectrumGraphFeedback) + spectrumGraphPrevious[i] * spectrumGraphFeedback;
-    }
-  }
-
-
   Vec2d volumeMeterMaxLevel;
   double volumeMeterMaxLevelDropRate = 0.1;
   double volumeMeterTooLoudThreshold = 0.666;
@@ -1151,6 +1142,7 @@ struct SynthSketch : public Sketch
 
     if(spectrumGraph.size() != visibleSpectrumSize) {
       spectrumGraph.resize(visibleSpectrumSize);
+      spectrumGraphOriginal.resize(visibleSpectrumSize);
       spectrumGraphPrevious.assign(visibleSpectrumSize, 0);
     }
     else {
@@ -1187,8 +1179,11 @@ struct SynthSketch : public Sketch
         }
       }
     }
+    spectrumGraphOriginal = spectrumGraph;
+    for(int i=0; i<spectrumGraph.size(); i++) {
+      spectrumGraph[i] = spectrumGraph[i] * (1.0-spectrumGraphFeedback) + spectrumGraphPrevious[i] * spectrumGraphFeedback;
+    }
 
-    updateSpectrumGraph();
 
     int fr0 = (int)(spectrumFrequencyLimits.x * synth->delayLineFFTW.output.size()/synth->sampleRate);
     int fr1 = (int)(spectrumFrequencyLimits.y * synth->delayLineFFTW.output.size()/synth->sampleRate);
@@ -1248,7 +1243,7 @@ struct SynthSketch : public Sketch
       synthShader.deActivate();
     }
     else if(backgroundVisualization == 1) {
-      spectrumMap.update(screenW, screenH, spectrumGraph, synth->delayLine, spectrumFrequencyLimits, spectrumAsNotes, volumeUnit);
+      spectrumMap.update(screenW, screenH, spectrumGraphOriginal, spectrumGraph, synth->delayLine, spectrumFrequencyLimits, spectrumAsNotes, volumeUnit);
       spectrumMap.render();
     }
     else if(backgroundVisualization == 2) {

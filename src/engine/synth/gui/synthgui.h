@@ -625,7 +625,7 @@ struct SynthGui
         recordingPanel->toggleVisibility();
       }
     }
-    if(events.sdlKeyCode == SDLK_F7 && events.numModifiersDown == 0) {
+    if(events.sdlKeyCode == SDLK_F9 && events.numModifiersDown == 0) {
       synth->stereoOscilloscope.getPanel()->toggleVisibility();
     }
   }

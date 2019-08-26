@@ -1014,9 +1014,11 @@ public:
           }
         }
         geomRenderer.strokeColor.set(1, 1, 1, 0.5);
+        geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
         for(int x=1; x<size.x; x++) {
           geomRenderer.drawLine(x-1, size.y*0.36 * (1.0 - waveForm[x-1]), x, size.y*0.36 * (1.0 - waveForm[x]), absolutePos);
         }
+        geomRenderer.endRendering();
       }
     };
     
@@ -1313,9 +1315,11 @@ public:
           }
         }
         geomRenderer.strokeColor.set(1, 1, 1, 0.5);
+        geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
         for(int x=1; x<size.x; x++) {
           geomRenderer.drawLine(x-1, size.y*0.36 * (1.0 - waveForm[x-1]), x, size.y*0.36 * (1.0 - waveForm[x]), absolutePos);
         }
+        geomRenderer.endRendering();
       }
     };
     
@@ -1608,10 +1612,12 @@ public:
           }
         }*/
         geomRenderer.strokeColor.set(1, 1, 1, 0.5);
+        geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
         for(int x=1; x<size.x; x++) {
           //geomRenderer.drawLine(x-1, size.y*0.36 * (1.0 - envelopeTrail[x-1]), x, size.y*0.36 * (1.0 - envelopeTrail[x]), absolutePos);
           geomRenderer.drawLine(x-1, size.y*0.72 * (1.0 - envelopeTrail[x-1]), x, size.y*0.72 * (1.0 - envelopeTrail[x]), absolutePos);
         }
+        geomRenderer.endRendering();
       }
     };
     //Panel *envelopesPanel = NULL;

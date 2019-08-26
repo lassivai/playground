@@ -1,36 +1,23 @@
 instrument {
-  name: Bells 3
+  name: Lead 11
   volume: 1
   reverb {
-    subtype: Zita
-    gain: 0.9
-    wet: 1
-    dry: 1
+    subtype: FreeVerb
+    gain: 1
+    wet: 0.933333
+    dry: 0.6
     width: 1
-    diffusion: 0.99
-    rt60: 50
-    rt60factorLow: 1
-    rt60factorHigh: 0.1
-    dcCutFrequency: 1
-    lfo1: 0.8
-    lfo2: 0.7
-    lfoFactor: 0
-    spin: 0.7
-    spinFactor: 0.09
-    xOverLow: 1
-    xOverHigh: 40
-    apFeedback: 0
-    lowPass: 200
-    highPass: 20
+    roomSize: 0.18
+    damp: 0.94
   }
   voice {
-    volume: 0.7
+    volume: 0.55
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
-    unison: 1
-    unisonDetuning: 0.006
-    unisonDetuningRandomSeeds: 0, 0
+    unison: 2
+    unisonDetuning: 0.009
+    unisonDetuningRandomSeeds: 1, 9
     amplitudeModulator: 0
     frequencyModulator: 0
     amplitudeEnvelope: 0
@@ -39,9 +26,10 @@ instrument {
       type: Sin bands
       waveTableMode: Single
       waveTableSeamMode: No seam
+      phaseMode: First zero
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0, 0
+      phaseOffsets: 0.049591112, 0.049591112
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
@@ -49,32 +37,32 @@ instrument {
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
-      minHarmonicSmoothing: 30
-      maxHarmonicSmoothing: 3000
+      minHarmonicSmoothing: 5
+      maxHarmonicSmoothing: 500
       harmonicSmoothingSlope: 1
-      harmonicSmoothingPower: 2
+      harmonicSmoothingPower: 3
       partials {
         pattern: Graphs
-        count: 32
+        count: 30
       }
       factorDraggingGraph {
         yRange: 1, 30
-        curve: 0, 1, 0.4, 0.390977444, 0.98245614, 0.5, 0.669172932, 0.541353383, 0.5, 1, 0, 0
-        roundDraggingFactors: 0
+        curve: 0, 1, 0.5, 0.213032581, 0.273182957, 0.4, 1, 0, 0
+        roundDraggingFactors: 1
         roundToNearestDraggingFraction: 1
         clampMinDraggingFactor: 1
       }
       gainDraggingGraph {
-        numDataPoints: 32
+        numDataPoints: 30
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 0, 0, 1, 0, 0
+        curve: 0, 0, 0.5, 0.027568922, 0.095238095, 0.4, 0.095238095, 0.56641604, 0.5, 0.137844612, 0.934837093, 0.6, 0.197994987, 0.290726817, 0.5, 0.278195489, 0.962406015, 0.6, 0.368421053, 0.350877193, 0.4, 0.473684211, 0.984962406, 0.5, 0.513784461, 0.045112782, 0.4, 0.636591479, 0.967418546, 0.4, 0.739348371, 0.060150376, 0.4, 0.807017544, 0.877192982, 0.5, 1, 1, 0
       }
     }
   }
   envelope {
     type: ahe
-    parameters: 0.0008, -0.5, -3, -0.05
+    parameters: 0.05, -1.7, -20, -0.00001
     output: 0
   }
 }

@@ -23,7 +23,6 @@ synth {
       frequencyModulator: 0
       amplitudeEnvelope: 0
       frequencyEnvelope: -1
-      filterFrequencyModular: -1, 1, 800, 20000
       waveform {
         type: Sin
         waveTableMode: Single

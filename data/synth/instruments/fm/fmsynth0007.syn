@@ -1,7 +1,6 @@
 instrument {
   name: FM synth 7
   volume: 1
-  noteFilterFrequencyModular: -1, 1, 100, 1000
   multiDelay {
     gain: 1.07
     wet: 0.85
@@ -22,7 +21,6 @@ instrument {
     frequencyModulator: 1
     amplitudeEnvelope: 1
     frequencyEnvelope: -1
-    filterFrequencyModular: -1, 1, 100, 1000
     waveform {
       type: Sin
       waveTableMode: Single faster

@@ -30,10 +30,13 @@ struct StereoOscilloscope {
       
       double scaling = min(size.x-10, size.y-10) * 0.5 / d;
       
+      geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
+      
       for(int i=1; i<stereoOscilloscope->trailLength; i++) {
         geomRenderer.drawLine(mp + stereoOscilloscope->trail[(stereoOscilloscope->maxTrailLength+currentPhase-i-1) % stereoOscilloscope->maxTrailLength] * scaling,
                               mp + stereoOscilloscope->trail[(stereoOscilloscope->maxTrailLength+currentPhase-i) % stereoOscilloscope->maxTrailLength] * scaling);
       }
+      geomRenderer.endRendering();
     }
   };
   

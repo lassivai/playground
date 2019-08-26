@@ -22,7 +22,6 @@ instrument {
     frequencyModulator: 1
     amplitudeEnvelope: 1
     frequencyEnvelope: -1
-    filterFrequencyModular: -1, 1, 100, 1000
     waveform {
       type: Sin
       waveTableMode: Single faster

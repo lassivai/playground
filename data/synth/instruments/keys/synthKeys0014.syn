@@ -1,0 +1,48 @@
+instrument {
+  name: Synth keys 14
+  volume: 1
+  voice {
+    volume: 0.35
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 3
+    unisonDetuning: 0.01
+    unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Zeros in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.05
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Equation
+        count: 3
+        frequencyParameters: 1, 3, 0, 1, 1, 0
+        gainParameters: 10, 0, 0, 15, 0, 0.05
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.025, -1, -6, -0.05
+    output: 1
+  }
+}

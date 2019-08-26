@@ -1,38 +1,7 @@
 synth {
   instrument {
-    name: Cross synth 8
+    name: Brassy 2
     volume: 1
-    biquadFilter {
-      subtype: High-pass
-      gain: 1
-      wet: 1
-      frequency: 20
-      dbGain: 3
-      bandwidth: 2
-      qualityFactor: 1
-    }
-    reverb {
-      subtype: Zita
-      gain: 0.7
-      wet: 1
-      dry: 1
-      width: 1
-      diffusion: 0.89
-      rt60: 3
-      rt60factorLow: 1
-      rt60factorHigh: 0.3
-      dcCutFrequency: 2.5
-      lfo1: 0.3
-      lfo2: 1
-      lfoFactor: 0.9
-      spin: 0.7
-      spinFactor: 0.5
-      xOverLow: 90
-      xOverHigh: 3000
-      apFeedback: 0.5
-      lowPass: 10000
-      highPass: 4
-    }
     voice {
       volume: 0.25
       tuning: 1
@@ -48,9 +17,10 @@ synth {
       waveform {
         type: Sin
         waveTableMode: Single
+        waveTableSeamMode: No seam
         waveformParameters: 1
-        phaseOffsets: 0, 0
-        lockedStereoPhase: 1
+        phaseOffsets: 0, 1
+        lockedStereoPhase: 0
         numSteps: 1
         gaussianSmoothing: 0
         pitchDependendGaussianSmoothing: 0
@@ -74,14 +44,47 @@ synth {
       unisonDetuningRandomSeeds: 0, 0
       amplitudeModulator: 0
       frequencyModulator: 0
-      amplitudeEnvelope: 0
+      amplitudeEnvelope: 1
       frequencyEnvelope: -1
       waveform {
         type: Sin
         waveTableMode: Single
+        waveTableSeamMode: No seam
         waveformParameters: 1
         phaseOffsets: 0, 0
-        lockedStereoPhase: 1
+        lockedStereoPhase: 0
+        numSteps: 1
+        gaussianSmoothing: 0
+        pitchDependendGaussianSmoothing: 0
+        pitchDependendPartialAttenuation: 0
+        waveValueOffset: 0
+        partials {
+          pattern: None
+          count: 1
+          frequencies: 1
+          gains: 0.5
+        }
+      }
+    }
+    voice {
+      volume: 0.85
+      tuning: 1
+      stereoPhaseOffset: 0
+      pan: 0
+      unison: 1
+      unisonDetuning: 0.001
+      unisonDetuningRandomSeeds: 0, 0
+      amplitudeModulator: 0
+      frequencyModulator: 0
+      amplitudeEnvelope: 2
+      frequencyEnvelope: -1
+      waveform {
+        type: Sin
+        waveTableMode: Single
+        waveTableSeamMode: No seam
+        waveformParameters: 1
+        phaseOffsets: 0, 0
+        lockedStereoPhase: 0
         numSteps: 1
         gaussianSmoothing: 0
         pitchDependendGaussianSmoothing: 0
@@ -97,13 +100,23 @@ synth {
     }
     envelope {
       type: ahe
-      parameters: 0.0002, -0.6, -3
+      parameters: 0.09, 0, -8, -0.009
       output: 0
+    }
+    envelope {
+      type: ahe
+      parameters: 0.1, 0, -8, -0.000001
+      output: 1
+    }
+    envelope {
+      type: ahe
+      parameters: 1, 0, -8, -0.000001
+      output: 2
     }
     voiceCrossModulation {
       mode: Frequency modulation
-      numVoices: 2
-      amounts: 0.06, 0, 30, 2
+      numVoices: 3
+      amounts: 3, 5, 1, 0, 0, 0.02, 0.6, 7, 0.2
     }
   }
 }

@@ -1,0 +1,61 @@
+instrument {
+  name: Organ 15
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 100, 1000
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.01
+    unisonDetuningRandomSeeds: 1, 3
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    filterFrequencyModular: -1, 1, 100, 1000
+    waveform {
+      type: Wave01
+      waveTableMode: Single faster
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 2, 0, 0
+      phaseOffsets: 0.013190034, 0.013190034
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 10
+      }
+      factorDraggingGraph {
+        yRange: 1, 4
+        curve: 0, 1, 0.5, 0.273182957, 0.959899749, 0.5, 0.315789474, 0.649122807, 0.5, 0.546365915, 0.616541353, 0.5, 0.629072682, 0.09273183, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 10
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.06, 0, -6, -0.05
+    output: 0
+  }
+}

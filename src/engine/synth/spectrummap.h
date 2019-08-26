@@ -10,7 +10,11 @@ struct SpectrumMap
 
   double spectrumMapScaling = 1;
 
-  bool shareGraphSpectrumTransform = false;
+  enum SpectrumShareMode { ShareOriginal, ShareAdjusted, DontShare };
+  std::vector<std::string> spectrumShareModeNames = { "Share original", "Share adjusted", "Use custom" };
+  SpectrumShareMode spectrumShareMode = ShareOriginal;
+
+  //bool shareGraphSpectrumTransform = false;
 
   const std::vector<std::string> spectrum2dColorMapNames = {"Grayscale", "Warmth"};
   int colorMode = 2;
@@ -64,14 +68,23 @@ struct SpectrumMap
   }
 
 
-  void update(int w, int h, const std::vector<double> &spectrumGraph, DelayLine &delayLine, Vec2d spectrumLimits, bool spectrumAsNotes, int volumeUnit) {
+  void update(int w, int h, const std::vector<double> &spectrumGraphOriginal, const std::vector<double> &spectrumGraph, DelayLine &delayLine, Vec2d spectrumLimits, bool spectrumAsNotes, int volumeUnit) {
     if(frameCounter++ % max(1, updateInterval) != 0) return;
 
     if(spectrum.size() != w) {
       spectrum.resize(w);
     }
 
-    if(shareGraphSpectrumTransform && spectrumGraph.size() > 0) {
+    if(spectrumShareMode == ShareOriginal && spectrumGraph.size() > 0) {
+      if(spectrumGraphOriginal.size() != w) {
+        resizeArray(spectrumGraphOriginal, spectrum);
+      }
+      else {
+        spectrum = spectrumGraphOriginal;
+      }
+      scaleArray(spectrum, spectrumMapScaling);
+    }
+    else if(spectrumShareMode == ShareAdjusted && spectrumGraph.size() > 0) {
       if(spectrumGraph.size() != w) {
         resizeArray(spectrumGraph, spectrum);
       }
@@ -190,7 +203,8 @@ struct SpectrumMap
   Panel *panel = NULL;
   NumberBox *spectrumResolutionGui = NULL;
 
-  CheckBox *shareGraphSpectrumTransformGui = NULL;
+  //CheckBox *shareGraphSpectrumTransformGui = NULL;
+  ListBox *spectrumShareModeGui = NULL;
 
   const std::vector<std::string> colorModeNames = { spectrum2dColorMapNames[0], spectrum2dColorMapNames[1], "Custom Gradient" };
   ListBox *colorModeGui = NULL;
@@ -213,8 +227,11 @@ struct SpectrumMap
 
     double line = 10, lineHeight = 23;
 
-    shareGraphSpectrumTransformGui = new CheckBox("Use spectrum from graph", shareGraphSpectrumTransform, 10, line);
-    panel->addChildElement(shareGraphSpectrumTransformGui);
+    //shareGraphSpectrumTransformGui = new CheckBox("Use spectrum from graph", shareGraphSpectrumTransform, 10, line);
+    //panel->addChildElement(shareGraphSpectrumTransformGui);
+    panel->addChildElement(spectrumShareModeGui = new ListBox("Spectrum share", 10, line, 14));
+    spectrumShareModeGui->setItems(spectrumShareModeNames);
+    spectrumShareModeGui->setValue(spectrumShareMode);
 
     spectrumResolutionGui = new NumberBox("Spectrum transform size", delayLineFFTW.getSize(), NumberBox::INTEGER, 128, 1<<24, 10, line+=lineHeight, 8);
     spectrumResolutionGui->incrementMode = NumberBox::IncrementMode::Power;
@@ -252,7 +269,8 @@ struct SpectrumMap
   void updatePanel() {
     if(panel) {
       spectrumResolutionGui->setValue(delayLineFFTW.getSize());
-      shareGraphSpectrumTransformGui->setValue(shareGraphSpectrumTransform);
+      //shareGraphSpectrumTransformGui->setValue(shareGraphSpectrumTransform);
+      spectrumShareModeGui->setValue(spectrumShareMode);
       colorModeGui->setValue(colorMode);
       spectrumMapUpdateLagGui->setValue(updateInterval);
       spectrumMapScalingGui->setValue(spectrumMapScaling);
@@ -267,7 +285,8 @@ struct SpectrumMap
     parentElement->deleteChildElement(panel);
     panel = NULL;
     spectrumResolutionGui = NULL;
-    shareGraphSpectrumTransformGui = NULL;
+    //shareGraphSpectrumTransformGui = NULL;
+    spectrumShareModeGui = NULL;
     colorModeGui = NULL;
     spectrumMapUpdateLagGui = NULL;
     spectrumMapScalingGui = NULL;
@@ -282,8 +301,11 @@ struct SpectrumMap
       this->spectrumMap = spectrumMap;
     }
     void onValueChange(GuiElement *guiElement) {
-      if(guiElement == spectrumMap->shareGraphSpectrumTransformGui) {
+      /*if(guiElement == spectrumMap->shareGraphSpectrumTransformGui) {
         guiElement->getValue((void*)&spectrumMap->shareGraphSpectrumTransform);
+      }*/
+      if(guiElement == spectrumMap->spectrumShareModeGui) {
+        guiElement->getValue((void*)&spectrumMap->spectrumShareMode);
       }
       if(guiElement == spectrumMap->colorModeGui) {
         guiElement->getValue((void*)&spectrumMap->colorMode);

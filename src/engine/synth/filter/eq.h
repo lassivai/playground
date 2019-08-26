@@ -162,8 +162,6 @@ struct Equalizer : public PostProcessingEffect {
       eqLayouts[1].gui->addChildElement(gainKnob = new RotaryKnob<double>("Gain", placer.progressX(), placer.getY(), RotaryKnob<double>::LimitedKnob, 0, 1, equalizer->gain));
       eqLayouts[1].gui->addChildElement(numChannelsKnob = new RotaryKnob<long>("Bands", placer.progressX(), placer.getY(), RotaryKnob<long>::LimitedKnob, 1, min(8, maxNumPeakingEqs), equalizer->numPeakingEqs));
       
-      printf("<> %d\n", min(8, maxNumPeakingEqs));
-      
       placer.reset(); 
       placer.line = placer.knobSize;
       

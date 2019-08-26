@@ -364,6 +364,7 @@ struct Sketch
   }
 
   void update(){
+    TicToc frameTime;
 
     for(int i=0; i<commandQueue.commands.size(); i++) {
       Command *cmd = NULL;
@@ -454,14 +455,14 @@ struct Sketch
     guiRoot.update(time, dt);
     guiRoot.prepare(geomRenderer, textRenderer);
 
-    if(renderTargetTextureForPostEffects.w != screenW || renderTargetTextureForPostEffects.h != screenH) {
+    /*if(renderTargetTextureForPostEffects.w != screenW || renderTargetTextureForPostEffects.h != screenH) {
       renderTargetTextureForPostEffects.createRenderTarget(screenW, screenH);
       renderTargetTextureForPostEffects.enableFiltering(true);
       postEffectTexture.load("data/textures/texture.png", false);
       postEffectShader.create("data/glsl/texture.vert", "data/glsl/postEffectShader.frag");
       quadScreen.create(screenW, screenH);
     }
-    renderTargetTextureForPostEffects.setRenderTarget();
+    renderTargetTextureForPostEffects.setRenderTarget();*/
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
     onDraw();
@@ -477,7 +478,7 @@ struct Sketch
       }
     }
     
-    renderTargetTextureForPostEffects.unsetRenderTarget();
+    /*renderTargetTextureForPostEffects.unsetRenderTarget();
     
     postEffectShader.activate();
     postEffectShader.setUniform1f("time", time);
@@ -490,7 +491,7 @@ struct Sketch
     
     postEffectShader.deActivate();
     renderTargetTextureForPostEffects.inactivate(0);
-    postEffectTexture.inactivate(1);
+    postEffectTexture.inactivate(1);*/
 
 
     updateScreen(sdlInterface);

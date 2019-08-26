@@ -1,28 +1,6 @@
 instrument {
-  name: Bells 3
+  name: Lead 9
   volume: 1
-  reverb {
-    subtype: Zita
-    gain: 0.9
-    wet: 1
-    dry: 1
-    width: 1
-    diffusion: 0.99
-    rt60: 50
-    rt60factorLow: 1
-    rt60factorHigh: 0.1
-    dcCutFrequency: 1
-    lfo1: 0.8
-    lfo2: 0.7
-    lfoFactor: 0
-    spin: 0.7
-    spinFactor: 0.09
-    xOverLow: 1
-    xOverHigh: 40
-    apFeedback: 0
-    lowPass: 200
-    highPass: 20
-  }
   voice {
     volume: 0.7
     tuning: 1
@@ -49,32 +27,32 @@ instrument {
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
-      minHarmonicSmoothing: 30
+      minHarmonicSmoothing: 20
       maxHarmonicSmoothing: 3000
       harmonicSmoothingSlope: 1
       harmonicSmoothingPower: 2
       partials {
         pattern: Graphs
-        count: 32
+        count: 10
       }
       factorDraggingGraph {
-        yRange: 1, 30
-        curve: 0, 1, 0.4, 0.390977444, 0.98245614, 0.5, 0.669172932, 0.541353383, 0.5, 1, 0, 0
+        yRange: 1, 40
+        curve: 0, 1, 0.4, 1, 0, 0
         roundDraggingFactors: 0
         roundToNearestDraggingFraction: 1
         clampMinDraggingFactor: 1
       }
       gainDraggingGraph {
-        numDataPoints: 32
+        numDataPoints: 10
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 0, 0, 1, 0, 0
+        curve: 0, 0, 0.5, 0.503759398, 0.383458647, 0.5, 1, 1, 0
       }
     }
   }
   envelope {
     type: ahe
-    parameters: 0.0008, -0.5, -3, -0.05
+    parameters: 0.04, 0, -20, -0.05
     output: 0
   }
 }

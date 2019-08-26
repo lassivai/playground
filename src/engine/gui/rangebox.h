@@ -62,6 +62,12 @@ struct RangeBox : public GuiElement
   virtual void getValue(void *value) {
     *(Vec2d*)value = this->range;
   }
+  
+  virtual void setValue(const Vec2d &value) {
+    this->range = value;
+    rangeMinGui->setValue(range.x);
+    rangeMaxGui->setValue(range.y);
+  }
 
   struct RangeBoxListener : public GuiEventListener {
     RangeBox *rangeBox;

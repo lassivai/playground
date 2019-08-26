@@ -167,10 +167,12 @@ struct InstrumentPreviewPanel : public Panel {
           }
         }
         geomRenderer.strokeColor.set(1, 1, 1, 0.7);
+        geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
         for(int i=1; i<waveForm.size(); i++) {
           geomRenderer.drawLine(absolutePos.x + x + i-1, absolutePos.y + size.y*0.5-waveForm[i-1].x*(size.y*0.5-2),
                                 absolutePos.x + x + i,   absolutePos.y + size.y*0.5-waveForm[i].x*(size.y*0.5-2));
         }
+        geomRenderer.endRendering();
       }
     }
     else if(instrument->instrumentType == Instrument::InstrumentType::CompositePads) {

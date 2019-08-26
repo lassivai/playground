@@ -1,7 +1,6 @@
 instrument {
   name: FM Organ 2
   volume: 1
-  noteFilterFrequencyModular: -1, 1, 100, 1000
   reverb {
     subtype: MVerb
     gain: 1

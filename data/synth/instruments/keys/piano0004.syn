@@ -1,74 +1,135 @@
 instrument {
-  volume: 1.000000
   name: Piano 4
+  volume: 1
   biquadFilter {
-    gain: 1.000000
-    wet: 1.000000
-    frequency: 1.000000
-    dbGain: 3.000000
-    bandwidth: 2.000000
-    qualityFactor: 1.000000
     subtype: High-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 1
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+  reverb {
+    subtype: Zita
+    gain: 1.3
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.78
+    rt60: 4
+    rt60factorLow: 1.3
+    rt60factorHigh: 0.3
+    dcCutFrequency: 2.5
+    lfo1: 0.9
+    lfo2: 1.3
+    lfoFactor: 0.31
+    spin: 2.4
+    spinFactor: 0.3
+    xOverLow: 6
+    xOverHigh: 50
+    apFeedback: 0.6
+    lowPass: 10000
+    highPass: 4
   }
   voice {
-    volume: 0.180000
-    tuning: 1.000000
-    stereoPhaseOffset: 0.500000
-    unison: 1.000000
-    unisonDetuning: 0.000900
-    unisonDetuningRandomSeeds: 2.000000, 40.000000
-    amplitudeModulator: 1.000000
-    frequencyModulator: 8.000000
-    amplitudeEnvelope: 1.000000
-    frequencyEnvelope: -1.000000
+    volume: 0.18
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.006
+    unisonDetuningRandomSeeds: 2, 40
+    amplitudeModulator: 1
+    frequencyModulator: 8
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
     waveform {
-      waveformParameters: 60.000000
-      phaseOffsets: 0.000001, 0.000001
-      lockedStereoPhase: 1.000000
-      numSteps: 1.000000
-      gaussianSmoothing: 0.050000
       type: Sinc
       waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Zeros in range
+      waveTableSize: 2048
+      waveformParameters: 60, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0.05
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
-        count: 7.000000
-        usePattern: 1.000000
-        frequencyParameters: 1.000000, 2.000000, 0.000000, 0.000000, 0.000000, 0.000000
-        gainParameters: 0.080000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        pattern: Equation
+        count: 7
+        frequencyParameters: 1, 2, 0, 0, 0, 0
+        gainParameters: 0.08, 0, 0, 0, 0, 0
       }
     }
   }
   modulator {
-    frequency: 1.000000
-    stereoPhaseOffset: 0.500000
-    stereoPhaseDifference: 0.000000
-    relativeMode: 1.000000
-    inputAM: 2.000000
-    inputFM: -1.000000
-    outputAM: 1.000000
-    outputFM: -1.000000
-    amplitudeEnvelope: -1.000000
-    frequencyEnvelope: -1.000000
-    depthAM: 3.000000
-    depthFM: 0.001000
+    frequency: 1
+    stereoPhaseOffset: 0.5
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 1
+    inputAM: 2
+    inputFM: -1
+    outputAM: 1
+    outputFM: -1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 3
+    depthFM: 0.001
     waveform {
-      waveformParameters: 2.000000
-      phaseOffsets: 0.000000, 0.000000
-      lockedStereoPhase: 1.000000
-      numSteps: 1.000000
-      gaussianSmoothing: 0.000000
       type: Triangle
       waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 2, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
-        count: 3.000000
-        usePattern: 1.000000
-        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
-        gainParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        pattern: Equation
+        count: 3
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 0, 0, 0, 0, 0, 0
       }
     }
   }
   envelope {
-    parameters: 0.000000, -3.000000, -10.000000
-    output: 1.000000
     type: ahe
+    parameters: 0, -2, -10, -0.0005
+    output: 1
+  }
+  noteFilter {
+    subtype: Low-pass
+    keyTrackingMode: Velocity
+    gain: 1
+    wet: 1
+    frequency: 9300
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 1
+    bandwidthKeyTracking: 0
   }
 }

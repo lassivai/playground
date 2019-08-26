@@ -44,6 +44,14 @@ struct ModularParameter {
       addGuiEventListener(new ModularTrackPanelListener(this));
     }
     
+    void update() {
+      printf("Modular parameter '%s' updated\n", modularParameter->name.c_str());
+      modulatorGui->setValue(modularParameter->modulator);
+      envelopeGui->setValue(modularParameter->envelope);
+      midiGui->setValue(modularParameter->midi);
+      rangeGui->setValue(modularParameter->range);
+    }
+    
     struct ModularTrackPanelListener : public GuiEventListener {
       ModularTrackPanel *modularTrackPanel;
       ModularTrackPanelListener(ModularTrackPanel *modularTrackPanel) {
@@ -160,6 +168,11 @@ struct ModularParameter {
     valueLimits.set(min, max);
     range.set(clamp(*value, min, max), clamp(*value, min, max));
     this->guiEventListener = guiEventListener;
+    modulator = -1;
+    envelope = -1;
+    midi = -1;
+    voice = -1;
+    
     return *this;
   }
 
@@ -169,13 +182,11 @@ struct ModularParameter {
     valueLimits.set(min, max);
     range.set(clamp(rangeMin, min, max), clamp(rangeMax, min, max));
     this->guiEventListener = guiEventListener;
+    modulator = -1;
+    envelope = -1;
+    midi = -1;
+    voice = -1;
     return *this;
-  }
-
-  GuiElement *createGuiElement(double x, double y) {
-    valueGui = new NumberBox(name, value, NumberBox::FLOATING_POINT, valueLimits.x, valueLimits.y, x, y);
-    valueGui->addGuiEventListener(new ParameterListener(this));
-    return valueGui;
   }
 
   Panel *getModularTrackPanel() {
@@ -184,6 +195,9 @@ struct ModularParameter {
       if(guiEventListener) {
         modularTrackPanel->addGuiEventListener(guiEventListener);
       }
+    }
+    else {
+      modularTrackPanel->update();
     }
     return modularTrackPanel;
   }

@@ -72,7 +72,6 @@ synth {
       frequencyModulator: 0
       amplitudeEnvelope: 0
       frequencyEnvelope: -1
-      filterFrequencyModular: -1, 1, 500, 40000
       waveform {
         type: Saw
         waveTableMode: Single

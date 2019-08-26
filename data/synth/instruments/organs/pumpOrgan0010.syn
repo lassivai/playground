@@ -1,0 +1,48 @@
+instrument {
+  name: Pump organ 10
+  volume: 1
+  voice {
+    volume: 0.15
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 4, 8
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Equation
+        count: 9
+        frequencyParameters: 1, 1, 1, 2, 1, 0
+        gainParameters: 3, 8, 200, 8, 0.09, 0.000006
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.05, 0, -40, -0.05
+    output: 0
+  }
+}
