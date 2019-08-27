@@ -305,39 +305,42 @@ struct Note
 {
   /*  I am not sure if I should change the paradigm of these note variables to such that I would include oscillator objects per note.
    * And the oscillator objects would include the phases, and those filters. 
-   *
    */
-  std::vector<OscillatorBiquadFilter> voiceBiquadFilters;
-  OscillatorBiquadFilter biquadFilter;
-  //std::vector<OscillatorBiquadFilter> modulatorBiquadFilters;
-  
-  PitchChanger pitchChanger;
   
   
   double pitch = 0, frequency = 0, volume = -1;
   double startTime = 0, keyHoldDuration = 0;
   double insertTime = 0;
 
-  double noteLength = 0;
-  double noteValueInverse = 1;
+  bool isHolding = false;
+  int instrumentIndex = 0;
+  std::string instrumentName = "";
 
-  //Vec2d phase;
+  long initializeID = -1;
+  bool isInitialized = false;
+
+  double sampleRate = 1;
+
+  //FIXME
+  int noteIndex = -1;
+
+  
+
+  /**************** OSCILLATOR STUFF ****************/
+  
   std::vector<Vec2d> phasesGM;
   std::vector<std::vector<Vec2d>> phasesVoiceNew;
 
-  //std::vector<std::vector<Vec2d>> phasesFM, phasesAM;
-  //std::vector<std::vector<std::vector<Vec2d>>> phasesVoice;
-
-  std::vector<Vec2d> amplitudeModulatorOutputs;// = std::vector<Vec2d>(Instrument::maxNumModulators+1, Vec2d(1, 1));
-  std::vector<Vec2d> frequencyModulatorOutputs;// = std::vector<Vec2d>(Instrument::maxNumModulators+1, Vec2d(0, 0));
-  std::vector<Vec2d> amplitudeModulatorOutputsPrevious;// = std::vector<Vec2d>(Instrument::maxNumModulators+1, Vec2d(1, 1));
-  std::vector<Vec2d> frequencyModulatorOutputsPrevious;// = std::vector<Vec2d>(Instrument::maxNumModulators+1, Vec2d(0, 0));
-  std::vector<double> envelopeOutputs;// = std::vector<Vec2d>(Instrument::maxNumEnvelopes+1, 1);
-  
+  std::vector<Vec2d> amplitudeModulatorOutputs;
+  std::vector<Vec2d> frequencyModulatorOutputs;
+  std::vector<Vec2d> amplitudeModulatorOutputsPrevious;
+  std::vector<Vec2d> frequencyModulatorOutputsPrevious;
+  std::vector<double> envelopeOutputs;
   std::vector<Vec2d> voiceOutputs;
   
   
-
+  /**************** NOTE RECORDING STUFF ****************/
+  
   std::vector<Vec2d> *samplesReference;
   std::vector<Vec2d> samples;
   double noteFullLengthSecs = 0, noteActualLength = -1;
@@ -347,21 +350,32 @@ struct Note
   bool isRecorded = false;
   bool isReadyToPlayRecorded = false;
 
-  bool isHolding = false;
-  int instrumentIndex = 0;
-  std::string instrumentName = "";
 
-
+  /**************** SEQUENCER STUFF ****************/
+  
   double widthFraction = 1;
   Rect sequencerRect;
+  double noteLength = 0;
+  double noteValueInverse = 1;
 
-  long initializeID = -1;
-  bool isInitialized = false;
+  double startTimeInMeasures = 0;
+  //long startMeasure = 0;
+  //double startMeasureFraction = 0;
+  //double lenghtMeasureFraction = 0;
 
-  double sampleRate = 1;
+  /**************** PER NOTE FILTERS ****************/
+  
+  std::vector<OscillatorBiquadFilter> voiceBiquadFilters;
+  OscillatorBiquadFilter biquadFilter;
+  //std::vector<OscillatorBiquadFilter> modulatorBiquadFilters;
+    
+    
+  /**************** VOCODER STUFF ****************/
+  
+  PitchChanger pitchChanger;
 
-  //FIXME
-  int noteIndex = -1;
+
+
 
   virtual void reset() {
     pitch = 0;
@@ -388,6 +402,8 @@ struct Note
     samples.clear();
     
     noteActualLength = -1;
+    
+    startTimeInMeasures = 0;
     
     phasesGM.assign(phasesGM.size(), Vec2d::Zero);;
     
@@ -467,6 +483,8 @@ struct Note
     //pitchChanger.init(sampleRate, 0.1);
 
     pitchChanger = note.pitchChanger;
+    
+    startTimeInMeasures = note.startTimeInMeasures;
     
     //phase.set(0, 0);
   }

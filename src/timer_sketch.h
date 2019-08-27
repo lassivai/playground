@@ -105,7 +105,7 @@ struct TimerSketch : public Sketch
 
   void onKeyDown() {
     if(events.sdlKeyCode == SDLK_t) {
-      synth->startNote(60);
+      //synth->startNote(60);
     }
     if(events.sdlKeyCode == SDLK_DOWN) {
       timer -= 60;

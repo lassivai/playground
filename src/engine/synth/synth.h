@@ -40,6 +40,8 @@
 
 #include "spectrummap.h"
 
+
+
 struct SequenceLooper {
   const int maxNumTracks = 128;
   int numTracks = 1;
@@ -211,6 +213,10 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   bool synthThreadDisableRequested = false;
   
   int requestedNumberOfNotes = 0, requestedNumberOfNotesPresampled = 0;
+  
+  
+  Vec2d sequencerTimeWindow;
+  double sequencerZoom = 1.0;
 
 
   Synth(double sampleRate = -1, int framesPerBuffer = 128, double suggestedOutputLatency = 0, int screenW = 1, int screenH = 1, int suggestedAudioDevice = -1) {
@@ -284,97 +290,15 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     for(int i=0; i<instruments.size(); i++) delete instruments[i];
   }
 
-
-  // FIXME these could be more elegant
-
-  void setSustain(bool isSustainActive, int instrumentIndex) {
-    if(instrumentIndex >= 0 && instrumentIndex < instruments.size()) {
-      instruments[instrumentIndex]->isSustainActive = isSustainActive;
-      if(!isSustainActive) {
-        std::vector<int> notesToBeErased;
-        for(const auto &intNotePair : instruments[instrumentIndex]->sustainedNotes) {
-          Note *note = intNotePair.second;
-          if(holdingNotesMidi.count(note->noteIndex) == 0) {
-            note->isHolding = false;
-            note->keyHoldDuration = getPaTime() - note->startTime;
-            note->noteActualLength = instruments[instrumentIndex]->getNoteActualLength(*note);
-            notesToBeErased.push_back(note->noteIndex);
-          }
-        }
-        for(int i=0; i<notesToBeErased.size(); i++) {
-          instruments[instrumentIndex]->sustainedNotes.erase(notesToBeErased[i]);
-        }
-      }
+  void onQuit() {
+    for(int i=0; i<recordingThreads.size(); i++) {
+      recordingThreads[i].join();
+    }
+    for(int i=0; i<trackRecordingThreads.size(); i++) {
+      trackRecordingThreads[i].join();
     }
   }
 
-  void midiTrackNoteOn(unsigned char pitch, unsigned char velocity, int channel, int instrumentTrackIndex) {
-    if(!instrumentTracks[instrumentTrackIndex].isMuted) {
-      midiNoteOn(pitch, velocity, instrumentTrackIndex, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
-    }
-  }
-  void midiTrackNoteOff(unsigned char pitch, unsigned char velocity, int channel, int instrumentTrackIndex) {
-    if(!instrumentTracks[instrumentTrackIndex].isMuted) {
-      midiNoteOff(pitch, velocity, instrumentTrackIndex, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
-    }
-  }
-
-
-  void midiNoteOn(unsigned char pitch, unsigned char velocity, int channel, int instrumentIndex, int instrumentTrackIndex = -1) {
-    if(instrumentIndex >= 0 && instrumentIndex < instruments.size()) {
-      int noteIndex = (channel << 8) | pitch;
-      
-      if(holdingNotesMidi.count(noteIndex) > 0) {
-        midiNoteOff(pitch, 0, channel, instrumentIndex, instrumentTrackIndex);
-      }
-      
-      double volume = applyDefaultVolumeTokeyboards ? defaultNoteVolume : (double)velocity/127.0;
-      Note *note = NULL;
-      if(instrumentTrackIndex == -1) {
-        note = startInstrumentNote(pitch, volume, instrumentIndex);
-      }
-      else {
-        note = startInstrumentTrackNote(pitch, volume, instrumentTrackIndex);
-      }
-
-      if(note) {
-        if(instruments[instrumentIndex]->sustainedNotes.count(noteIndex) > 0) {
-          // FIXME wrap to functions
-          instruments[instrumentIndex]->sustainedNotes[noteIndex]->isHolding = false;
-          instruments[instrumentIndex]->sustainedNotes[noteIndex]->keyHoldDuration = getPaTime() - instruments[instrumentIndex]->sustainedNotes[noteIndex]->startTime;
-          instruments[instrumentIndex]->sustainedNotes.erase(noteIndex);
-        }
-        note->noteIndex = noteIndex;
-        note->isHolding = true;
-        holdingNotesMidi[noteIndex] = note;
-      }
-    }
-  }
-
-  void midiNoteOff(unsigned char pitch, unsigned char velocity, int channel, int instrumentIndex, int instrumentTrackIndex = -1) {
-    if(instrumentIndex >= 0 && instrumentIndex < instruments.size()) {
-      int noteIndex = (channel << 8) | pitch;
-      if(holdingNotesMidi.count(noteIndex) > 0) {
-        Note *note = holdingNotesMidi[noteIndex];
-        if(!instruments[instrumentIndex]->isSustainActive) {
-          note->isHolding = false;
-          note->keyHoldDuration = getPaTime() - note->startTime;
-          note->noteActualLength = instruments[instrumentIndex]->getNoteActualLength(*note);
-          
-          printf("Key released, note full lenght = %f\n", note->noteActualLength);
-        }
-        else {
-          if(instruments[instrumentIndex]->sustainedNotes.count(noteIndex) > 0) {
-            instruments[instrumentIndex]->sustainedNotes[noteIndex]->isHolding = false;
-            instruments[instrumentIndex]->sustainedNotes[noteIndex]->keyHoldDuration = getPaTime() - instruments[instrumentIndex]->sustainedNotes[noteIndex]->startTime;
-            instruments[instrumentIndex]->sustainedNotes.erase(noteIndex);
-          }
-          instruments[instrumentIndex]->sustainedNotes[noteIndex] = note;
-        }
-        holdingNotesMidi.erase(noteIndex);
-      }
-    }
-  }
 
   void reset() {
     inputDelayLine.reset();
@@ -669,6 +593,102 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     looperTime = looperTrackDuration / measuresPerLooperTrack * nextBeat;
   }
 
+
+
+
+
+  void setSustain(bool isSustainActive, int instrumentIndex) {
+    if(instrumentIndex >= 0 && instrumentIndex < instruments.size()) {
+      instruments[instrumentIndex]->isSustainActive = isSustainActive;
+      if(!isSustainActive) {
+        std::vector<int> notesToBeErased;
+        for(const auto &intNotePair : instruments[instrumentIndex]->sustainedNotes) {
+          Note *note = intNotePair.second;
+          if(holdingNotesMidi.count(note->noteIndex) == 0) {
+            note->isHolding = false;
+            note->keyHoldDuration = getPaTime() - note->startTime;
+            note->noteActualLength = instruments[instrumentIndex]->getNoteActualLength(*note);
+            notesToBeErased.push_back(note->noteIndex);
+          }
+        }
+        for(int i=0; i<notesToBeErased.size(); i++) {
+          instruments[instrumentIndex]->sustainedNotes.erase(notesToBeErased[i]);
+        }
+      }
+    }
+  }
+
+  void midiTrackNoteOn(unsigned char pitch, unsigned char velocity, int channel, int instrumentTrackIndex) {
+    if(!instrumentTracks[instrumentTrackIndex].isMuted) {
+      midiNoteOn(pitch, velocity, instrumentTrackIndex, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
+    }
+  }
+  void midiTrackNoteOff(unsigned char pitch, unsigned char velocity, int channel, int instrumentTrackIndex) {
+    if(!instrumentTracks[instrumentTrackIndex].isMuted) {
+      midiNoteOff(pitch, velocity, instrumentTrackIndex, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
+    }
+  }
+
+
+  void midiNoteOn(unsigned char pitch, unsigned char velocity, int channel, int instrumentIndex, int instrumentTrackIndex = -1) {
+    if(instrumentIndex >= 0 && instrumentIndex < instruments.size()) {
+      int noteIndex = (channel << 8) | pitch;
+      
+      if(holdingNotesMidi.count(noteIndex) > 0) {
+        midiNoteOff(pitch, 0, channel, instrumentIndex, instrumentTrackIndex);
+      }
+      
+      double volume = applyDefaultVolumeTokeyboards ? defaultNoteVolume : (double)velocity/127.0;
+      Note *note = NULL;
+      if(instrumentTrackIndex == -1) {
+        note = startInstrumentNote(pitch, volume, instrumentIndex);
+      }
+      else {
+        note = startInstrumentTrackNote(pitch, volume, instrumentTrackIndex);
+      }
+
+      if(note) {
+        if(instruments[instrumentIndex]->sustainedNotes.count(noteIndex) > 0) {
+          // FIXME wrap to functions
+          instruments[instrumentIndex]->sustainedNotes[noteIndex]->isHolding = false;
+          instruments[instrumentIndex]->sustainedNotes[noteIndex]->keyHoldDuration = getPaTime() - instruments[instrumentIndex]->sustainedNotes[noteIndex]->startTime;
+          instruments[instrumentIndex]->sustainedNotes.erase(noteIndex);
+        }
+        note->noteIndex = noteIndex;
+        note->isHolding = true;
+        holdingNotesMidi[noteIndex] = note;
+      }
+    }
+  }
+
+  void midiNoteOff(unsigned char pitch, unsigned char velocity, int channel, int instrumentIndex, int instrumentTrackIndex = -1) {
+    if(instrumentIndex >= 0 && instrumentIndex < instruments.size()) {
+      int noteIndex = (channel << 8) | pitch;
+      if(holdingNotesMidi.count(noteIndex) > 0) {
+        Note *note = holdingNotesMidi[noteIndex];
+        if(!instruments[instrumentIndex]->isSustainActive) {
+          note->isHolding = false;
+          note->keyHoldDuration = getPaTime() - note->startTime;
+          note->noteActualLength = instruments[instrumentIndex]->getNoteActualLength(*note);
+          
+          printf("Key released, note full lenght = %f\n", note->noteActualLength);
+        }
+        else {
+          if(instruments[instrumentIndex]->sustainedNotes.count(noteIndex) > 0) {
+            instruments[instrumentIndex]->sustainedNotes[noteIndex]->isHolding = false;
+            instruments[instrumentIndex]->sustainedNotes[noteIndex]->keyHoldDuration = getPaTime() - instruments[instrumentIndex]->sustainedNotes[noteIndex]->startTime;
+            instruments[instrumentIndex]->sustainedNotes.erase(noteIndex);
+          }
+          instruments[instrumentIndex]->sustainedNotes[noteIndex] = note;
+        }
+        holdingNotesMidi.erase(noteIndex);
+      }
+    }
+  }
+
+
+
+
   bool playNote(double pitch, double volume, double duration, double startTime) {
     if(numInstrumentTracks < 1) return false;
     Note note(sampleRate, pitch, getPaTime() + startTime, volume, instrumentTracks[0].instrumentIndex);
@@ -684,51 +704,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     return false;
   }
 
-  Note *startNote(double pitch) {
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
-      roundLoopTimeNoteValueInverse();
-    }
-    Note *note = startNote(pitch, defaultNoteVolume, getLooperTime());
 
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
-      if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
-    }
-
-    return note;
-  }
-  Note *startNote(double pitch, double volume) {
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
-      roundLoopTimeNoteValueInverse();
-    }
-    Note *note = startNote(pitch, volume, getLooperTime());
-
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
-      if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
-    }
-
-    return note;
-  }
-
-
-  // FIXME clean up this start note mess
-
-  Note *startNote(double pitch, double volume, double startTime, bool asdf = false) {
-    TrackNote note(sampleRate, pitch, getPaTime() + (asdf ? startTime : 0), volume, activeInstrumentIndex);
-
-    /*if(mode == Mode::Looper && isRecordingMode) {
-      note.widthFraction = measuresPerLooperTrack * noteValueInverse;
-      note.noteValueInverse = noteValueInverse;
-      note.noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
-      Note *ln = getActiveLooperSequenceTrack()->startNote(note, startTime+0.0001);
-      setNoteSequencerRect(*ln);
-    }*/
-    
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
-      if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
-    }
-
-    return addCurrentlyPlayingNote(note);
-  }
 
   Note *startInstrumentNote(double pitch, double volume, int instrumentIndex) {
     if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
@@ -739,38 +715,187 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
       if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
     }
-
-    //printf("(debuggin ) at startInstrumentNote() %f, %f, %d\n", pitch, volume, instrumentIndex);
-
     return note;
   }
 
   Note *startInstrumentNote(double pitch, double volume, double startTime, int instrumentIndex) {
     Note note(sampleRate, pitch, getPaTime(), volume, instrumentIndex);
-
-    /*if(mode == Mode::Looper && isRecordingMode) {
-      note.widthFraction = measuresPerLooperTrack * noteValueInverse;
-      note.noteValueInverse = noteValueInverse;
-      note.noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
-      Note *ln = getActiveLooperSequenceTrack()->startNote(note, startTime+0.0001);
-      setNoteSequencerRect(*ln);
-    }*/
     
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying) {
-      if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
-    }
-
     return addCurrentlyPlayingNote(note);
   }
 
-  void onQuit() {
-    for(int i=0; i<recordingThreads.size(); i++) {
-      recordingThreads[i].join();
+
+  Note *startInstrumentTrackNote(double pitch, double volume, int instrumentTrackIndex, double time = -1) {
+    if(instruments[instrumentTracks[instrumentTrackIndex].instrumentIndex]->instrumentType == Instrument::InstrumentType::CompositePads) {
+      return startDrumPadNote(pitch, volume, instrumentTrackIndex, time);
     }
-    for(int i=0; i<trackRecordingThreads.size(); i++) {
-      trackRecordingThreads[i].join();
+    
+    TrackNote note(sampleRate, pitch, getPaTime(), volume, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
+    //printf("(debugging) at Synth::startInstrumentTrackNote()\n");
+
+    if(mode == Mode::Looper && isRecordingMode) {
+      double startTime = (time < 0 ? getLooperTime() : time) + 0.0001;
+      note.widthFraction = measuresPerLooperTrack * noteValueInverse;
+      note.noteValueInverse = noteValueInverse;
+      note.noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
+      note.startTimeInMeasures = measuresPerLooperTrack * startTime / looperTrackDuration;
+      
+      TrackNote *ln = getActiveLooperSequenceTrack()->startNote(note, startTime);
+      setNoteSequencerRect(*ln);
+      if(recordTrackNotes) {
+        recordNote(ln, instrumentTracks[instrumentTrackIndex].instrumentIndex);
+      }
+      if(!isLooperPlaying && time < 0) {
+        if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
+      }
     }
+    
+
+    note.volume *= instrumentTracks[instrumentTrackIndex].volume;
+    
+    return addCurrentlyPlayingNote(note);
   }
+
+
+
+  Note *startDrumPadNote(double pitch, double volume, int instrumentTrackIndex, double time = -1) {
+    DrumPad *drumPad = dynamic_cast<DrumPad*>(instruments[instrumentTracks[instrumentTrackIndex].instrumentIndex]);
+    if(!drumPad) return NULL;
+    int pad = (int)pitch - drumPad->pitchOffset;
+    
+    //printf("1. %f, %f, %d, %f\n", pitch, volume, instrumentTrackIndex, time);
+    
+    if(!(pad >= 0 && pad < drumPad->numPads)) return NULL;
+    
+    TrackNote note(sampleRate, drumPad->pads[pad].pitch, getPaTime(), drumPad->pads[pad].volume, drumPad->pads[pad].instrumentIndex);
+    //printf("2. %f, %f, %d, %f\n", drumPad->pads[pad].pitch, drumPad->pads[pad].volume, drumPad->pads[pad].instrumentIndex, getPaTime());
+    //printf("(debugging) at Synth::startInstrumentTrackNote()\n");
+
+    if(mode == Mode::Looper && isRecordingMode) {
+      double startTime = (time < 0 ? getLooperTime() : time) + 0.0001;
+      note.padIndex = pad;
+      note.widthFraction = measuresPerLooperTrack * noteValueInverse;
+      note.noteValueInverse = noteValueInverse;
+      note.noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
+      note.startTimeInMeasures = measuresPerLooperTrack * startTime / looperTrackDuration;
+      //note.startMeasure = floor(measuresPerLooperTrack * startTime / looperTrackDuration);
+      //note.startMeasureFraction = fract(measuresPerLooperTrack * startTime / looperTrackDuration);
+      
+      TrackNote *ln = getActiveLooperSequenceTrack()->startNote(note, startTime + 0.0001);
+      setNoteSequencerRect(*ln);
+      if(recordTrackNotes) {
+        recordNote(ln, drumPad->pads[pad].instrumentIndex);
+      }
+    }
+    
+    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying && time < 0) {
+      if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
+    }
+
+    note.volume *= instrumentTracks[instrumentTrackIndex].volume;
+    return addCurrentlyPlayingNote(note);
+  }
+  
+  
+  
+  
+  
+  Note *addCurrentlyPlayingNote(const Note &note, int deltaFrame = 0, bool isLoopTrackNote = false) {
+    if(isLoopTrackNote && note.isRecorded) {
+      return addCurrentlyPlayingNotePresampled(note, deltaFrame);
+    }
+    
+    int i = 0;
+    double earliestTime = 1e10;
+    double earliestTimeHolding = 1e10;
+    int numHolding = 0;
+    int earliestTimeIndex = 0;
+    int earliestTimeHoldingIndex = 0;
+    
+    for(; i<numCurrentlyPlayingNotes; i++) {
+      if(currentlyPlayingNotes[i].volume <= 0) {
+        earliestTimeIndex = i;
+        break;
+      }
+      if(currentlyPlayingNotes[i].isHolding) {
+        double t = currentlyPlayingNotes[i].startTime;
+        if(earliestTimeHolding > t) {
+          earliestTimeHolding = t;
+          earliestTimeHoldingIndex = i;
+          numHolding++;
+        }
+      }
+      else {
+        double t = currentlyPlayingNotes[i].startTime + max(currentlyPlayingNotes[i].noteLength, currentlyPlayingNotes[i].keyHoldDuration);
+        if(earliestTime > t) {
+          earliestTime = t;
+          earliestTimeIndex = i;
+        }
+      }
+    }
+    i = numHolding == numCurrentlyPlayingNotes ? earliestTimeHoldingIndex : earliestTimeIndex;
+    
+    currentlyPlayingNotes[i].isInitialized = false;
+    currentlyPlayingNotes[i] = note;
+
+    if(isLoopTrackNote) {
+      int frame = looperTrackDuration == 0 ? 0 : (int)(getPaTime()/looperTrackDuration);
+      currentlyPlayingNotes[i].startTime += (frame+deltaFrame)*looperTrackDuration;
+    }
+
+    currentlyPlayingNotes[i].insertTime = 0.001*SDL_GetTicks();
+    
+    currentlyPlayingNotes[i].prepare(sampleRate);
+    
+    // FIXME could be done partially beforehand
+    instruments[note.instrumentIndex]->initializeNote(currentlyPlayingNotes[i]);
+    
+    return &currentlyPlayingNotes[i];
+  }
+
+
+  Note *addCurrentlyPlayingNotePresampled(const Note &note, int deltaFrame = 0) {
+    int i = 0;
+    double earliestTime = 1e10;
+    int earliestTimeIndex = 0;
+    for(; i<numCurrentlyPlayingNotesPresampled; i++) { 
+      if(currentlyPlayingNotesPresampled[i].volume <= 0) {
+        earliestTimeIndex = i;
+        break;
+      }
+      double t = (currentlyPlayingNotesPresampled[i].startTime + currentlyPlayingNotesPresampled[i].noteFullLengthSecs);
+      
+      if(earliestTime > t) {
+        earliestTime = t;
+        earliestTimeIndex = i;
+      }
+    }
+    i = earliestTimeIndex;
+
+    currentlyPlayingNotesPresampled[i].set(note);
+    currentlyPlayingNotesPresampled[i].volume = -1;
+
+    int frame = looperTrackDuration == 0 ? 0 : (int)(getPaTime()/looperTrackDuration);
+    currentlyPlayingNotesPresampled[i].startTime += (frame+deltaFrame)*looperTrackDuration;
+
+    currentlyPlayingNotesPresampled[i].insertTime = 0.001 * SDL_GetTicks();
+    currentlyPlayingNotesPresampled[i].isInitialized = false;
+    currentlyPlayingNotesPresampled[i].prepare(sampleRate);
+    
+    // FIXME could be done partially beforehand
+    instruments[note.instrumentIndex]->initializeNote(currentlyPlayingNotesPresampled[i]);
+    
+    
+    //printf("%d, %d, %f, %f, v %f, t %f, %d\n", frame, deltaFrame, currentlyPlayingNotesPresampled[i].startTime, getPaTime(), currentlyPlayingNotesPresampled[i].volume, currentlyPlayingNotesPresampled[i].noteFullLengthSecs, currentlyPlayingNotesPresampled[i].isRecorded);
+    currentlyPlayingNotesPresampled[i].volume = note.volume;
+    currentlyPlayingNotesPresampled[i].isReadyToPlayRecorded = true;
+    return &currentlyPlayingNotesPresampled[i];
+  }
+
+
+
+
+
 
 
   void recordNote(Note *note, int instrumentIndex) {
@@ -902,145 +1027,6 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
   }
 
-  Note *startInstrumentTrackNote(double pitch, double volume, int instrumentTrackIndex, double time = -1) {
-    if(instruments[instrumentTracks[instrumentTrackIndex].instrumentIndex]->instrumentType == Instrument::InstrumentType::CompositePads) {
-      return startDrumPadNote(pitch, volume, instrumentTrackIndex, time);
-    }
-    
-    TrackNote note(sampleRate, pitch, getPaTime(), volume, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
-    //printf("(debugging) at Synth::startInstrumentTrackNote()\n");
-
-    if(mode == Mode::Looper && isRecordingMode) {
-      note.widthFraction = measuresPerLooperTrack * noteValueInverse;
-      note.noteValueInverse = noteValueInverse;
-      note.noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
-      TrackNote *ln = getActiveLooperSequenceTrack()->startNote(note, (time < 0 ? getLooperTime() : time) + 0.0001);
-      setNoteSequencerRect(*ln);
-      if(recordTrackNotes) {
-        recordNote(ln, instrumentTracks[instrumentTrackIndex].instrumentIndex);
-      }
-    }
-    
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying && time < 0) {
-      if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
-    }
-    
-    note.volume *= instrumentTracks[instrumentTrackIndex].volume;
-    
-    return addCurrentlyPlayingNote(note);
-  }
-
-
-
-  Note *startDrumPadNote(double pitch, double volume, int instrumentTrackIndex, double time = -1) {
-    DrumPad *drumPad = dynamic_cast<DrumPad*>(instruments[instrumentTracks[instrumentTrackIndex].instrumentIndex]);
-    if(!drumPad) return NULL;
-    int pad = (int)pitch - drumPad->pitchOffset;
-    
-    //printf("1. %f, %f, %d, %f\n", pitch, volume, instrumentTrackIndex, time);
-    
-    if(!(pad >= 0 && pad < drumPad->numPads)) return NULL;
-    
-    TrackNote note(sampleRate, drumPad->pads[pad].pitch, getPaTime(), drumPad->pads[pad].volume, drumPad->pads[pad].instrumentIndex);
-    //printf("2. %f, %f, %d, %f\n", drumPad->pads[pad].pitch, drumPad->pads[pad].volume, drumPad->pads[pad].instrumentIndex, getPaTime());
-    //printf("(debugging) at Synth::startInstrumentTrackNote()\n");
-
-    if(mode == Mode::Looper && isRecordingMode) {
-      note.padIndex = pad;
-      note.widthFraction = measuresPerLooperTrack * noteValueInverse;
-      note.noteValueInverse = noteValueInverse;
-      note.noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
-      TrackNote *ln = getActiveLooperSequenceTrack()->startNote(note, (time < 0 ? getLooperTime() : time) + 0.0001);
-      setNoteSequencerRect(*ln);
-      if(recordTrackNotes) {
-        recordNote(ln, drumPad->pads[pad].instrumentIndex);
-      }
-    }
-    
-    if(mode == Mode::Looper && isRecordingMode && !isLooperPlaying && time < 0) {
-      if(progressOnNoteStartWhenPaused) progressLoopTimeByNoteValue();
-    }
-
-    note.volume *= instrumentTracks[instrumentTrackIndex].volume;
-    return addCurrentlyPlayingNote(note);
-  }
-  
-  Note *addCurrentlyPlayingNote(const Note &note, int deltaFrame = 0, bool isLoopTrackNote = false) {
-    if(isLoopTrackNote && note.isRecorded) {
-      return addCurrentlyPlayingNotePresampled(note, deltaFrame);
-    }
-    
-    int i = 0;
-    double earliestTime = 1e10;
-    int earliestTimeIndex = 0;
-    for(; i<numCurrentlyPlayingNotes; i++) {
-      if(currentlyPlayingNotes[i].volume <= 0) {
-        earliestTimeIndex = i;
-        break;
-      }
-      double t = currentlyPlayingNotes[i].startTime + max(currentlyPlayingNotes[i].noteLength, currentlyPlayingNotes[i].keyHoldDuration);
-      if(!currentlyPlayingNotes[i].isHolding && earliestTime > t) {
-        earliestTime = t;
-        earliestTimeIndex = i;
-      }
-    }
-    i = earliestTimeIndex;
-    currentlyPlayingNotes[i].isInitialized = false;
-    currentlyPlayingNotes[i] = note;
-
-    if(isLoopTrackNote) {
-      int frame = looperTrackDuration == 0 ? 0 : (int)(getPaTime()/looperTrackDuration);
-      currentlyPlayingNotes[i].startTime += (frame+deltaFrame)*looperTrackDuration;
-    }
-
-    currentlyPlayingNotes[i].insertTime = 0.001*SDL_GetTicks();
-    
-    currentlyPlayingNotes[i].prepare(sampleRate);
-    
-    // FIXME could be done partially beforehand
-    instruments[note.instrumentIndex]->initializeNote(currentlyPlayingNotes[i]);
-    
-    return &currentlyPlayingNotes[i];
-  }
-
-
-  Note *addCurrentlyPlayingNotePresampled(const Note &note, int deltaFrame = 0) {
-    int i = 0;
-    double earliestTime = 1e10;
-    int earliestTimeIndex = 0;
-    for(; i<numCurrentlyPlayingNotesPresampled; i++) { 
-      if(currentlyPlayingNotesPresampled[i].volume <= 0) {
-        earliestTimeIndex = i;
-        break;
-      }
-      double t = (currentlyPlayingNotesPresampled[i].startTime + currentlyPlayingNotesPresampled[i].noteFullLengthSecs);
-      
-      if(earliestTime > t) {
-        earliestTime = t;
-        earliestTimeIndex = i;
-      }
-    }
-    i = earliestTimeIndex;
-
-    currentlyPlayingNotesPresampled[i].set(note);
-    currentlyPlayingNotesPresampled[i].volume = -1;
-
-    int frame = looperTrackDuration == 0 ? 0 : (int)(getPaTime()/looperTrackDuration);
-    currentlyPlayingNotesPresampled[i].startTime += (frame+deltaFrame)*looperTrackDuration;
-
-    currentlyPlayingNotesPresampled[i].insertTime = 0.001 * SDL_GetTicks();
-    currentlyPlayingNotesPresampled[i].isInitialized = false;
-    currentlyPlayingNotesPresampled[i].prepare(sampleRate);
-    
-    // FIXME could be done partially beforehand
-    instruments[note.instrumentIndex]->initializeNote(currentlyPlayingNotesPresampled[i]);
-    
-    
-    //printf("%d, %d, %f, %f, v %f, t %f, %d\n", frame, deltaFrame, currentlyPlayingNotesPresampled[i].startTime, getPaTime(), currentlyPlayingNotesPresampled[i].volume, currentlyPlayingNotesPresampled[i].noteFullLengthSecs, currentlyPlayingNotesPresampled[i].isRecorded);
-    currentlyPlayingNotesPresampled[i].volume = note.volume;
-    currentlyPlayingNotesPresampled[i].isReadyToPlayRecorded = true;
-    return &currentlyPlayingNotesPresampled[i];
-  }
 
 
   LooperSequenceTrack *getActiveLooperSequenceTrack() {
@@ -1050,6 +1036,8 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   LooperSequenceTrack *getLoopTrack(int delta) {
     return sequenceLooper.tracks[(sequenceLooper.currentTrack+delta+sequenceLooper.numTracks)%sequenceLooper.numTracks];
   }
+
+
 
   double cancelNote() {
     if(mode == Mode::Looper && isRecordingMode) {
@@ -1080,8 +1068,10 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   void updateNoteLengths() {
     for(int i=0; i<sequenceLooper.tracks.size(); i++) {
       for(int k=0; k<sequenceLooper.tracks[i]->notes.size(); k++) {
-        sequenceLooper.tracks[i]->notes[k].noteLength = (sequenceLooper.tracks[i]->notes[k].widthFraction == 0) ? 0 :
-                                              looperTrackDuration / (sequenceLooper.tracks[i]->notes[k].widthFraction);
+        if(sequenceLooper.tracks[i]->notes[k].volume > 0) {
+          sequenceLooper.tracks[i]->notes[k].noteLength = looperTrackDuration / (sequenceLooper.tracks[i]->notes[k].noteValueInverse * measuresPerLooperTrack);
+          sequenceLooper.tracks[i]->notes[k].startTime = looperTrackDuration * sequenceLooper.tracks[i]->notes[k].startTimeInMeasures / measuresPerLooperTrack;
+        }
       }
     }
   }
@@ -1329,12 +1319,12 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   }
 
   void setLoopDuration(double time) {
-    double f = looperTrackDuration == 0 ? 0 : time / looperTrackDuration;
+    /*double f = looperTrackDuration == 0 ? 0 : time / looperTrackDuration;
     for(int i=0; i<sequenceLooper.maxNumTracks; i++) {
       for(int k=0; k<sequenceLooper.maxNumTrackNotes; k++) {
         sequenceLooper.tracks[i]->notes[k].startTime *= f;
       }
-    }
+    }*/
     setPaTime(paTime / looperTrackDuration * time);
     looperTrackDuration = time;
     tempo = 60 * measuresPerLooperTrack * beatsPerMeasure / looperTrackDuration;
@@ -1380,6 +1370,18 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   }
 
   
+  
+    Note *getMostRecentNote() {
+      float latestNoteTime = -100;
+      int latestNoteIndex = 0;
+      for(int i=0; i<numCurrentlyPlayingNotes; i++) {
+        if(currentlyPlayingNotes[i].startTime > latestNoteTime) {
+          latestNoteTime = currentlyPlayingNotes[i].startTime;
+          latestNoteIndex = i;
+        }
+      }
+      return &currentlyPlayingNotes[latestNoteIndex];
+    }
 
 
   void onUpdateGetMidiMessages(MidiInterface &midiInterface) {
@@ -1630,45 +1632,9 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
   }
 
-  /*Note *getMostRecentlyInsertedNote() {
-    float latestNoteTime = 0;
-    int latestNoteIndex = 0;
-    for(int i=0; i<numCurrentlyPlayingNotes; i++) {
-      if(currentlyPlayingNotes[i].insertTime > latestNoteTime) {
-        latestNoteTime = currentlyPlayingNotes[i].insertTime;
-        latestNoteIndex = i;
-      }
-    }
-    return &currentlyPlayingNotes[latestNoteIndex];
-  }*/
-
-  Note *getMostRecentNote() {
-    float latestNoteTime = -100;
-    int latestNoteIndex = 0;
-    for(int i=0; i<numCurrentlyPlayingNotes; i++) {
-      if(currentlyPlayingNotes[i].startTime > latestNoteTime) {
-        latestNoteTime = currentlyPlayingNotes[i].startTime;
-        latestNoteIndex = i;
-      }
-    }
-    return &currentlyPlayingNotes[latestNoteIndex];
-  }
 
 
-  double synthMonoPast(double t) {
-    return delayLine.getOutputSampleInSeconds(t).x * masterVolume;
-  }
 
-  // FIXME
-  double synthMonoFuture(double t) {
-    double out = 0;
-    for(int i=0; i<numCurrentlyPlayingNotes; i++) {
-      if(currentlyPlayingNotes[i].volume > 0 && currentlyPlayingNotes[i].startTime <= t) {
-        //out += currentlyPlayingNotes[i].getSample(t);
-      }
-    }
-    return out * masterVolume;
-  }
 
   Vec2d synthStereoPast(double t) {
     return delayLine.getOutputSampleInSeconds(t);
@@ -1677,36 +1643,6 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     return delayLine.getOutputSample(i);
   }
 
-  // FIXME
-  Vec2d synthStereoFuture(double t) {
-    Vec2d out;
-    for(int i=0; i<numCurrentlyPlayingNotes; i++) {
-      if(currentlyPlayingNotes[i].volume > 0 && currentlyPlayingNotes[i].startTime <= t) {
-        //currentlyPlayingNotes[i].getSample(out, t, 1.0/sampleRate);
-      }
-    }
-    return out;
-  }
-
-
-  // FIXME
-  static float synthMono(double t, const std::vector<Note> &notes, int numNotes, double masterVolume, DelayLine &delayLine, std::vector<PostProcessingEffect*> &postProcessingEffects) {
-    double out = 0;
-    for(int i=0; i<numNotes; i++) {
-      if(notes[i].volume > 0 && notes[i].startTime <= t) {
-        //out += notes[i].getSample(t);
-      }
-    }
-    out *= masterVolume;
-
-    //delayLine.update(out);
-
-    /*for(int i=0; i<postProcessingEffects.size(); i++) {
-      postProcessingEffects[i]->update();
-    }*/
-
-    return (float)(delayLine.getCurrentSample().x);
-  }
 
 
   static void synthStereo(Vec2d &sampleOut, const Vec2d &sampleIn, double t, double dt, std::vector<Note> &notes, int numNotes, std::vector<Note> &notesPresampled, int numNotesPresampled, DelayLine &delayLine, std::vector<Instrument*> &instruments) {
@@ -1773,70 +1709,61 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     Synth *synth = (Synth*)userData;
     synth->paTime = (double)(synth->bufferCount*framesPerBuffer)/synth->sampleRate;
 
-    if(synth->isStereo) {
-      Vec2d sampleOut, sampleIn;
-      double dt = 1.0/synth->sampleRate;
 
-      for(int i=0; i<framesPerBuffer; i++) {
-        double t = (double)(synth->bufferCount*framesPerBuffer+i)/synth->sampleRate;
-        sampleOut.set(0, 0);
-        sampleIn.set(in[i*2] * synth->inputVolume, in[i*2+1] * synth->inputVolume);
+    Vec2d sampleOut, sampleIn;
+    double dt = 1.0/synth->sampleRate;
 
-        synth->inputDelayLine.update(sampleIn);
-        for(int i=0; i<synth->inputPostProcessingEffects.size(); i++) {
-          synth->inputPostProcessingEffects[i]->apply(sampleIn);
-        }
-        // FIXME this shouldn't be here
-        synth->inputDelayLine.buffer[synth->inputDelayLine.bufferPos] = sampleIn;
+    for(int i=0; i<framesPerBuffer; i++) {
+      double t = (double)(synth->bufferCount*framesPerBuffer+i)/synth->sampleRate;
+      sampleOut.set(0, 0);
+      sampleIn.set(in[i*2] * synth->inputVolume, in[i*2+1] * synth->inputVolume);
 
-
-        while(synth->synthThreadDisabled) {}
-
-        synth->synthThreadExecuting = true;
-        synthStereo(sampleOut, sampleIn, t, dt, synth->currentlyPlayingNotes, synth->numCurrentlyPlayingNotes, synth->currentlyPlayingNotesPresampled, synth->numCurrentlyPlayingNotesPresampled, synth->delayLine, synth->instruments);
-        synth->synthThreadExecuting = false;
-        
-        sampleOut += synth->recordingPlaybackBuffer[synth->recordingPlaybackBufferPosition % synth->recordingPlaybackBuffer.size()];
-        synth->recordingPlaybackBuffer[synth->recordingPlaybackBufferPosition % synth->recordingPlaybackBuffer.size()].set(0, 0);
-        synth->recordingPlaybackBufferPosition++;
-
-        if(synth->playAudioInput) {
-          sampleOut += sampleIn;
-        }
-        
-        sampleOut *= synth->masterVolume;
-
-        synth->delayLine.update(sampleOut);
-        
-        for(int i=0; i<synth->postProcessingEffects.size(); i++) {
-          synth->postProcessingEffects[i]->apply(sampleOut);
-        }
-
-        if(sampleOut.x > 1 || sampleOut.x < -1) {
-          sampleOut.x = Random::getDouble(-0.1, 0.1);
-        }
-        if(sampleOut.y > 1 || sampleOut.y < -1) {
-          sampleOut.y = Random::getDouble(-0.1, 0.1);
-        }
-
-        // FIXME this shouldn't be here
-        synth->delayLine.buffer[synth->delayLine.bufferPos] = sampleOut;
-                
-        synth->stereoOscilloscope.update(sampleOut); // could be updated from delayline outside synthesizing thread
-
-        out[i*2] = (float)sampleOut.x;
-        out[i*2+1] = (float)sampleOut.y;
+      synth->inputDelayLine.update(sampleIn);
+      for(int i=0; i<synth->inputPostProcessingEffects.size(); i++) {
+        synth->inputPostProcessingEffects[i]->apply(sampleIn);
       }
-    }
-    else {
-      for(int i=0; i<framesPerBuffer; i++) {
-        double t = (double)(synth->bufferCount*framesPerBuffer+i)/synth->sampleRate;
+      // FIXME this shouldn't be here
+      synth->inputDelayLine.buffer[synth->inputDelayLine.bufferPos] = sampleIn;
 
-        float f = synthMono(t, synth->currentlyPlayingNotes, synth->numCurrentlyPlayingNotes, synth->masterVolume, synth->delayLine, synth->postProcessingEffects);
 
-        out[i*2+1] = out[i*2] = f;
+      while(synth->synthThreadDisabled) {}
+
+      synth->synthThreadExecuting = true;
+      synthStereo(sampleOut, sampleIn, t, dt, synth->currentlyPlayingNotes, synth->numCurrentlyPlayingNotes, synth->currentlyPlayingNotesPresampled, synth->numCurrentlyPlayingNotesPresampled, synth->delayLine, synth->instruments);
+      synth->synthThreadExecuting = false;
+      
+      sampleOut += synth->recordingPlaybackBuffer[synth->recordingPlaybackBufferPosition % synth->recordingPlaybackBuffer.size()];
+      synth->recordingPlaybackBuffer[synth->recordingPlaybackBufferPosition % synth->recordingPlaybackBuffer.size()].set(0, 0);
+      synth->recordingPlaybackBufferPosition++;
+
+      if(synth->playAudioInput) {
+        sampleOut += sampleIn;
       }
+      
+      sampleOut *= synth->masterVolume;
+
+      synth->delayLine.update(sampleOut);
+      
+      for(int i=0; i<synth->postProcessingEffects.size(); i++) {
+        synth->postProcessingEffects[i]->apply(sampleOut);
+      }
+
+      if(sampleOut.x > 1 || sampleOut.x < -1) {
+        sampleOut.x = Random::getDouble(-0.1, 0.1);
+      }
+      if(sampleOut.y > 1 || sampleOut.y < -1) {
+        sampleOut.y = Random::getDouble(-0.1, 0.1);
+      }
+
+      // FIXME this shouldn't be here
+      synth->delayLine.buffer[synth->delayLine.bufferPos] = sampleOut;
+              
+      synth->stereoOscilloscope.update(sampleOut); // could be updated from delayline outside synthesizing thread
+
+      out[i*2] = (float)sampleOut.x;
+      out[i*2+1] = (float)sampleOut.y;
     }
+
     synth->bufferCount++;
     return 0;
   }
@@ -1930,6 +1857,13 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
     note.sequencerRect.set(w, h, x+w*0.5, y);
   }
+
+
+
+
+
+
+
 
   void setShaderUniforms(GlShader &shader) {
     float pitches[96];
