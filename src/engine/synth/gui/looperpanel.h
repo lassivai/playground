@@ -34,15 +34,15 @@ struct LooperPanel : public Panel {
     isLooperPlayingGui = new CheckBox("Playing", synth->isLooperPlaying, 10, line);
     editLooperTrackGui = new CheckBox("Recording", synth->isRecordingMode, 10, line+=lineHeight);
 
-    currentLoopGui = new NumberBox("Current loop", synth->sequenceLooper.currentTrack+1, NumberBox::INTEGER, 0, 1<<31, 10, line += lineHeight);
+    /*currentLoopGui = new NumberBox("Current loop", synth->sequenceLooper.currentTrack+1, NumberBox::INTEGER, 0, 1<<31, 10, line += lineHeight);
     currentLoopGui->setInputEnabled(false);
-    numLooperTracksGui = new NumberBox("Loop count", synth->sequenceLooper.numTracks, NumberBox::INTEGER, 1, synth->sequenceLooper.maxNumTracks, 10, line += lineHeight);
+    numLooperTracksGui = new NumberBox("Loop count", synth->sequenceLooper.numTracks, NumberBox::INTEGER, 1, synth->sequenceLooper.maxNumTracks, 10, line += lineHeight);*/
     //loopProgressionGui = new CheckBox("Progress loops", 10, line += lineHeight);
 
-    currentLoopRepeatGui = new NumberBox("Current repeat", synth->sequenceLooper.currentRepeat+1, NumberBox::INTEGER, 0, 1<<31, 10, line += lineHeight);
+    /*currentLoopRepeatGui = new NumberBox("Current repeat", synth->sequenceLooper.currentRepeat+1, NumberBox::INTEGER, 0, 1<<31, 10, line += lineHeight);
     currentLoopRepeatGui->setInputEnabled(false);
-    numLooperRepeatsGui = new NumberBox("Repeat count", synth->sequenceLooper.numRepeats, NumberBox::INTEGER, 0, 3600, 10, line += lineHeight);
-    measuresPerLoopGui = new NumberBox("Measures per loop", synth->measuresPerLooperTrack, NumberBox::INTEGER, 1, 1000000, 10, line+=lineHeight, 11);
+    numLooperRepeatsGui = new NumberBox("Repeat count", synth->sequenceLooper.numRepeats, NumberBox::INTEGER, 0, 3600, 10, line += lineHeight);*/
+    measuresPerLoopGui = new NumberBox("Measures", synth->measuresPerLooperTrack, NumberBox::INTEGER, 1, 1000000, 10, line+=lineHeight, 11);
     measuresPerLoopGui->incrementMode = NumberBox::IncrementMode::Linear;
 
     beatsPerMeasureGui = new NumberBox("Beats per measure", synth->beatsPerMeasure, NumberBox::INTEGER, 1, 1000000, 10, line+=lineHeight, 11);
@@ -51,18 +51,18 @@ struct LooperPanel : public Panel {
     tempoGui = new NumberBox("Tempo", synth->tempo, NumberBox::FLOATING_POINT, 1.0, 100000, 10, line += lineHeight);
     tempoGui->incrementMode = NumberBox::IncrementMode::LinearAboveOne;
 
-    loopDurationGui = new NumberBox("Loop duration", synth->looperTrackDuration, NumberBox::FLOATING_POINT, 0.01, 100000, 10, line += lineHeight);
+    loopDurationGui = new NumberBox("Duration", synth->looperTrackDuration, NumberBox::FLOATING_POINT, 0.01, 100000, 10, line += lineHeight, 11);
     loopDurationGui->incrementMode = NumberBox::IncrementMode::Linear;
 
-    subdivisionsPerMeasureGui = new NumberBox("Measure subdivisions", synth->subdivisionsPerMeasure, NumberBox::INTEGER, 1, 10000000, 10, line+=lineHeight, 9);
+    subdivisionsPerMeasureGui = new NumberBox("Subdivisions", synth->subdivisionsPerMeasure, NumberBox::INTEGER, 1, 10000000, 10, line+=lineHeight, 9);
     subdivisionsPerMeasureGui->incrementMode = NumberBox::IncrementMode::Linear;
 
-    noteValueInverseGui = new NumberBox("Note value inverse", synth->noteValueInverse, NumberBox::FLOATING_POINT, pow(2.0, -6), pow(2.0, 10), 10, line+=lineHeight, 9);
+    noteValueInverseGui = new NumberBox("Note length fraction", synth->noteValueInverse, NumberBox::FLOATING_POINT, pow(2.0, -6), pow(2.0, 10), 10, line+=lineHeight, 9);
     noteValueInverseGui->incrementMode = NumberBox::IncrementMode::Linear;
 
     autoStepForwardGui = new CheckBox("Auto step forward", synth->progressOnNoteStartWhenPaused, 10, line+=lineHeight);
 
-    maxNumSequenceLooperTrackNotesGui = new NumberBox("Max num notes", synth->sequenceLooper.maxNumTrackNotes, NumberBox::INTEGER, 1, 10000, 10, line+=lineHeight, 9);
+    maxNumSequenceLooperTrackNotesGui = new NumberBox("Max num notes", synth->sequenceLooper.maxNumTrackNotes, NumberBox::INTEGER, 1, 1<<30, 10, line+=lineHeight, 9);
     maxNumSequenceLooperTrackNotesGui->incrementMode = NumberBox::IncrementMode::LinearAboveOne;
 
     defaultNoteVolumeGui = new NumberBox("Note volume", synth->defaultNoteVolume, NumberBox::FLOATING_POINT, 0, 1.0, 10, line += lineHeight, 6);
@@ -72,10 +72,10 @@ struct LooperPanel : public Panel {
 
     this->addChildElement(isLooperPlayingGui);
     this->addChildElement(editLooperTrackGui);
-    this->addChildElement(currentLoopGui);
+    /*this->addChildElement(currentLoopGui);
     this->addChildElement(numLooperTracksGui);
     this->addChildElement(currentLoopRepeatGui);
-    this->addChildElement(numLooperRepeatsGui);
+    this->addChildElement(numLooperRepeatsGui);*/
     this->addChildElement(loopDurationGui);
     this->addChildElement(tempoGui);
     this->addChildElement(maxNumSequenceLooperTrackNotesGui);
@@ -96,9 +96,10 @@ struct LooperPanel : public Panel {
   }
   
   void onUpdate() {
-    currentLoopGui->setValue(synth->sequenceLooper.currentTrack+1);
-    currentLoopRepeatGui->setValue(synth->sequenceLooper.currentRepeat+1);
+    //currentLoopGui->setValue(synth->sequenceLooper.currentTrack+1);
+    //currentLoopRepeatGui->setValue(synth->sequenceLooper.currentRepeat+1);
     isLooperPlayingGui->setValue(synth->isLooperPlaying);
+    editLooperTrackGui->setValue(synth->isRecordingMode);
   }
 
 

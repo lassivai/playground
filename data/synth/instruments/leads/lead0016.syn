@@ -1,0 +1,95 @@
+instrument {
+  name: Lead 16
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 2000, 20000
+  reverb {
+    subtype: MVerb
+    gain: 1
+    mix: 0.400000006
+    earlyMix: 1
+    size: 1
+    density: 0.090000004
+    decay: 0.447221994
+    preDelay: 0
+    dampingFrequency: 0.079999998
+    bandwidthFrequency: 0.100000001
+  }
+  voice {
+    volume: 0.5
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 2
+    unisonDetuning: 0.007
+    unisonDetuningRandomSeeds: 2, 4
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave02
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 5, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0.55
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 9
+      }
+      factorDraggingGraph {
+        yRange: 1, 40
+        curve: 0, 1, 0.5, 0.56641604, 0.984962406, 0, 0.606516291, 0.614035088, 0.5, 0.84962406, 0.157894737, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 9
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.525876461, 1, 0, 0.666110184, 0.974874372, 0, 0.861435726, 0.874371859, 0, 1, 0.306532663, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.000001, -0, -6, -0.05
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -20, -20, -0.05
+    output: 1
+  }
+  noteFilter {
+    subtype: Low-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 2000
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+}

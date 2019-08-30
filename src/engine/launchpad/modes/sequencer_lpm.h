@@ -292,7 +292,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
         synth->previousLoop();
       }
       if(x == 2) {
-        synth->progressLoopTimeByBeats(-1);
+        synth->progressLoopTimeByMeasures(-1);
       }
       if(x == 3) {
         synth->progressLoopTimeByMeasureSubdivisions(-1);
@@ -301,7 +301,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
         synth->progressLoopTimeByMeasureSubdivisions(1);
       }
       if(x == 5) {
-        synth->progressLoopTimeByBeats(1);
+        synth->progressLoopTimeByMeasures(1);
       }
       if(x == 6) {
         synth->nextLoop();

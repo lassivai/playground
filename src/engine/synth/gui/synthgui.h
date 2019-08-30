@@ -75,13 +75,13 @@ struct CurrentlyPlayingNotePanel : public Panel {
     liveNoteRects.resize(synth->numCurrentlyPlayingNotes);
     recordedNoteRects.resize(synth->numCurrentlyPlayingNotesPresampled);
     
-    double width = 40;
+    double width = 44;
     double itemHeight = 8;
     if(mode == ShowLiveAndRecordedNotes) {
-      setSize(width, itemHeight * (synth->numCurrentlyPlayingNotes + synth->numCurrentlyPlayingNotesPresampled) + 6);
+      setSize(width, itemHeight * (synth->numCurrentlyPlayingNotes + synth->numCurrentlyPlayingNotesPresampled) + 7);
     }
     else {
-      setSize(width, itemHeight * (synth->numCurrentlyPlayingNotes) + 2);
+      setSize(width, itemHeight * (synth->numCurrentlyPlayingNotes) + 5);
     }
     geomRenderer.texture = NULL;
     geomRenderer.strokeType = 1;
@@ -90,19 +90,19 @@ struct CurrentlyPlayingNotePanel : public Panel {
     geomRenderer.fillColor.set(1, 1, 1, 0.2);
     
     double time = synth->getPaTime();
-    double hx = 2;
-    double padding = 2;
+    double hx = 4;
+    double padding = 4;
     for(int i=0; i<synth->numCurrentlyPlayingNotes; i++) {
       liveNoteRects[i].set(width - padding*2, itemHeight-3, absolutePos.x+width/2, hx+absolutePos.y+itemHeight*i+(itemHeight-3)*0.5);
       
       if(synth->currentlyPlayingNotes[i].volume > 0) {
         double progress;
         if(synth->currentlyPlayingNotes[i].isHolding) {
-          geomRenderer.fillColor.set(1, 1, 1, 0.44);
+          geomRenderer.fillColor.set(0, 0, 0, 0.7);
           progress = clamp((time-synth->currentlyPlayingNotes[i].startTime) / synth->currentlyPlayingNotes[i].noteFullLengthSecs, 0, 1);
         }
         else {
-          geomRenderer.fillColor.set(1, 1, 1, 0.2);
+          geomRenderer.fillColor.set(0, 0, 0, 0.7);
           progress = clamp((time-synth->currentlyPlayingNotes[i].startTime) / synth->currentlyPlayingNotes[i].noteActualLength, 0, 1);
         }
         geomRenderer.strokeColor.set(1, 1, 1, 1);
@@ -115,14 +115,19 @@ struct CurrentlyPlayingNotePanel : public Panel {
         geomRenderer.strokeType = 1;
       }
       else {
-        geomRenderer.strokeColor.set(1, 1, 1, 0.5);
-        geomRenderer.fillColor.set(1, 1, 1, 0.2);
+        geomRenderer.strokeColor.set(0.4, 0.4, 0.4, 0.7);
+        geomRenderer.fillColor.set(0.2, 0.2, 0.2, 0.7);
         geomRenderer.drawRect(liveNoteRects[i].w, liveNoteRects[i].h, liveNoteRects[i].pos.x, liveNoteRects[i].pos.y);
       }
     }
     //geomRenderer.strokeWidth = 1.5; // FIXME something's wrong with the stroke width
-    
-    if(mode == ShowLiveAndRecordedNotes) {
+    int recordedNotesPlaying = 0;
+    for(int i=0; i<synth->numCurrentlyPlayingNotesPresampled; i++) {
+      if(synth->currentlyPlayingNotesPresampled[i].volume > 0) {
+        recordedNotesPlaying++;
+      }
+    }
+    if(mode == ShowLiveAndRecordedNotes || recordedNotesPlaying > 0|| synth->isLooperPlaying) {
       hx = 4+2+itemHeight * synth->numCurrentlyPlayingNotes;
       
       for(int i=0; i<synth->numCurrentlyPlayingNotesPresampled; i++) {
@@ -130,10 +135,10 @@ struct CurrentlyPlayingNotePanel : public Panel {
         if(synth->currentlyPlayingNotesPresampled[i].volume > 0) {
           double progress = clamp((time-synth->currentlyPlayingNotesPresampled[i].startTime) / synth->currentlyPlayingNotesPresampled[i].noteFullLengthSecs, 0, 1);
           if(time-synth->currentlyPlayingNotesPresampled[i].startTime < synth->currentlyPlayingNotesPresampled[i].noteLength) {
-            geomRenderer.fillColor.set(1, 1, 1, 0.44);
+            geomRenderer.fillColor.set(0, 0, 0, 0.7);
           }
           else {
-            geomRenderer.fillColor.set(1, 1, 1, 0.2);
+            geomRenderer.fillColor.set(0, 0, 0, 0.7);
           }
           geomRenderer.strokeColor.set(1, 1, 1, 1);
           geomRenderer.drawRect(recordedNoteRects[i].w, recordedNoteRects[i].h, recordedNoteRects[i].pos.x, recordedNoteRects[i].pos.y);
@@ -144,8 +149,8 @@ struct CurrentlyPlayingNotePanel : public Panel {
           geomRenderer.strokeType = 1;
         }
         else {
-          geomRenderer.strokeColor.set(1, 1, 1, 0.5);
-          geomRenderer.fillColor.set(1, 1, 1, 0.2);
+          geomRenderer.strokeColor.set(0.4, 0.4, 0.4, 0.7);
+          geomRenderer.fillColor.set(0.2, 0.2, 0.2, 0.7);
           geomRenderer.drawRect(recordedNoteRects[i].w, recordedNoteRects[i].h, recordedNoteRects[i].pos.x, recordedNoteRects[i].pos.y);
         }
       }

@@ -10,6 +10,7 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
     std::vector<NumberBox*> frequencyFactorsGui;
     
     ListBox *voiceCrossModulationModeGui;
+    ListBox *amplitudeModeGui;
     
     VoiceCrossModulation *voiceCrossModulation;
     
@@ -33,6 +34,10 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
       addChildElement(voiceCrossModulationModeGui = new ListBox("Voice cross modulation", 10, line, 15));
       voiceCrossModulationModeGui->setItems(voiceCrossModulationModeNames);
       voiceCrossModulationModeGui->setValue(voiceCrossModulation->mode);
+
+      addChildElement(amplitudeModeGui = new ListBox("Amplitude mode", 10, line+=lineHeight, 15));
+      amplitudeModeGui->setItems(voiceCrossModulation->amplitudeModeNames);
+      amplitudeModeGui->setValue(voiceCrossModulation->amplitudeMode);
       
       for(int i=0; i<maxNumVoices; i++) {
         addChildElement(verticalLabels[i] = new Label(std::to_string(i+1), 10, line + lineHeight*2 + i*lineHeight));
@@ -54,6 +59,7 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
     void update() {
       
       voiceCrossModulationModeGui->setValue(voiceCrossModulation->mode);
+      amplitudeModeGui->setValue(voiceCrossModulation->amplitudeMode);
       
       for(int y=0; y<maxNumVoices; y++) {
         verticalLabels[y]->setVisible(y < voiceCrossModulation->numVoices);
@@ -72,10 +78,10 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
       }
       
       if(voiceCrossModulation->numVoices == 0) {
-        setSize(400, 10+lineHeight+10);
+        setSize(400, 10+lineHeight*2+10);
       }
       else {
-        setSize(max(400, 10 + cellWidth*(voiceCrossModulation->numVoices))+25, 10 + lineHeight*(voiceCrossModulation->numVoices+2)+10);
+        setSize(max(400, 10 + cellWidth*(voiceCrossModulation->numVoices))+25, 10 + lineHeight*(voiceCrossModulation->numVoices+3)+10);
       }
     }
     
@@ -88,6 +94,9 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
         if(guiElement == voiceCrossModulationPanel->voiceCrossModulationModeGui) {
           guiElement->getValue((void*)&voiceCrossModulationPanel->voiceCrossModulation->mode);
           voiceCrossModulationPanel->update();
+        }
+        if(guiElement == voiceCrossModulationPanel->amplitudeModeGui) {
+          guiElement->getValue((void*)&voiceCrossModulationPanel->voiceCrossModulation->amplitudeMode);
         }
         for(int y=0; y<voiceCrossModulationPanel->voiceCrossModulation->numVoices; y++) {
           for(int x=0; x<voiceCrossModulationPanel->voiceCrossModulation->numVoices; x++) {
@@ -132,10 +141,16 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
   std::vector<bool> isVoiceConnected;
   VoiceCrossModulationMode mode = VoiceCrossModulationMode::CrossModulatationNone;
   
+  enum AmplitudeMode { Constant, Adjustable };
+  std::vector<std::string> amplitudeModeNames { "Constant", "Adjustable" };
+  
+  AmplitudeMode amplitudeMode = Constant;
+  
   int numVoices = 0;
   
   void reset() {
     numVoices = 0;
+    amplitudeMode = Constant;
     mode = VoiceCrossModulationMode::CrossModulatationNone;
     amplitudeFactors.assign(maxNumVoices*maxNumVoices, 0);
     frequencyFactors.assign(maxNumVoices*maxNumVoices, 0);
@@ -184,7 +199,7 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
 
     isVoiceConnected = voiceCrossModulation.isVoiceConnected;
     mode = voiceCrossModulation.mode;
-    
+    amplitudeMode = voiceCrossModulation.amplitudeMode;
     numVoices = voiceCrossModulation.numVoices;
     
     return *this;
@@ -211,6 +226,14 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
     for(int i=0; i<voiceCrossModulationModeNames.size(); i++) {
       if(modeName == voiceCrossModulationModeNames[i]) mode = (VoiceCrossModulationMode)i;
     }
+    
+    std::string amplitudeModeName;
+    getStringParameter("amplitudeMode", amplitudeModeName);
+    for(int i=0; i<amplitudeModeNames.size(); i++) {
+      if(amplitudeModeName == amplitudeModeNames[i]) amplitudeMode = (AmplitudeMode)i;
+    }
+
+    
     getNumericParameter("numVoices", numVoices);
     numVoices = min(numVoices, maxNumVoices);
     
@@ -235,6 +258,7 @@ struct VoiceCrossModulation : public HierarchicalTextFileParser {
   virtual void encodeParameters() {
     clearParameters();
     putStringParameter("mode", voiceCrossModulationModeNames[mode]);
+    putStringParameter("amplitudeMode", amplitudeModeNames[amplitudeMode]);
     putNumericParameter("numVoices", numVoices);
     if(mode == VoiceCrossModulationMode::CrossModulationAmplitude || mode == VoiceCrossModulationMode::CrossModulationRing) {
       //putNumericParameter("amounts", amplitudeFactors);

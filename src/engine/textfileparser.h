@@ -42,6 +42,18 @@ public:
     //blockName = getBlockName();
   }
   
+  void resetParameters() {
+    doubleParameters.clear();
+    stringParameters.clear();
+  }
+  
+  bool isSameContent(const HierarchicalTextFileParser &other) {
+    /*resetParameters();
+    encodeParameters();
+    other.resetParameters();
+    other.encodeParameters();*/
+    return doubleParameters.size() == other.doubleParameters.size() && stringParameters.size() == other.stringParameters.size();
+  }
   
   // return the block size
   virtual int onNewBlock(const std::string &blockName, int blockStartInd, int blockLevel) {

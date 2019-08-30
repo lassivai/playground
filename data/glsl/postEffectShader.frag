@@ -68,6 +68,14 @@ float random(vec2 co) {
    return fract(sin(dot(co.xy,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+float hash(vec2 v) {
+  return fract(1e4 * sin(17.0 * v.x + v.y * 0.1) * (0.1 + abs(sin(v.y * 13.0 + v.x))));
+}
+
+/*float random2(float i) {
+  return random(vec2(sin(float(i)*372.73)*5.3565, sin(float(i)*467.273)*5.54));
+}*/
+
 
 void main(){
   /*vec2 pix = 1.0 / screenSize;
@@ -83,7 +91,7 @@ void main(){
   vec4 color2 = texture(texture2, texCoord);
   
   int blendMode = 2;
-  double blend = 1;
+  double blend = 0.65;
 
   if(blendMode == 1) {
     colorOut.r = color2.r - color1.r;
@@ -100,6 +108,19 @@ void main(){
   
   colorOut = vec4(mix(color1, colorOut, blend));
   
+  //float k = random(gl_FragCoord.xy*144.5432*(1.535+sin(time))) * 0.2-0.1;
+  //float k = random(vec2(cos(gl_FragCoord.y*5432)+3+sin(gl_FragCoord.x*12364*fract(time*0.000001)), gl_FragCoord.x*.54) + gl_FragCoord.xy*.05432*(.535+fract(time*0.00001)));
+  
+  float k = hash(gl_FragCoord.xy*(126+time*0.06));
+  
+  //float k = random2(gl_FragCoord.x+gl_FragCoord.y*screenSize.x);
+  k = k*0.2 - 0.1;
+  colorOut.r += k;
+  colorOut.g += k;
+  colorOut.b += k;
+  /*colorOut.r = k;
+  colorOut.g = k;
+  colorOut.b = k;*/
   //colorOut = vec4(1, 0, 1, 1);
 
   /*vec4 b;

@@ -29,14 +29,15 @@ struct DraggableGraph : public HierarchicalTextFileParser {
         geomRenderer.fillColor.set(0., 0., 0, 0.4);
           
         double x = round(map(draggableGraph->infoHoverDataPoint, 0.0, draggableGraph->numDataPoints-1, 0.0, draggableGraph->w-1));
+        double y = map(draggableGraph->infoHoverValue, draggableGraph->verticalLimits.x, draggableGraph->verticalLimits.y, 0, 1.0);
         
         geomRenderer.strokeWidth = 1;
         geomRenderer.strokeColor.set(0, 0, 0, 0.4);
-        geomRenderer.drawLine(x, draggableGraph->h-1, x, draggableGraph->h-draggableGraph->infoHoverValue * draggableGraph->h, displ);
+        geomRenderer.drawLine(x, draggableGraph->h-1, x, draggableGraph->h - y * draggableGraph->h, displ);
         
         geomRenderer.strokeWidth = 2;
         geomRenderer.strokeColor.set(0, 0, 0, 1);
-        geomRenderer.drawRect(6, 6, x+displ.x, draggableGraph->h-draggableGraph->infoHoverValue * draggableGraph->h+displ.y, PI*0.25);
+        geomRenderer.drawRect(6, 6, x+displ.x, draggableGraph->h - y * draggableGraph->h+displ.y, PI*0.25);
 
         
         geomRenderer.strokeWidth = 1;
@@ -45,10 +46,10 @@ struct DraggableGraph : public HierarchicalTextFileParser {
         
         std::string eventStr = std::to_string(draggableGraph->infoHoverDataPoint) + " - " + std::to_string(draggableGraph->infoHoverValue);
         Vec2d eventStrSize = textRenderer.getDimensions(eventStr, 10);
-        Vec2d size = eventStrSize + Vec2d(10, 10);
-        geomRenderer.drawRectCorner(size.x, size.y, draggableGraph->infoHoverPos.x+15, draggableGraph->infoHoverPos.y);
+        Vec2d size = eventStrSize + Vec2d(10, 0);
+        geomRenderer.drawRectCorner(size.x, size.y, draggableGraph->infoHoverPos.x+15, draggableGraph->infoHoverPos.y+20);
         textRenderer.setColor(1, 1, 1, 0.9);
-        textRenderer.print(eventStr, draggableGraph->infoHoverPos.x+3+15, draggableGraph->infoHoverPos.y+5, 10);
+        textRenderer.print(eventStr, draggableGraph->infoHoverPos.x+3+15, draggableGraph->infoHoverPos.y+20, 10);
       }
     }
     
@@ -400,12 +401,27 @@ struct DraggableGraph : public HierarchicalTextFileParser {
     }
   }*/
   
+  void updateInfoHover(const Events &events) {
+    isInfoHover = false;
+    //if(events.numModifiersDown > 0) {
+      if(draggableGraphPanel->isPointWithin(events.m)) {
+        isInfoHover = true;
+        infoHoverDataPoint = (int)clamp(map(events.m.x, draggableGraphPanel->absolutePos.x+borderWidth, draggableGraphPanel->absolutePos.x + draggableGraphPanel->size.x - borderWidth, 0, numDataPoints), 0, numDataPoints-1);
+        infoHoverValue = getDataPointValue(infoHoverDataPoint);
+        infoHoverPos = events.m;
+        //printf("info hover: %d - %f\n", infoHoverDataPoint, infoHoverValue);
+      }
+      //printf("...\n");
+    //}
+  }
+  
   virtual void onMouseWheel(const Events &events) {
     if(!draggableGraphPanel || !graphRendered) return;
     if(closestPointIndex != -1) {
       curve[closestPointIndex].cubicInterpolationCurvature += 0.1 * events.mouseWheel;
       curve[closestPointIndex].cubicInterpolationCurvature = clamp(curve[closestPointIndex].cubicInterpolationCurvature, 0.0, 1.0);
       update();
+      updateInfoHover(events);
     }
   }
   
@@ -445,6 +461,8 @@ struct DraggableGraph : public HierarchicalTextFileParser {
       update();
     }
     
+    updateInfoHover(events);
+    
     return actionHappened;
   }
   
@@ -455,6 +473,7 @@ struct DraggableGraph : public HierarchicalTextFileParser {
       draggingPointIndex = -1;
     }
   }
+
   
   virtual void onMouseMotion(const Events &events) {
     if(!draggableGraphPanel || !graphRendered) return;
@@ -465,17 +484,7 @@ struct DraggableGraph : public HierarchicalTextFileParser {
     md.x /= (w-1.0);
     md.y /= (h-1.0);
     
-    isInfoHover = false;
-    if(events.numModifiersDown > 0) {
-      if(draggableGraphPanel->isPointWithin(events.m)) {
-        isInfoHover = true;
-        infoHoverDataPoint = (int)clamp(map(events.m.x, draggableGraphPanel->absolutePos.x+borderWidth, draggableGraphPanel->absolutePos.x + draggableGraphPanel->size.x - borderWidth, 0, numDataPoints), 0, numDataPoints-1);
-        infoHoverValue = getDataPointValue(infoHoverDataPoint);
-        infoHoverPos = events.m;
-        printf("info hover: %d - %f\n", infoHoverDataPoint, infoHoverValue);
-      }
-      printf("...\n");
-    }
+    
     
     if(events.lControlDown || events.rControlDown) {
       md *= 0.1;
@@ -516,6 +525,8 @@ struct DraggableGraph : public HierarchicalTextFileParser {
       
       update();
     }
+    
+    updateInfoHover(events);
   }
   
   static std::string getClassName() {

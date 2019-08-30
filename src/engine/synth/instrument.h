@@ -552,7 +552,7 @@ public:
 
     note.biquadFilter.init(biquadFilter, note.frequency, note.volume);
     //note.biquadFilter.print();
-    printf("note biquad %f %f - %f %f %f %f %f %f\n", note.biquadFilter.frequency, note.biquadFilter.bandwidth, note.biquadFilter.a0, note.biquadFilter.a1, note.biquadFilter.a2, note.biquadFilter.b0, note.biquadFilter.b1, note.biquadFilter.b2);
+    //printf("note biquad %f %f - %f %f %f %f %f %f\n", note.biquadFilter.frequency, note.biquadFilter.bandwidth, note.biquadFilter.a0, note.biquadFilter.a1, note.biquadFilter.a2, note.biquadFilter.b0, note.biquadFilter.b1, note.biquadFilter.b2);
     //note.voiceBiquadFilters[0].print();
     //printf("%f %f %f %f %f %f %f %f\n", note.voiceBiquadFilters[0].frequency, note.voiceBiquadFilters[0].bandwidth, note.voiceBiquadFilters[0].a0, note.voiceBiquadFilters[0].a1, note.voiceBiquadFilters[0].a2, note.voiceBiquadFilters[0].b0, note.voiceBiquadFilters[0].b1, note.voiceBiquadFilters[0].b2);
     
@@ -595,7 +595,6 @@ public:
     note.isInitialized = true;
     
     unsigned char pitch = (unsigned char)clamp(note.pitch, 0.0, 127.0);
-    printf("Started note, pitch %d\n", pitch);
   }
 
   virtual void update() {
@@ -770,12 +769,15 @@ public:
       
       if(voices[k].inputAM >= 0) {
         out *= note.amplitudeModulatorOutputs[voices[k].inputAM];
+        if(voiceCrossModulation.amplitudeMode == VoiceCrossModulation::AmplitudeMode::Adjustable) {
+          note.voiceOutputs[k] *= note.amplitudeModulatorOutputs[voices[k].inputAM];
+        }
       }
       if(voices[k].inputAmplitudeEnvelope >= 0) {
         out *= note.envelopeOutputs[voices[k].inputAmplitudeEnvelope];
-      }
-      if(applyVolume) {
-        out = out * volume * note.volume;
+        if(voiceCrossModulation.amplitudeMode == VoiceCrossModulation::AmplitudeMode::Adjustable) {
+          note.voiceOutputs[k] *= note.envelopeOutputs[voices[k].inputAmplitudeEnvelope];
+        }
       }
       
       if(voices[k].biquadFilter->isActive) {
@@ -785,6 +787,10 @@ public:
           note.voiceBiquadFilters[k].prepare();
 //        }
         note.voiceBiquadFilters[k].apply(out);
+      }
+
+      if(applyVolume) {
+        out = out * volume * note.volume;
       }
       
       noteOut += out;

@@ -43,13 +43,13 @@
 
 
 struct SequenceLooper {
-  const int maxNumTracks = 128;
+  const int maxNumTracks = 1;
   int numTracks = 1;
   int currentTrack = 0;
   int numRepeats = 0;
   int currentRepeat = 0;
 
-  int maxNumTrackNotes = 1000;
+  int maxNumTrackNotes = 100000;
   
   // FIXME get rid of the pointer
   std::vector<LooperSequenceTrack*> tracks;
@@ -133,7 +133,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   std::unordered_map<int, Note*> holdingNotesKeyboard;
   std::vector<Note*> holdingNotesScreenKeys = std::vector<Note*>(3, NULL); 
 
-  int screenKeyboardMinNote = 60 - 36 - 1;
+  int screenKeyboardMinNote = 60 - 36;
   int screenKeyboardMaxNote = 60 + 36;
 
   bool isKeyboardPianoActive = false;
@@ -244,6 +244,8 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     
     tempo = 60;
     looperTrackDuration = 60 * measuresPerLooperTrack * beatsPerMeasure / tempo;
+    sequencerTimeWindow.y = looperTrackDuration;
+    looperTime = looperTrackDuration;
 
     addInstrument();
     numInstrumentTracks = 1;
@@ -574,26 +576,44 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     roundLoopTimeMeasureSubDivisions();
     double t = subdivisionsPerMeasure > 0 ? 1.0 / subdivisionsPerMeasure : 1.0;
     looperTime += looperTrackDuration * t * amount / measuresPerLooperTrack;
-    looperTime = max(0.0, looperTime);
+    looperTime = max(looperTrackDuration, looperTime);
     roundLoopTimeMeasureSubDivisions();
+    
+    setTimeWindowWithinLoopProgress();
   }
 
   void progressLoopTimeByNoteValue(double amount = 1.0) {
     roundLoopTimeNoteValueInverse();
     double t = noteValueInverse > 0 ? 1.0 / noteValueInverse : 1.0;
     looperTime += looperTrackDuration * t * amount / measuresPerLooperTrack;
-    looperTime = max(0.0, looperTime);
+    looperTime = max(looperTrackDuration, looperTime);
     roundLoopTimeNoteValueInverse();
+    
+    setTimeWindowWithinLoopProgress();
   }
 
-  void progressLoopTimeByBeats(int amount = 1) {
-    int currentBeat = int(looperTime / looperTrackDuration * measuresPerLooperTrack);
+  void progressLoopTimeByMeasures(int amount = 1) {
+    int currentMeasure = int(looperTime / looperTrackDuration * measuresPerLooperTrack);
     if(amount < 0 && fract(looperTime / looperTrackDuration * measuresPerLooperTrack) > 0.00000001) amount += 1;
-    int nextBeat = (measuresPerLooperTrack+currentBeat+amount) % measuresPerLooperTrack;
-    looperTime = looperTrackDuration / measuresPerLooperTrack * nextBeat;
+    int nextMeasure = (measuresPerLooperTrack+currentMeasure+amount) % measuresPerLooperTrack;
+    looperTime = looperTrackDuration / measuresPerLooperTrack * nextMeasure;
+    looperTime = max(looperTrackDuration, looperTime);
+    
+    setTimeWindowWithinLoopProgress();
   }
 
 
+  void setTimeWindowWithinLoopProgress() {
+    if(sequencerZoom > 1 && !draggingSequencerZoom && !draggingSequencerTimeWindow) {
+      double time = modfff(looperTime, looperTrackDuration);
+      if((time < sequencerTimeWindow.x || time >= sequencerTimeWindow.x + looperTrackDuration/measuresPerLooperTrack * 4)) {
+        sequencerTimeWindow.x = (int(time/looperTrackDuration*measuresPerLooperTrack) / 4 * 4) * (double)looperTrackDuration / measuresPerLooperTrack;
+        sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration/sequencerZoom;
+        //sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration/measuresPerLooperTrack * 4;
+        clampSequencerTimeWindow();
+      }
+    }
+  }
 
 
 
@@ -1048,10 +1068,10 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
 
 
   void stopAllNotes(bool stopStream = true) {
-    for(int i=0; i<maxCurrentlyPlayingNotes; i++) {
+    for(int i=0; i<numCurrentlyPlayingNotes; i++) {
       currentlyPlayingNotes[i].reset();
     }
-    for(int i=0; i<maxCurrentlyPlayingNotesPresampled; i++) {
+    for(int i=0; i<numCurrentlyPlayingNotesPresampled; i++) {
       currentlyPlayingNotesPresampled[i].reset();
     }
 
@@ -1122,17 +1142,17 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   void toBeginning() {
     sequenceLooper.currentTrack = 0;
     sequenceLooper.currentRepeat = 0;
-    looperTime = 0;    
+    looperTime = looperTrackDuration;    
   }
   void previousLoop() {
     sequenceLooper.currentTrack = (sequenceLooper.numTracks+sequenceLooper.currentTrack-1) % sequenceLooper.numTracks;
     sequenceLooper.currentRepeat = sequenceLooper.numRepeats == 0 ? -1 : 0;
-    looperTime = 0;
+    looperTime = looperTrackDuration;
   }
   void nextLoop() {
     sequenceLooper.currentTrack = (sequenceLooper.currentTrack+1) % sequenceLooper.numTracks;
     sequenceLooper.currentRepeat = sequenceLooper.numRepeats == 0 ? -1 : 0;
-    looperTime = 0;
+    looperTime = looperTrackDuration;
   }
 
   void resetAll() {
@@ -1151,10 +1171,13 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
 
   void setLooperTracksPlaying(bool isLooperPlaying) {
     this->isLooperPlaying = isLooperPlaying;
-    stopAllNotes(false);
+    
     if(isLooperPlaying) {
-      setPaTime(looperTime);
+      setPaTime(looperTime-0.05);
       onStart();
+    }
+    else {
+      //stopAllNotes(false);
     }
     //lastUpdateFrame = 0;
   }
@@ -1214,7 +1237,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     if(mode == Mode::Looper && !recordNoteTrackActive) {
       if(isLooperPlaying) {
         looperTime = getPaTime();
-        
+        setTimeWindowWithinLoopProgress();
         for(int i=0; i<numAudioRecordingTracks; i++) {
           audioRecordingTracks[i].onUpdate(recordingPlaybackBuffer, recordingPlaybackBufferPosition);
         }
@@ -1328,9 +1351,11 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     setPaTime(paTime / looperTrackDuration * time);
     looperTrackDuration = time;
     tempo = 60 * measuresPerLooperTrack * beatsPerMeasure / looperTrackDuration;
+    looperTime = looperTrackDuration;
     updateNoteLengths();
     resetRecordedTrackNotes();
     
+    fitSequencerView(4);
   }
 
   void setTempo(double tempo) {
@@ -1389,7 +1414,10 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   }
 
   int getMouseHoverScreenKeysPitch(Events &events, int screenW, int screenH) {
-    return (int)mapRoundClamp(screenH-events.mouseY, 0, screenH-1, screenKeyboardMinNote, screenKeyboardMaxNote);
+    //return (int)mapRoundClamp(screenH-events.mouseY, 0, screenH-1, screenKeyboardMinNote, screenKeyboardMaxNote);
+    int p = (int)map(screenH-events.mouseY, 0, screenH-1, screenKeyboardMinNote, screenKeyboardMaxNote);
+    p = clamp(p, screenKeyboardMinNote, screenKeyboardMaxNote);
+    return p;
   }
 
   void onMousePressedScreenKeys(Events &events, int screenW, int screenH) {
@@ -1397,7 +1425,8 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
 
     if(!screenKeysActive && !isRecordingMode) return;
 
-    double pitch = mapRoundClamp(screenH-events.mouseY, 0, screenH-1, screenKeyboardMinNote, screenKeyboardMaxNote);
+    //double pitch = mapRoundClamp(screenH-events.mouseY, 0, screenH-1, screenKeyboardMinNote, screenKeyboardMaxNote);
+    double pitch = getMouseHoverScreenKeysPitch(events, screenW, screenH);
     if(!isEditing()) {
       if(events.mouseButton >= 0 && events.mouseButton < 3 && holdingNotesScreenKeys[events.mouseButton] == NULL && activeInstrumentTrackIndex >= 0 && activeInstrumentTrackIndex < numInstrumentTracks) {
         holdingNotesScreenKeys[events.mouseButton] = startInstrumentTrackNote(pitch, defaultNoteVolume, activeInstrumentTrackIndex);
@@ -1408,14 +1437,14 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
     else {
       if(events.mouseNowDownL && holdingNotesScreenKeys[0] == NULL) {
-        double startTime = floorLoopTime(map(events.mouseX, 0, screenW-1, 0, looperTrackDuration));
+        double startTime = floorLoopTime(map(events.mouseX, 0, screenW-1, sequencerTimeWindow.x, sequencerTimeWindow.y));
         holdingNotesScreenKeys[0] = startInstrumentTrackNote(pitch, defaultNoteVolume, activeInstrumentTrackIndex, startTime);
         if(holdingNotesScreenKeys[0]) {
           holdingNotesScreenKeys[0]->isHolding = true;
         }
       }
       if(events.mouseNowDownM) {
-        cancelNote();
+        //cancelNote();
       }
       if(events.mouseNowDownR) {
         for(int i=0; i<getActiveLooperSequenceTrack()->notes.size(); i++) {
@@ -1438,7 +1467,69 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       holdingNotesScreenKeys[events.mouseButton] = NULL;
     }
   }
+  bool draggingSequencerTimeWindow = false;
+  bool draggingSequencerZoom = false;
+  bool isFittedSequencerView = false;
+  
+  void fitSequencerView(int numMeasures = -1) {
 
+    if(numMeasures > 0) {
+      //sequencerTimeWindow.x = (int(sequencerTimeWindow.x / looperTrackDuration * measuresPerLooperTrack) / numMeasures * numMeasures) * (double)looperTrackDuration / measuresPerLooperTrack;
+      sequencerTimeWindow.x = 0;
+      sequencerZoom = (double)measuresPerLooperTrack / numMeasures;
+    }
+    else {
+      sequencerTimeWindow.x = 0;
+      //sequencerTimeWindow.x = round(sequencerTimeWindow.x / looperTrackDuration * measuresPerLooperTrack);
+      sequencerZoom = measuresPerLooperTrack / round(measuresPerLooperTrack / sequencerZoom);
+    }
+    
+    sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration / sequencerZoom;
+    isFittedSequencerView = true;
+    clampSequencerTimeWindow();
+  }
+  
+  void clampSequencerTimeWindow() {
+    if(sequencerTimeWindow.x < 0) {
+      sequencerTimeWindow.x = 0;
+      sequencerTimeWindow.y = looperTrackDuration/sequencerZoom;
+    }
+    if(sequencerTimeWindow.y > looperTrackDuration) {
+      sequencerTimeWindow.x = looperTrackDuration - looperTrackDuration/sequencerZoom;
+      sequencerTimeWindow.y = looperTrackDuration;
+    }
+  }
+  
+  void onMousePressed(Events &e) {
+    if(e.mouseButton == 1 && e.numModifiersDown == 0) {
+      draggingSequencerTimeWindow = true;
+    }
+    if(e.mouseButton == 2) {
+      draggingSequencerZoom = true;
+    }
+  }
+  void onMouseReleased(Events &e) {
+    draggingSequencerTimeWindow = false;
+    draggingSequencerZoom = false;
+  }
+  void onMouseMotion(Events &e) {
+    if(draggingSequencerTimeWindow) {
+      double dt = -(sequencerTimeWindow.y - sequencerTimeWindow.x) * e.md.x / GuiElement::screenW;
+      sequencerTimeWindow.x = clamp(sequencerTimeWindow.x + dt, 0, looperTrackDuration-looperTrackDuration/sequencerZoom);
+      sequencerTimeWindow.y = clamp(sequencerTimeWindow.y + dt, looperTrackDuration/sequencerZoom, looperTrackDuration);
+      updateActiveNoteSequencerRects();
+      //printf("time window: %f - %f\n", sequencerTimeWindow.x, sequencerTimeWindow.y);
+    }
+    if(draggingSequencerZoom) {
+      if(e.md.x > 0) sequencerZoom = clamp(sequencerZoom * (1.0 + e.md.x*0.001), 1, 1e10);
+      else sequencerZoom = clamp(sequencerZoom / (1.0 - e.md.x*0.001), 1, 1e10);
+      sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration/sequencerZoom;
+      isFittedSequencerView = false;
+      clampSequencerTimeWindow();
+      updateActiveNoteSequencerRects();
+    }
+  }
+  
   void onKeyDownKeyboardPiano(Events &events) {
     if(!isKeyboardPianoActive) return;
     if(events.noModifiers && activeInstrumentTrackIndex >= 0 && activeInstrumentTrackIndex < numInstrumentTracks) {
@@ -1474,28 +1565,50 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   }
   void stop() {
     if(mode == Mode::Looper) {
-      looperTime = 0.0;
+      looperTime = looperTrackDuration;
       sequenceLooper.currentTrack = 0;
       sequenceLooper.currentRepeat = 0;
       setLooperTracksPlaying(false);
     }
   }
-
+  
+  void progressSequencerTimeWindowByMeasures(int numMeasures) {
+    if(sequencerZoom > 1) {
+      sequencerTimeWindow.x += looperTrackDuration / measuresPerLooperTrack * numMeasures;
+      sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration / sequencerZoom;
+      clampSequencerTimeWindow();
+    }
+  }
 
   void onKeyDownLooperControls(Events &events) {
-    if(mode == Mode::Looper && !isLooperPlaying && !events.lShiftDown && !events.rShiftDown) {
-      if(events.sdlKeyCode == SDLK_LEFT) {
-        if(events.lControlDown || events.rControlDown) progressLoopTimeByBeats(-1);
-        //else if(events.lShiftDown || events.rShiftDown) progressLoopTimeByNoteValue(-1);
-        else progressLoopTimeByMeasureSubdivisions(-1);
+    if(mode == Mode::Looper) {
+      if(!isLooperPlaying) {
+        if(events.sdlKeyCode == SDLK_LEFT) {
+          if(events.lControlDown || events.rControlDown) progressLoopTimeByMeasures(-1);
+          else if(events.lShiftDown || events.rShiftDown) progressLoopTimeByMeasures(-4);
+          else progressLoopTimeByMeasureSubdivisions(-1);
+        }
+        if(events.sdlKeyCode == SDLK_RIGHT) {
+          if(events.lControlDown || events.rControlDown) progressLoopTimeByMeasures(1);
+          else if(events.lShiftDown || events.rShiftDown) progressLoopTimeByMeasures(4);
+          else progressLoopTimeByMeasureSubdivisions(1);
+        }
       }
-      if(events.sdlKeyCode == SDLK_RIGHT) {
-        if(events.lControlDown || events.rControlDown) progressLoopTimeByBeats(1);
-        //else if(events.lShiftDown || events.rShiftDown) progressLoopTimeByNoteValue(1);
-        else progressLoopTimeByMeasureSubdivisions(1);
+      else {
+        if(events.sdlKeyCode == SDLK_LEFT && (events.lShiftDown || events.rShiftDown)) {
+          progressSequencerTimeWindowByMeasures(-4);
+          fitSequencerView();
+        }
+        if(events.sdlKeyCode == SDLK_RIGHT && (events.lShiftDown || events.rShiftDown)) {
+          progressSequencerTimeWindowByMeasures(4);
+          fitSequencerView();
+        }
       }
     }
-
+    if(events.sdlKeyCode == SDLK_t) {
+      fitSequencerView();
+    }
+    
     if(events.sdlKeyCode == SDLK_F12) {
       stopAllNotes();
     }
@@ -1511,21 +1624,21 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     if(events.sdlKeyCode == SDLK_KP_MULTIPLY) {
       increaseLoopRepeats();
     }*/
-    if(events.sdlKeyCode == SDLK_LEFT && (events.lShiftDown || events.rShiftDown)) {
+    /*if(events.sdlKeyCode == SDLK_LEFT && (events.lShiftDown || events.rShiftDown)) {
       previousLoop();
     }
     if(events.sdlKeyCode == SDLK_RIGHT && (events.lShiftDown || events.rShiftDown)) {
       nextLoop();
-    }
+    }*/
 
     if(events.sdlKeyCode == SDLK_SPACE) {
       if(mode == Mode::Looper) {
         if(!isLooperPlaying) {
           if(events.lControlDown || events.rControlDown) {
-            looperTime = 0.0;
+            looperTime = looperTrackDuration;
           }
           if(events.lShiftDown || events.rShiftDown) {
-            looperTime = 0.0;
+            looperTime = looperTrackDuration;
             sequenceLooper.currentTrack = 0;
             sequenceLooper.currentRepeat = 0;
           }
@@ -1552,6 +1665,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
         looperTime = floorLoopTime(r);
       }
     }
+
     if(events.sdlKeyCode == SDLK_c && events.lControlDown) {
       //if(events.lShiftDown)
       if(sequenceLooper.copyTrack) delete sequenceLooper.copyTrack;
@@ -1772,7 +1886,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     return screenKeysActive || isRecordingMode;
   }
 
-  void drawSynthNoteLayer(int screenW, int screenH, GeomRenderer &geomRenderer) {
+  /*void drawSynthNoteLayer(int screenW, int screenH, GeomRenderer &geomRenderer) {
     if(mode == Mode::Looper) {
       double f = map(getLooperTime(), 0, looperTrackDuration, 0, screenW);
       geomRenderer.texture = NULL;
@@ -1856,6 +1970,144 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       w = min(w, wg);
     }
     note.sequencerRect.set(w, h, x+w*0.5, y);
+  }*/
+
+  void drawSynthNoteLayer(int screenW, int screenH, GeomRenderer &geomRenderer, TextGl &textRenderer) {
+    if(mode == Mode::Looper) {
+      double f = map(getLooperTime(), sequencerTimeWindow.x, sequencerTimeWindow.y, 0, screenW);
+      geomRenderer.texture = NULL;
+
+
+
+      /*if(isScreenKeysVisible()) {
+        geomRenderer.strokeColor.set(0, 0, 0, 0.7);
+      }*/
+
+      LooperSequenceTrack *looperSequenceTrack = getActiveLooperSequenceTrack();
+
+      for(int i=0; i<looperSequenceTrack->numNotes; i++) {
+        if(looperSequenceTrack->notes[i].volume > 0) {
+          double t = looperSequenceTrack->notes[i].noteLength == 0 ? 0 : (getLooperTime() - looperSequenceTrack->notes[i].startTime) / looperSequenceTrack->notes[i].noteLength;
+          //printf("%f, %f, %f, %f\n", t, getLooperTime(), looperSequenceTrack->notes[i].startTime, looperSequenceTrack->notes[i].noteLength);
+
+          /*if(isScreenKeysVisible()) {
+            if(t >= 0 && t < 1) {
+              geomRenderer.strokeColor.set(0, 0, 0, 0.7 + (1.0-t)*0.3);
+              geomRenderer.fillColor.set((1.0-t)*0.8, (1.0-t)*0.8, (1.0-t)*0.8, 0.3 + (1.0-t)*0.55);
+            }
+            else {
+              geomRenderer.strokeColor.set(0, 0, 0, 0.7);
+              geomRenderer.fillColor.set(0, 0, 0, 0.3);
+            }
+          }
+          else {*/
+            if(t >= 0 && t < 1) {
+              geomRenderer.strokeColor.set(1, 1, 1, 0.6 + (1.0-t)*0.3);
+              geomRenderer.fillColor.set(1, 1, 1, 0.15 + (1.0-t)*0.75);
+            }
+            else {
+              geomRenderer.strokeColor.set(1, 1, 1, 0.6);
+              geomRenderer.fillColor.set(1, 1, 1, 0.15);
+            }
+          //}
+
+          geomRenderer.drawRect(looperSequenceTrack->notes[i].sequencerRect);
+        }
+      }
+      
+      if(isScreenKeysVisible()) {
+        geomRenderer.strokeWidth = 1.5;
+        geomRenderer.strokeColor.set(1, 1, 1, 0.35);
+        textRenderer.setColor(1, 1, 1, 0.85);
+        //geomRenderer.fillColor.set(0, 0, 0, 0.2);
+        int k = (int)(sequencerTimeWindow.x/looperTrackDuration*measuresPerLooperTrack) / 4 * 4;
+        for(int i=k; ; i+=4) {
+          double t = map(i, 0, measuresPerLooperTrack, 0, looperTrackDuration);
+          if(t < sequencerTimeWindow.x || i == 0) continue;
+          if(t >= sequencerTimeWindow.y) break;
+          double x = map(t, sequencerTimeWindow.x, sequencerTimeWindow.y, 0, GuiElement::screenW-1);
+          geomRenderer.drawLine(x, 0, x, GuiElement::screenH-1);
+          textRenderer.print(std::to_string(i), x + 10, GuiElement::screenH - 19, 10);
+        }
+        geomRenderer.strokeColor.set(1, 1, 1, 0.55);
+        double y = screenH-map(60.5, screenKeyboardMinNote+0.5, screenKeyboardMaxNote+0.5, 0, screenH);
+        geomRenderer.drawLine(0, y, GuiElement::screenW-1, y);
+      }
+      if(sequencerZoom > 1) {
+        double w1 = 90;
+        double w2 = max(w1 / sequencerZoom, 2);
+        double h = 40;
+        double x1 = GuiElement::screenW - w1 - 30;
+        double x2 = x1 + map(sequencerTimeWindow.x, 0, looperTrackDuration, 0, w1);
+        double y = GuiElement::screenH - h - 5;
+
+        geomRenderer.strokeWidth = 1.5;
+        /*if(isScreenKeysVisible()) {
+          geomRenderer.strokeColor.set(0, 0, 0, 0.5);
+          geomRenderer.fillColor.set(0, 0, 0, 0.2);
+        }
+        else {*/
+          geomRenderer.strokeColor.set(0.65, 0.65, 0.65, 0.5);
+          geomRenderer.fillColor.set(0.65, 0.65, 0.65, 0.2);
+        //}
+        geomRenderer.drawRectCorner(w1, h, x1, y);
+        
+        geomRenderer.strokeColor.set(1, 1, 1, 0.6);
+        geomRenderer.fillColor.set(1, 1, 1, 0.3);
+        geomRenderer.drawRectCorner(w2, h, x2, y);
+        
+      }
+      //if(isScreenKeysVisible()) {
+        geomRenderer.strokeColor.set(0.3, 0, 0, 1.0);
+        geomRenderer.fillColor.set(0, 0, 0, 0.3);
+      /*}
+      else {
+        geomRenderer.strokeColor.set(1, 1, 1, 0.8);
+        geomRenderer.fillColor.set(1, 1, 1, 0.3);
+      }*/
+      geomRenderer.strokeType = 1;
+      geomRenderer.strokeWidth = 1.5;
+      geomRenderer.drawLine(f, 0, f, screenH);
+    }
+    
+  }
+
+  void updateNoteSequencerRects() {
+    for(int i=0; i<sequenceLooper.tracks.size(); i++) {
+      for(int k=0; k<sequenceLooper.tracks[i]->notes.size(); k++) {
+        if(sequenceLooper.tracks[i]->notes[k].volume > 0) {
+          setNoteSequencerRect(sequenceLooper.tracks[i]->notes[k]);
+        }
+      }
+    }
+  }
+  void updateActiveNoteSequencerRects() {
+    for(int k=0; k<sequenceLooper.tracks[sequenceLooper.currentTrack]->notes.size(); k++) {
+      if(sequenceLooper.tracks[sequenceLooper.currentTrack]->notes[k].volume > 0) {
+        setNoteSequencerRect(sequenceLooper.tracks[sequenceLooper.currentTrack]->notes[k]);
+      }
+    }
+  }
+
+  void setNoteSequencerRect(TrackNote &note) {
+    double pitch = note.pitch;
+    if(instruments[instrumentTracks[note.instrumentTrackIndex].instrumentIndex]->instrumentType == Instrument::InstrumentType::CompositePads) {
+      DrumPad *drumPad = dynamic_cast<DrumPad*>(instruments[instrumentTracks[note.instrumentTrackIndex].instrumentIndex]);
+      pitch = drumPad->pitchOffset + note.padIndex;
+    }
+    double h = (screenKeyboardMaxNote - screenKeyboardMinNote == 0) ? 0 : (double)screenH / (screenKeyboardMaxNote - screenKeyboardMinNote);
+    double wg = (double)screenW / (measuresPerLooperTrack * subdivisionsPerMeasure);
+    double w;
+    double x = map(note.startTime, sequencerTimeWindow.x, sequencerTimeWindow.y, 0, screenW);
+    double y = screenH - (map(pitch, screenKeyboardMinNote, screenKeyboardMaxNote, 0, screenH) + h * 0.5);
+    if(note.noteLength > 0) {
+      w = looperTrackDuration == 0 ? 0 : note.noteLength / (sequencerTimeWindow.y-sequencerTimeWindow.x) * screenW;
+    }
+    else {
+      w = note.widthFraction == 0 ? 0 : (double)screenW / note.widthFraction;
+      w = min(w, wg);
+    }
+    note.sequencerRect.set(w, h, x+w*0.5, y);
   }
 
 
@@ -1864,58 +2116,58 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
 
 
 
-
   void setShaderUniforms(GlShader &shader) {
-    float pitches[96];
-    float volumes[96];
-    float startTimes[96];
-    int isKeyHoldings[96];
+    /*std::vector<float> pitches = std::vector<float>(96, 0);
+    std::vector<float> volumes = std::vector<float>(96, 0);
+    std::vector<float> startTimes = std::vector<float>(96, 0);
+    std::vector<int> isKeyHoldings = std::vector<int>(96, 0);
     int latestNoteIndex = 0;
     float latestNoteTime = -100;
     int numNotes = 0;
+    
     for(int i=0; i<numCurrentlyPlayingNotes && numNotes < 96; i++) {
       Note *note = &currentlyPlayingNotes[i];
-      if(note->volume <= 0 || (noteHoldTime < getPaTime() - note->startTime && !note->isHolding)) {
-        continue;
+      bool started = getPaTime() >= note->startTime;
+      bool playing = getPaTime() < note->startTime + note->noteActualLength;
+      if(note->volume > 0 && (note->isHolding || (started && playing))) {          
+        pitches[numNotes] = note->pitch;
+        volumes[numNotes] = note->volume;
+        startTimes[numNotes] = note->startTime;
+        isKeyHoldings[numNotes] = note->isHolding;
+        numNotes++;
       }
-      pitches[numNotes] = note->pitch;
-      volumes[numNotes] = note->volume;
-      startTimes[numNotes] = note->startTime;
-      isKeyHoldings[numNotes] = note->isHolding;
-      if(note->startTime > latestNoteTime && note->startTime <= getPaTime()) {
-        latestNoteTime = note->startTime;
-        latestNoteIndex = numNotes;
-      }
-      numNotes++;
     }
     for(int i=0; i<numCurrentlyPlayingNotesPresampled && numNotes < 96; i++) {
       Note *note = &currentlyPlayingNotesPresampled[i];
-      if(note->volume <= 0 || (noteHoldTime < getPaTime() - note->startTime && !note->isHolding)) {
-        continue;
+      bool started = getPaTime() >= note->startTime;
+      bool playing = getPaTime() < note->startTime + note->noteActualLength;
+      
+      if(note->volume > 0 && (note->isHolding || (started && playing))) {          
+        pitches[numNotes] = note->pitch;
+        volumes[numNotes] = note->volume;
+        startTimes[numNotes] = note->startTime;
+        isKeyHoldings[numNotes] = note->isHolding;
+        numNotes++;
       }
-      pitches[numNotes] = note->pitch;
-      volumes[numNotes] = note->volume;
-      startTimes[numNotes] = note->startTime;
-      isKeyHoldings[numNotes] = note->isHolding;
-      if(note->startTime > latestNoteTime && note->startTime <= getPaTime()) {
-        latestNoteTime = note->startTime;
-        latestNoteIndex = numNotes;
-      }
-      numNotes++;
     }
+    printf("num notes %d\n", numNotes);
+    shader.setUniform1i("numNotes", numNotes);
+    shader.setUniform1fv("notes", 96, pitches.data());
+    shader.setUniform1fv("noteVolumes", 96, volumes.data());
+    shader.setUniform1fv("noteStartTimes", 96, startTimes.data());
+    shader.setUniform1iv("isKeyHoldings", 96, isKeyHoldings.data());
+    shader.setUniform1i("latestNoteIndex", latestNoteIndex);
+*/
     shader.setUniform1i("measuresPerLooperTrack", measuresPerLooperTrack);
     shader.setUniform1i("subdivisionsPerMeasure", (int)subdivisionsPerMeasure);
     shader.setUniform1i("screenKeyboardMinNote", screenKeyboardMinNote);
     shader.setUniform1i("screenKeyboardMaxNote", screenKeyboardMaxNote);
-    shader.setUniform1i("numNotes", numNotes);
-    shader.setUniform1fv("notes", numNotes, pitches);
-    shader.setUniform1fv("noteVolumes", numNotes, volumes);
-    shader.setUniform1fv("noteStartTimes", numNotes, startTimes);
-    shader.setUniform1iv("isKeyHoldings", numNotes, isKeyHoldings);
-    shader.setUniform1i("latestNoteIndex", latestNoteIndex);
     shader.setUniform1i("keyBaseNote", keyBaseNote);
     shader.setUniform1i("showMeasures", isEditing());
     shader.setUniform1i("isBackgroundGraphVisible", isBackgroundGraphVisible);
+
+    shader.setUniform2f("timeWindow", sequencerTimeWindow);
+    shader.setUniform1f("trackLenght", looperTrackDuration);
 
   }
 
@@ -2142,10 +2394,10 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
           synth->progressLoopTimeByMeasureSubdivisions(1);
         }
         if(huiMessage.type == HuiMessage::Type::DownPressed) {
-          synth->progressLoopTimeByBeats(-1);
+          synth->progressLoopTimeByMeasures(-1);
         }
         if(huiMessage.type == HuiMessage::Type::UpPressed) {
-          synth->progressLoopTimeByBeats(1);
+          synth->progressLoopTimeByMeasures(1);
         }
         i += size - 1;
         continue;

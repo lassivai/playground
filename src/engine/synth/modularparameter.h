@@ -45,7 +45,6 @@ struct ModularParameter {
     }
     
     void update() {
-      printf("Modular parameter '%s' updated\n", modularParameter->name.c_str());
       modulatorGui->setValue(modularParameter->modulator);
       envelopeGui->setValue(modularParameter->envelope);
       midiGui->setValue(modularParameter->midi);

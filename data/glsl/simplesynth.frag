@@ -25,6 +25,19 @@ uniform int measuresPerLooperTrack, subdivisionsPerMeasure;
 
 const float SIGMA = pow(2.0, 1.0/12.0);
 
+/*const vec3[12] colorMap = vec3[12] ( vec3(173.0/255.0, 0, 14.0/255.0),
+                                     vec3(209.0/255.0, 0.0/255.0, 74.0/255.0),
+                                     vec3(236.0/255.0, 26.0/255.0, 139.0/255.0),
+                                     vec3(255.0/255.0, 79.0/255.0, 255.0/255.0),
+                                     vec3(191.0/255.0, 0.0/255.0, 255.0/255.0),
+                                     vec3(128.0/255.0, 0.0/255.0, 255.0/255.0),
+                                     vec3(64.0/255.0, 0.0/255.0, 255.0/255.0),
+                                     vec3(0.0/255.0, 0.0/255.0, 255.0/255.0),
+                                     vec3(0.0/255.0, 64.0/255.0, 255.0/255.0),
+                                     vec3(50.0/255.0, 128.0/255.0, 255.0/255.0),
+                                     vec3(100.0/255.0, 191.0/255.0, 255.0/255.0),
+                                     vec3(120.0/255.0, 220.0/255.0, 255.0/255.0) );*/
+
 float noteToFreq(float note) {
   return pow(SIGMA, note-69.0) * 440.0;
 }
@@ -87,11 +100,16 @@ void main() {
   int numNotes = screenKeyboardMaxNote - screenKeyboardMinNote;
   float ff = round(gl_FragCoord.y/screenSize.y*numNotes);
   float mf1 = round((screenSize.y-mousePos.y)/screenSize.y*numNotes);
-  float t = mod(ff-keyBaseNote+screenKeyboardMinNote, 12.0)/11.0;
+  int k = int(mod(ff-keyBaseNote+screenKeyboardMinNote, 12.0));
+  float t = k/11.0;
   //float t = mod(ff-keyBaseNote+screenKeyboardMinNote, 2.0)*0.15 + 0.7;
   vec4 mc = vec4(0.5+t*0.5);
   if(ff >= mf1 && ff < mf1+1.0) {
-    mc = vec4(0.2+0.5*(1.0-t), 0.0, 0.0+1.0*t, 1.0);
+    //mc = vec4(0.0+0.9*(1.0-t), 0.0, 0.0+1.0*t, 1.0);
+    /*mc.r = colorMap[k].r;
+    mc.g = colorMap[k].g;
+    mc.b = colorMap[k].b;*/
+    mc = vec4(0.25);
   }
 
   for(int n=0; n<numNotes; n++) {
@@ -112,15 +130,15 @@ void main() {
   // TODO deal with variable beat amount, and divisions
   if(showMeasures == 1) {
     int i = int(gl_FragCoord.x/screenSize.x*measuresPerLooperTrack*subdivisionsPerMeasure);
-    vec4 measuCol = vec4(0.35, 0.3, 0.3, 1.0);
+    vec4 measuCol = vec4(0.15, 0.15, 0.15, 1.0);
     //vec4 measuCol = vec4(0.8, 0.8, 0.8, 1.0);
     float measu = 0.5;
     if(mod(i, 2) == 1) {
-      measu *= 0.75;
+      measu *= 0.9;
     }
     //if(mod(i/4, 2) == 1) {
     if(mod(i/subdivisionsPerMeasure, 2) == 1) {
-      measuCol = vec4(0.3, 0.3, 0.35, 1.0);
+      measuCol = vec4(0.35, 0.35, 0.35, 1.0);
       //measuCol = vec4(0.6, 0.6, 0.6, 1.0);
     }
     mc = mix(mc, measuCol, measu);
@@ -131,6 +149,10 @@ void main() {
 
   //fragColor = mix(mix(synthVis, synthVis2, 0.5),  mc, 0.45);
   fragColor = mc;//mix(synthVis,  mc, 0.65);
+
+  //vec3 c = colorMap[int(12*gl_FragCoord.x/screenSize.x)];
+  
+  //fragColor = vec4(c.r, c.g, c.b, 1);
 
   /*float f = gl_FragCoord.y/screenSize.y*72.0;
   float ff = floor(f);

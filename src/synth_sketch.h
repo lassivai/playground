@@ -495,7 +495,8 @@ struct SynthSketch : public Sketch
   AudioPlayer *audioPlayer = NULL;
 
   void onReloadShaders() {
-    synthShader.create("data/glsl/basic.vert", "data/glsl/simplesynth.frag");
+    //synthShader.create("data/glsl/basic.vert", "data/glsl/simplesynth.frag");
+    synthShader.create("data/glsl/basic.vert", "data/glsl/synthsequencer.frag");
     mandelbrotVisualizer.loadShader();
     warpVisualizer.loadShader();
     flameVisualizer.loadShader();
@@ -757,16 +758,19 @@ struct SynthSketch : public Sketch
   void onMousePressed() {
     if(!guiRoot.isPointWithinChildElements(events.m)) {
       synth->onMousePressedScreenKeys(events, screenW, screenH);
+      synth->onMousePressed(events);
     }
   }
   void onMouseReleased() {
     synth->onMouseReleasedScreenKeys(events, screenW, screenH);
+    synth->onMouseReleased(events);
   }
 
   void onMouseMotion() {
     if(backgroundVisualization == 4) {
       flameVisualizer.onMouseMotion(events);
     }
+    synth->onMouseMotion(events);
   }
 
   void onMouseWheel() {
@@ -1128,7 +1132,8 @@ struct SynthSketch : public Sketch
     if(isDebugMode) return;
 
     bool isScreenKeys = synth->isScreenKeysVisible();
-    bool isDarkGraphColors = isScreenKeys || graphColorIndex == 1;
+    //bool isDarkGraphColors = isScreenKeys || graphColorIndex == 1;
+    bool isDarkGraphColors = graphColorIndex == 1;
 
     Vec2d delayLineRms = synth->delayLine.getRMS(0.05) * 2.0;
 
@@ -1260,7 +1265,7 @@ struct SynthSketch : public Sketch
     }
 
 
-    synth->drawSynthNoteLayer(screenW, screenH, geomRenderer);
+    synth->drawSynthNoteLayer(screenW, screenH, geomRenderer, textRenderer);
 
     //scaleArray(spectrumGraph, spectrumGraphScaling);
 

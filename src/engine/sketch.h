@@ -182,11 +182,12 @@ struct Sketch
 
   FpsPanel *fpsPanel = nullptr;
 
-
   Texture renderTargetTextureForPostEffects;
   Texture postEffectTexture;
   GlShader postEffectShader;
   Quadx quadScreen;
+
+  bool useGlobalOverlayTexture = true;
   
   const std::string fftwWisdomFilename = "data/tmp/fftw_wisdom";
 
@@ -455,15 +456,17 @@ struct Sketch
     guiRoot.update(time, dt);
     guiRoot.prepare(geomRenderer, textRenderer);
 
-    /*if(renderTargetTextureForPostEffects.w != screenW || renderTargetTextureForPostEffects.h != screenH) {
-      renderTargetTextureForPostEffects.createRenderTarget(screenW, screenH);
-      renderTargetTextureForPostEffects.enableFiltering(true);
-      postEffectTexture.load("data/textures/texture.png", false);
-      postEffectShader.create("data/glsl/texture.vert", "data/glsl/postEffectShader.frag");
-      quadScreen.create(screenW, screenH);
+    if(useGlobalOverlayTexture) {
+      if(renderTargetTextureForPostEffects.w != screenW || renderTargetTextureForPostEffects.h != screenH) {
+        renderTargetTextureForPostEffects.createRenderTarget(screenW, screenH);
+        renderTargetTextureForPostEffects.enableFiltering(true);
+        postEffectTexture.load("data/textures/texture.png", false);
+        postEffectShader.create("data/glsl/texture.vert", "data/glsl/postEffectShader.frag");
+        quadScreen.create(screenW, screenH);
+      }
+      renderTargetTextureForPostEffects.setRenderTarget();
     }
-    renderTargetTextureForPostEffects.setRenderTarget();*/
-
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
     onDraw();
     //glLoadIdentity();
@@ -478,20 +481,22 @@ struct Sketch
       }
     }
     
-    /*renderTargetTextureForPostEffects.unsetRenderTarget();
-    
-    postEffectShader.activate();
-    postEffectShader.setUniform1f("time", time);
-    postEffectShader.setUniform2f("screenSize", screenW, screenH);
-    renderTargetTextureForPostEffects.activate(postEffectShader, "texture1", 0);
-    postEffectTexture.activate(postEffectShader, "texture2", 1);
+    if(useGlobalOverlayTexture) {
+      renderTargetTextureForPostEffects.unsetRenderTarget();
+      
+      postEffectShader.activate();
+      postEffectShader.setUniform1f("time", time);
+      postEffectShader.setUniform2f("screenSize", screenW, screenH);
+      renderTargetTextureForPostEffects.activate(postEffectShader, "texture1", 0);
+      postEffectTexture.activate(postEffectShader, "texture2", 1);
 
-    //renderTargetTextureForPostEffects.render();
-    quadScreen.render(screenW/2, screenH/2);
-    
-    postEffectShader.deActivate();
-    renderTargetTextureForPostEffects.inactivate(0);
-    postEffectTexture.inactivate(1);*/
+      //renderTargetTextureForPostEffects.render();
+      quadScreen.render(screenW/2, screenH/2);
+      
+      postEffectShader.deActivate();
+      renderTargetTextureForPostEffects.inactivate(0);
+      postEffectTexture.inactivate(1);
+    }
 
 
     updateScreen(sdlInterface);

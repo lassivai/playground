@@ -1,0 +1,778 @@
+drumPad {
+  volume: 1.000000
+  numPads: 8.000000
+  name: Drum pad 1
+  pad {
+    pitch: 6.000000
+    volume: 0.750000
+    instrument {
+      name: Percussive 4
+      volume: 1.000000
+      biquadFilter {
+        subtype: Low-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 380.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      biquadFilter {
+        subtype: High-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 1.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      multiDelay {
+        gain: 1.100000
+        wet: 0.900000
+        out: 1, 1.000000
+        out: 0, 0.000000
+      }
+      voice {
+        volume: 0.100000
+        tuning: 3.000000
+        stereoPhaseOffset: 0.000000
+        unison: 1
+        unisonDetuning: 0.001000
+        unisonDetuningRandomSeeds: 0, 0
+        amplitudeModulator: 0
+        frequencyModulator: 0
+        amplitudeEnvelope: 1
+        frequencyEnvelope: 2
+        waveform {
+          type: Wave08
+          waveTableMode: Single faster
+          waveformParameters: 70.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      modulator {
+        frequency: 1.000000
+        stereoPhaseOffset: 0.000000
+        stereoPhaseDifference: 0.000000
+        relativeMode: 1
+        inputAM: -1
+        inputFM: -1
+        outputAM: -1
+        outputFM: 0
+        amplitudeEnvelope: -1
+        frequencyEnvelope: -1
+        depthAM: 0.100000
+        depthFM: 2.000000
+        waveform {
+          type: White noise
+          waveTableMode: Single faster
+          phaseOffsets: 0.000000, 1.000000
+          lockedStereoPhase: 0
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 1
+            frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 2.000000, 0.000000
+            gainParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+          }
+        }
+      }
+      modulator {
+        frequency: 1.000000
+        stereoPhaseOffset: 0.000000
+        stereoPhaseDifference: 0.000000
+        relativeMode: 1
+        inputAM: -1
+        inputFM: -1
+        outputAM: -1
+        outputFM: 0
+        amplitudeEnvelope: -1
+        frequencyEnvelope: -1
+        depthAM: 0.300000
+        depthFM: 7.000000
+        waveform {
+          type: Sin
+          waveTableMode: Single faster
+          waveformParameters: 1.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -20.000000, -20.000000
+        output: 1
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -7.000000, -7.000000
+        output: 2
+      }
+    }
+  }
+  pad {
+    pitch: 300.000000
+    volume: 0.150000
+    instrument {
+      name: Percussive 10
+      volume: 1.000000
+      biquadFilter {
+        subtype: Low-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 730.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      biquadFilter {
+        subtype: High-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 33.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      voice {
+        volume: 0.600000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.000000
+        unison: 2
+        unisonDetuning: 0.300000
+        unisonDetuningRandomSeeds: 2, 8
+        amplitudeModulator: -1
+        frequencyModulator: 1
+        amplitudeEnvelope: 1
+        frequencyEnvelope: 1
+        waveform {
+          type: White noise
+          waveTableMode: Single faster
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 0
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 1
+            frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+            gainParameters: 30.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.100000
+          }
+        }
+      }
+      voice {
+        volume: 4.000000
+        tuning: 0.100000
+        stereoPhaseOffset: 0.000000
+        unison: 1
+        unisonDetuning: 0.001000
+        unisonDetuningRandomSeeds: 0, 0
+        amplitudeModulator: -1
+        frequencyModulator: -1
+        amplitudeEnvelope: 2
+        frequencyEnvelope: 2
+        waveform {
+          type: Wave08
+          waveTableMode: Single faster
+          waveformParameters: 10.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      modulator {
+        frequency: 8.000000
+        stereoPhaseOffset: 0.000000
+        stereoPhaseDifference: 0.000000
+        relativeMode: 1
+        inputAM: -1
+        inputFM: -1
+        outputAM: 1
+        outputFM: 1
+        amplitudeEnvelope: -1
+        frequencyEnvelope: -1
+        depthAM: 1.000000
+        depthFM: 1.000000
+        waveform {
+          type: Wave02
+          waveTableMode: Single faster
+          waveformParameters: 60.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 1.000000
+          }
+        }
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -4.000000, -4.000000
+        output: 1
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -40.000000, -40.000000
+        output: 2
+      }
+    }
+  }
+  pad {
+    pitch: 30.000000
+    volume: 0.750000
+    instrument {
+      name: Percussive 7
+      volume: 1.000000
+      biquadFilter {
+        subtype: Low-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 380.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      biquadFilter {
+        subtype: High-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 8.200000
+        dbGain: 3.000000
+        bandwidth: 10.000000
+        qualityFactor: 1.000000
+      }
+      multiDelay {
+        gain: 1.100000
+        wet: 0.900000
+        out: 1, 1.000000
+      }
+      voice {
+        volume: 0.500000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.000000
+        unison: 1
+        unisonDetuning: 0.200000
+        unisonDetuningRandomSeeds: 2, 8
+        amplitudeModulator: -1
+        frequencyModulator: -1
+        amplitudeEnvelope: 1
+        frequencyEnvelope: 1
+        waveform {
+          type: Wave02
+          waveTableMode: Single faster
+          waveformParameters: 5.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 0
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 1.000000
+          }
+        }
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -60.000000, -60.000000
+        output: 1
+      }
+    }
+  }
+  pad {
+    pitch: 60.000000
+    volume: 0.750000
+    instrument {
+      volume: 1.000000
+      name: Percussive 8
+      biquadFilter {
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 380.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+        subtype: Low-pass
+      }
+      biquadFilter {
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 8.200000
+        dbGain: 3.000000
+        bandwidth: 10.000000
+        qualityFactor: 1.000000
+        subtype: High-pass
+      }
+      multiDelay {
+        gain: 1.100000
+        wet: 0.900000
+        out: 1.000000, 1.000000
+        out: 0.000000, 0.000000
+      }
+      voice {
+        volume: 0.300000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.000000
+        unison: 1.000000
+        unisonDetuning: 0.500000
+        unisonDetuningRandomSeeds: 2.000000, 8.000000
+        amplitudeModulator: -1.000000
+        frequencyModulator: 1.000000
+        amplitudeEnvelope: 1.000000
+        frequencyEnvelope: 1.000000
+        waveform {
+          waveformParameters: 
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 0.000000
+          numSteps: 1.000000
+          gaussianSmoothing: 0.000000
+          type: White noise
+          waveTableMode: Single faster
+          partials {
+            count: 1.000000
+            usePattern: 0.000000
+            frequencies: 1.000000
+            gains: 1.000000
+          }
+        }
+      }
+      voice {
+        volume: 2.000000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.000000
+        unison: 1.000000
+        unisonDetuning: 0.001000
+        unisonDetuningRandomSeeds: 0.000000, 0.000000
+        amplitudeModulator: -1.000000
+        frequencyModulator: -1.000000
+        amplitudeEnvelope: 2.000000
+        frequencyEnvelope: 2.000000
+        waveform {
+          waveformParameters: 
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1.000000
+          numSteps: 1.000000
+          gaussianSmoothing: 0.000000
+          type: White noise
+          waveTableMode: Single faster
+          partials {
+            count: 1.000000
+            usePattern: 0.000000
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      modulator {
+        frequency: 0.900000
+        stereoPhaseOffset: 0.000000
+        stereoPhaseDifference: 0.000000
+        relativeMode: 1.000000
+        inputAM: -1.000000
+        inputFM: -1.000000
+        outputAM: -1.000000
+        outputFM: 1.000000
+        amplitudeEnvelope: -1.000000
+        frequencyEnvelope: -1.000000
+        depthAM: 0.020000
+        depthFM: 1.000000
+        waveform {
+          waveformParameters: 30.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1.000000
+          numSteps: 1.000000
+          gaussianSmoothing: 0.000000
+          type: Wave02
+          waveTableMode: Single faster
+          partials {
+            count: 1.000000
+            usePattern: 0.000000
+            frequencies: 1.000000
+            gains: 1.000000
+          }
+        }
+      }
+      envelope {
+        parameters: 0.000000, -7.000000, -7.000000
+        output: 1.000000
+        type: ahe
+      }
+      envelope {
+        parameters: 0.000000, -40.000000, -40.000000
+        output: 2.000000
+        type: ahe
+      }
+    }
+  }
+  pad {
+    pitch: 64.000000
+    volume: 2.050000
+    instrument {
+      name: Percussive 9
+      volume: 1.000000
+      biquadFilter {
+        subtype: Low-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 730.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      voice {
+        volume: 0.200000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.000000
+        unison: 1
+        unisonDetuning: 0.500000
+        unisonDetuningRandomSeeds: 2, 8
+        amplitudeModulator: -1
+        frequencyModulator: 1
+        amplitudeEnvelope: 1
+        frequencyEnvelope: 1
+        waveform {
+          type: White noise
+          waveTableMode: Single faster
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 0
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 1
+            frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+            gainParameters: 30.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.100000
+          }
+        }
+      }
+      voice {
+        volume: 1.000000
+        tuning: 0.080000
+        stereoPhaseOffset: 0.000000
+        unison: 1
+        unisonDetuning: 0.001000
+        unisonDetuningRandomSeeds: 0, 0
+        amplitudeModulator: -1
+        frequencyModulator: -1
+        amplitudeEnvelope: 2
+        frequencyEnvelope: 2
+        waveform {
+          type: Wave08
+          waveTableMode: Single faster
+          waveformParameters: 0.700000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      modulator {
+        frequency: 1.000000
+        stereoPhaseOffset: 0.000000
+        stereoPhaseDifference: 0.000000
+        relativeMode: 1
+        inputAM: -1
+        inputFM: -1
+        outputAM: 1
+        outputFM: 1
+        amplitudeEnvelope: -1
+        frequencyEnvelope: -1
+        depthAM: 1.000000
+        depthFM: 1.000000
+        waveform {
+          type: Wave02
+          waveTableMode: Single faster
+          waveformParameters: 5.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 1.000000
+          }
+        }
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -4.000000, -4.000000
+        output: 1
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -40.000000, -40.000000
+        output: 2
+      }
+    }
+  }
+  pad {
+    pitch: 80.000000
+    volume: 0.350000
+    instrument {
+      name: Percussive 10
+      volume: 1.000000
+      biquadFilter {
+        subtype: Low-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 730.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      biquadFilter {
+        subtype: High-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 33.000000
+        dbGain: 3.000000
+        bandwidth: 2.000000
+        qualityFactor: 1.000000
+      }
+      voice {
+        volume: 0.600000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.000000
+        unison: 2
+        unisonDetuning: 0.300000
+        unisonDetuningRandomSeeds: 2, 8
+        amplitudeModulator: -1
+        frequencyModulator: 1
+        amplitudeEnvelope: 1
+        frequencyEnvelope: 1
+        waveform {
+          type: White noise
+          waveTableMode: Single faster
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 0
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 1
+            frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
+            gainParameters: 30.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.100000
+          }
+        }
+      }
+      voice {
+        volume: 4.000000
+        tuning: 0.100000
+        stereoPhaseOffset: 0.000000
+        unison: 1
+        unisonDetuning: 0.001000
+        unisonDetuningRandomSeeds: 0, 0
+        amplitudeModulator: -1
+        frequencyModulator: -1
+        amplitudeEnvelope: 2
+        frequencyEnvelope: 2
+        waveform {
+          type: Wave08
+          waveTableMode: Single faster
+          waveformParameters: 10.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      modulator {
+        frequency: 8.000000
+        stereoPhaseOffset: 0.000000
+        stereoPhaseDifference: 0.000000
+        relativeMode: 1
+        inputAM: -1
+        inputFM: -1
+        outputAM: 1
+        outputFM: 1
+        amplitudeEnvelope: -1
+        frequencyEnvelope: -1
+        depthAM: 1.000000
+        depthFM: 1.000000
+        waveform {
+          type: Wave02
+          waveTableMode: Single faster
+          waveformParameters: 60.000000
+          phaseOffsets: 0.000000, 0.000000
+          lockedStereoPhase: 1
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 1.000000
+          }
+        }
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -4.000000, -4.000000
+        output: 1
+      }
+      envelope {
+        type: ahe
+        parameters: 0.000000, -40.000000, -40.000000
+        output: 2
+      }
+    }
+  }
+  pad {
+    pitch: 70.000000
+    volume: 0.650000
+    instrument {
+      name: Percussive 11
+      volume: 1.000000
+      biquadFilter {
+        subtype: Band-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 88.000000
+        dbGain: 3.000000
+        bandwidth: 0.400000
+        qualityFactor: 1.000000
+      }
+      multiDelay {
+        gain: 1.100000
+        wet: 0.900000
+        out: 1, 1.000000
+        out: 0, 0.000000
+        out: 0, 0.000000
+        out: 0, 0.000000
+        out: 0, 0.000000
+      }
+      voice {
+        volume: 4.000000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.500000
+        unison: 1
+        unisonDetuning: 0.030000
+        unisonDetuningRandomSeeds: 0, 0
+        amplitudeModulator: 0
+        frequencyModulator: 0
+        amplitudeEnvelope: 1
+        frequencyEnvelope: -1
+        waveform {
+          type: White noise
+          waveTableMode: None
+          phaseOffsets: 0.000000, 1.000000
+          lockedStereoPhase: 0
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      envelope {
+        type: pad
+        parameters: 0.000000, 0.000000, 0.300000, 10.000000
+        output: 1
+      }
+    }
+  }
+  pad {
+    pitch: 64.000000
+    volume: 0.750000
+    instrument {
+      name: Percussive 12
+      volume: 1.000000
+      biquadFilter {
+        subtype: Band-pass
+        gain: 1.000000
+        wet: 1.000000
+        frequency: 88.000000
+        dbGain: 3.000000
+        bandwidth: 0.400000
+        qualityFactor: 1.000000
+      }
+      multiDelay {
+        gain: 1.100000
+        wet: 0.900000
+        out: 1, 1.000000
+        out: 0, 0.000000
+        out: 0, 0.000000
+        out: 0, 0.000000
+        out: 0, 0.000000
+      }
+      voice {
+        volume: 10.000000
+        tuning: 1.000000
+        stereoPhaseOffset: 0.500000
+        unison: 1
+        unisonDetuning: 0.030000
+        unisonDetuningRandomSeeds: 0, 0
+        amplitudeModulator: 0
+        frequencyModulator: 0
+        amplitudeEnvelope: 1
+        frequencyEnvelope: -1
+        waveform {
+          type: White noise
+          waveTableMode: None
+          phaseOffsets: 0.000000, 1.000000
+          lockedStereoPhase: 0
+          numSteps: 1
+          gaussianSmoothing: 0.000000
+          partials {
+            count: 1
+            usePattern: 0
+            frequencies: 1.000000
+            gains: 0.500000
+          }
+        }
+      }
+      envelope {
+        type: pad
+        parameters: 0.000000, 0.000000, 2.000000, 60.000000
+        output: 1
+      }
+    }
+  }
+}
