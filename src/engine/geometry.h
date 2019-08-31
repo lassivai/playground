@@ -428,8 +428,36 @@ struct Rect : public GeomObject  {
   }
 
   // FIXME rotation not concidered currently
-  virtual bool isPointWithin(const Vec2d &p) {
+  virtual bool isPointWithin(const Vec2d &p) const {
     return p.x >= pos.x - w*0.5 && p.x <= pos.x + w*0.5 && p.y >= pos.y - h*0.5 && p.y <= pos.y + h*0.5;
+  }
+  
+  bool overlaps(const Rect &rect) {
+    Vec2d a(pos.x - w*0.5, pos.y - h*0.5);
+    Vec2d b(pos.x - w*0.5, pos.y + h*0.5);
+    Vec2d c(pos.x + w*0.5, pos.y - h*0.5);
+    Vec2d d(pos.x + w*0.5, pos.y + h*0.5);
+
+    Vec2d p(rect.pos.x - rect.w*0.5, rect.pos.y - rect.h*0.5);
+    Vec2d q(rect.pos.x - rect.w*0.5, rect.pos.y + rect.h*0.5);
+    Vec2d r(rect.pos.x + rect.w*0.5, rect.pos.y - rect.h*0.5);
+    Vec2d s(rect.pos.x + rect.w*0.5, rect.pos.y + rect.h*0.5);
+    
+    if(isPointWithin(p)) return true;
+    if(isPointWithin(q)) return true;
+    if(isPointWithin(r)) return true;
+    if(isPointWithin(s)) return true;
+
+    if(rect.isPointWithin(a)) return true;
+    if(rect.isPointWithin(b)) return true;
+    if(rect.isPointWithin(c)) return true;
+    if(rect.isPointWithin(d)) return true;
+    
+    if(pos.x > p.x && pos.x < r.x && rect.pos.y > a.y && rect.pos.y < b.y) return true;
+    
+    if(rect.pos.x > a.x && rect.pos.x < c.x && pos.y > p.y && pos.y < q.y) return true;
+    
+    return false;
   }
 };
 

@@ -49,7 +49,6 @@ struct SequenceLooper {
   int numRepeats = 0;
   int currentRepeat = 0;
 
-  int maxNumTrackNotes = 100000;
   
   // FIXME get rid of the pointer
   std::vector<LooperSequenceTrack*> tracks;
@@ -63,16 +62,16 @@ struct SequenceLooper {
     tracks.resize(maxNumTracks);
     
     for(int i=0; i<maxNumTracks; i++) {
-      tracks[i] = new LooperSequenceTrack(maxNumTrackNotes, i, sampleRate);
+      tracks[i] = new LooperSequenceTrack(i, sampleRate);
     }
   }
   
-  void setMaxNumTrackNotes(int maxNumTrackNotes) {
+  /*void setMaxNumTrackNotes(int maxNumTrackNotes) {
     this->maxNumTrackNotes = maxNumTrackNotes;
     for(int i=0; i<tracks.size(); i++) {
       tracks[i]->setNumNotes(maxNumTrackNotes);
     }
-  }
+  }*/
 };
 
 
@@ -316,10 +315,10 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
 
     for(int i=0; i<numCurrentlyPlayingNotes; i++) {
-      currentlyPlayingNotes[i].pitchChanger.reset();
+      //currentlyPlayingNotes[i].pitchChanger->reset();
     }
     for(int i=0; i<numCurrentlyPlayingNotesPresampled; i++) {
-      currentlyPlayingNotesPresampled[i].pitchChanger.reset();
+      //currentlyPlayingNotesPresampled[i].pitchChanger.reset();
     }
   }
 
@@ -611,6 +610,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
         sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration/sequencerZoom;
         //sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration/measuresPerLooperTrack * 4;
         clampSequencerTimeWindow();
+        updateActiveNoteSequencerRects();
       }
     }
   }
@@ -744,13 +744,14 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     return addCurrentlyPlayingNote(note);
   }
 
+  
 
   Note *startInstrumentTrackNote(double pitch, double volume, int instrumentTrackIndex, double time = -1) {
     if(instruments[instrumentTracks[instrumentTrackIndex].instrumentIndex]->instrumentType == Instrument::InstrumentType::CompositePads) {
       return startDrumPadNote(pitch, volume, instrumentTrackIndex, time);
     }
     
-    TrackNote note(sampleRate, pitch, getPaTime(), volume, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
+    Note note(sampleRate, pitch, getPaTime(), volume, instrumentTracks[instrumentTrackIndex].instrumentIndex, instrumentTrackIndex);
     //printf("(debugging) at Synth::startInstrumentTrackNote()\n");
 
     if(mode == Mode::Looper && isRecordingMode) {
@@ -760,7 +761,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       note.noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
       note.startTimeInMeasures = measuresPerLooperTrack * startTime / looperTrackDuration;
       
-      TrackNote *ln = getActiveLooperSequenceTrack()->startNote(note, startTime);
+      Note *ln = getActiveLooperSequenceTrack()->startNote(note, startTime);
       setNoteSequencerRect(*ln);
       if(recordTrackNotes) {
         recordNote(ln, instrumentTracks[instrumentTrackIndex].instrumentIndex);
@@ -787,7 +788,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     
     if(!(pad >= 0 && pad < drumPad->numPads)) return NULL;
     
-    TrackNote note(sampleRate, drumPad->pads[pad].pitch, getPaTime(), drumPad->pads[pad].volume, drumPad->pads[pad].instrumentIndex);
+    Note note(sampleRate, drumPad->pads[pad].pitch, getPaTime(), drumPad->pads[pad].volume, drumPad->pads[pad].instrumentIndex);
     //printf("2. %f, %f, %d, %f\n", drumPad->pads[pad].pitch, drumPad->pads[pad].volume, drumPad->pads[pad].instrumentIndex, getPaTime());
     //printf("(debugging) at Synth::startInstrumentTrackNote()\n");
 
@@ -801,7 +802,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       //note.startMeasure = floor(measuresPerLooperTrack * startTime / looperTrackDuration);
       //note.startMeasureFraction = fract(measuresPerLooperTrack * startTime / looperTrackDuration);
       
-      TrackNote *ln = getActiveLooperSequenceTrack()->startNote(note, startTime + 0.0001);
+      Note *ln = getActiveLooperSequenceTrack()->startNote(note, startTime + 0.0001);
       setNoteSequencerRect(*ln);
       if(recordTrackNotes) {
         recordNote(ln, drumPad->pads[pad].instrumentIndex);
@@ -942,7 +943,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     int numNotesToBeRecorded = 0;
     
     for(int i=0; i<synth->sequenceLooper.numTracks; i++) {
-      for(int k=0; k<synth->sequenceLooper.tracks[i]->numNotes; k++) {
+      for(int k=0; k<synth->sequenceLooper.tracks[i]->notes.size(); k++) {
         if(synth->recordNoteTrackResetInstrumentTrackIndex == -1 || synth->recordNoteTrackResetInstrumentTrackIndex == synth->sequenceLooper.tracks[i]->notes[k].instrumentTrackIndex) {
           if(synth->sequenceLooper.tracks[i]->notes[k].instrumentTrackIndex >= 0 && synth->sequenceLooper.tracks[i]->notes[k].instrumentTrackIndex < synth->numInstrumentTracks && synth->sequenceLooper.tracks[i]->notes[k].volume > 0) {
             synth->sequenceLooper.tracks[i]->notes[k].isRecorded = false;
@@ -953,7 +954,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
     
     for(int i=0; i<synth->sequenceLooper.numTracks; i++) {
-      for(int k=0; k<synth->sequenceLooper.tracks[i]->numNotes; k++) {
+      for(int k=0; k<synth->sequenceLooper.tracks[i]->notes.size(); k++) {
         if(synth->recordNoteTrackRestartRequested) {
           i = 0;
           k = 0;
@@ -963,8 +964,9 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
           numNotesRecorded = 0;
           noteTotalSamples = 0;
           noteTotalTime = 0;
-          for(int j=0; j<synth->sequenceLooper.maxNumTracks; j++) {
-            for(int p=0; p<synth->sequenceLooper.tracks[j]->numNotes; p++) {
+          //for(int j=0; j<synth->sequenceLooper.maxNumTracks; j++) {
+          int j = 0;
+            for(int p=0; p<synth->sequenceLooper.tracks[j]->notes.size(); p++) {
               if(synth->recordNoteTrackResetInstrumentTrackIndex == -1 || synth->recordNoteTrackResetInstrumentTrackIndex == synth->sequenceLooper.tracks[j]->notes[p].instrumentTrackIndex) {
                 if(synth->sequenceLooper.tracks[j]->notes[p].instrumentTrackIndex >= 0 && synth->sequenceLooper.tracks[j]->notes[p].instrumentTrackIndex < synth->numInstrumentTracks && synth->sequenceLooper.tracks[j]->notes[p].volume > 0) {
                   synth->sequenceLooper.tracks[j]->notes[p].isRecorded = false;
@@ -972,7 +974,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
                 }
               }
             }
-          }
+          //}
           totalTimeElapsed.tic();
         }
         
@@ -1016,7 +1018,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     
     bool wasAny = false;
     for(int i=0; i<sequenceLooper.maxNumTracks; i++) {
-      for(int k=0; k<sequenceLooper.tracks[i]->numNotes; k++) {
+      for(int k=0; k<sequenceLooper.tracks[i]->notes.size(); k++) {
         if(instrumentTrackIndex == -1 || instrumentTrackIndex == sequenceLooper.tracks[i]->notes[k].instrumentTrackIndex) {
           if(sequenceLooper.tracks[i]->notes[k].instrumentTrackIndex >= 0 && sequenceLooper.tracks[i]->notes[k].instrumentTrackIndex < numInstrumentTracks) {
             sequenceLooper.tracks[i]->notes[k].isRecorded = false;
@@ -1059,7 +1061,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
 
 
 
-  double cancelNote() {
+  bool cancelNote() {
     if(mode == Mode::Looper && isRecordingMode) {
       return getActiveLooperSequenceTrack()->cancelNote();
     }
@@ -1297,7 +1299,8 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       if(isLooperPlaying) {
         LooperSequenceTrack *looperSequenceTrack = getLoopTrack(deltaLoopTrack);
         int n = 0;
-        for(int i=0; i<sequenceLooper.maxNumTrackNotes; i++) {
+        //for(int i=0; i<sequenceLooper.maxNumTrackNotes; i++) {
+        for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
           if(looperSequenceTrack->notes[i].volume > 0 && !instrumentTracks[looperSequenceTrack->notes[i].instrumentTrackIndex].isMuted) {
             if(looperSequenceTrack->notes[i].startTime >= minTime && looperSequenceTrack->notes[i].startTime < maxTime) {
               /*if(recordTrackNotes && !looperSequenceTrack->notes[i].isRecorded) {
@@ -1436,7 +1439,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       }
     }
     else {
-      if(events.mouseNowDownL && holdingNotesScreenKeys[0] == NULL) {
+      if(events.mouseNowDownL && holdingNotesScreenKeys[0] == NULL && events.numModifiersDown == 0) {
         double startTime = floorLoopTime(map(events.mouseX, 0, screenW-1, sequencerTimeWindow.x, sequencerTimeWindow.y));
         holdingNotesScreenKeys[0] = startInstrumentTrackNote(pitch, defaultNoteVolume, activeInstrumentTrackIndex, startTime);
         if(holdingNotesScreenKeys[0]) {
@@ -1447,13 +1450,36 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
         //cancelNote();
       }
       if(events.mouseNowDownR) {
-        for(int i=0; i<getActiveLooperSequenceTrack()->notes.size(); i++) {
-          if(getActiveLooperSequenceTrack()->notes[i].volume > 0) {
-            if(getActiveLooperSequenceTrack()->notes[i].sequencerRect.isPointWithin(events.m)) {
-              getActiveLooperSequenceTrack()->notes[i].reset();
+        bool deleteSelectedNotes = false;
+        //std::vector<int> notesToBeErased;
+        LooperSequenceTrack *looperSequenceTrack = getActiveLooperSequenceTrack();
+        for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
+          if(looperSequenceTrack->notes[i].sequencerRect.isPointWithin(events.m)) {
+            //notesToBeErased.push_back(i);
+            if(getActiveLooperSequenceTrack()->notes[i].isSelected) {
+              deleteSelectedNotes = true;
+            }
+            else {
+              looperSequenceTrack->resetNote(i);
             }
           }
         }
+        /*for(int i=notesToBeErased.size()-1; i>=0; i--) {
+          getActiveLooperSequenceTrack()->notes.erase(getActiveLooperSequenceTrack()->notes.begin() + i);
+        }*/
+        if(deleteSelectedNotes) {
+          for(int i=0; i<selectedNotes.size(); i++) {
+            selectedNotes[i]->volume = -1;
+          }
+          selectedNotes.clear();
+
+          for(int i=getActiveLooperSequenceTrack()->notes.size()-1; i>=0; i--) {
+            if(getActiveLooperSequenceTrack()->notes[i].volume <= 0) {
+              getActiveLooperSequenceTrack()->notes.erase(getActiveLooperSequenceTrack()->notes.begin()+i);
+            }
+          }
+        }
+        updateNoteSequencerRects();
       }
     }
   }
@@ -1469,7 +1495,15 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
   }
   bool draggingSequencerTimeWindow = false;
   bool draggingSequencerZoom = false;
+  bool draggingNoteSelection = false;
+  bool draggingNoteSelectionMove = false;
   bool isFittedSequencerView = false;
+  
+  std::vector<Note*> selectedNotes;
+  
+  Vec2d noteSelectionCorner1, noteSelectionCorner2;
+  Rect noteSelectionRect;
+
   
   void fitSequencerView(int numMeasures = -1) {
 
@@ -1487,6 +1521,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     sequencerTimeWindow.y = sequencerTimeWindow.x + looperTrackDuration / sequencerZoom;
     isFittedSequencerView = true;
     clampSequencerTimeWindow();
+    updateActiveNoteSequencerRects();
   }
   
   void clampSequencerTimeWindow() {
@@ -1504,15 +1539,64 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     if(e.mouseButton == 1 && e.numModifiersDown == 0) {
       draggingSequencerTimeWindow = true;
     }
-    if(e.mouseButton == 2) {
+    if(e.mouseButton == 1 && (e.lControlDown || e.rControlDown)) {
       draggingSequencerZoom = true;
+    }
+    if(e.mouseButton == 2) {
+      //selectedNotes.clear();
+      draggingNoteSelection = true;
+      noteSelectionCorner1 = e.m;
+      noteSelectionRect.set(1, 1, noteSelectionCorner1.x, noteSelectionCorner1.y);
     }
   }
   void onMouseReleased(Events &e) {
+    if(draggingNoteSelection) {
+      //selectedNotes.clear();
+      LooperSequenceTrack *looperSequenceTrack = getActiveLooperSequenceTrack();
+      bool clearSelection = noteSelectionRect.w < 2 && noteSelectionRect.h < 2;
+      int numNotesAffected = 0;
+      
+      for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
+        if(noteSelectionRect.overlaps(looperSequenceTrack->notes[i].sequencerRect)) {
+          if(!looperSequenceTrack->notes[i].isSelected) {
+            selectedNotes.push_back(&looperSequenceTrack->notes[i]);
+            looperSequenceTrack->notes[i].isSelected = true;
+            numNotesAffected++;
+          }
+          else {
+            for(int k=0; k<selectedNotes.size(); k++) {
+              if(selectedNotes[k] == &looperSequenceTrack->notes[i]) {
+                looperSequenceTrack->notes[i].isSelected = false;
+                selectedNotes.erase(selectedNotes.begin()+k);
+                numNotesAffected++;
+              }
+            }
+          }
+        }
+      }
+      if(clearSelection && numNotesAffected == 0) {
+        for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
+          looperSequenceTrack->notes[i].isSelected = false;
+        }
+        selectedNotes.clear();
+      }
+    }
     draggingSequencerTimeWindow = false;
     draggingSequencerZoom = false;
+    draggingNoteSelection = false;
+    draggingNoteSelectionMove = false;
   }
   void onMouseMotion(Events &e) {
+
+    if(draggingNoteSelection) {
+      noteSelectionCorner2 = e.m;
+      
+      double x1 = min(noteSelectionCorner1.x, noteSelectionCorner2.x);
+      double x2 = max(noteSelectionCorner1.x, noteSelectionCorner2.x);
+      double y1 = min(noteSelectionCorner1.y, noteSelectionCorner2.y);
+      double y2 = max(noteSelectionCorner1.y, noteSelectionCorner2.y);
+      noteSelectionRect.set(x2-x1, y2-y1, (x1+x2)*0.5, (y1+y2)*0.5);
+    }
     if(draggingSequencerTimeWindow) {
       double dt = -(sequencerTimeWindow.y - sequencerTimeWindow.x) * e.md.x / GuiElement::screenW;
       sequencerTimeWindow.x = clamp(sequencerTimeWindow.x + dt, 0, looperTrackDuration-looperTrackDuration/sequencerZoom);
@@ -1666,26 +1750,86 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       }
     }
 
+    if(events.sdlKeyCode == SDLK_DELETE) {
+      for(int i=0; i<selectedNotes.size(); i++) {
+        selectedNotes[i]->volume = -1;
+      }
+      selectedNotes.clear();
+
+      for(int i=getActiveLooperSequenceTrack()->notes.size()-1; i>=0; i--) {
+        if(getActiveLooperSequenceTrack()->notes[i].volume <= 0) {
+          getActiveLooperSequenceTrack()->notes.erase(getActiveLooperSequenceTrack()->notes.begin()+i);
+        }
+      }
+      updateActiveNoteSequencerRects();
+    }
+
+    if(events.sdlKeyCode == SDLK_d && events.lControlDown) {
+      LooperSequenceTrack *looperSequenceTrack = getActiveLooperSequenceTrack();
+      double ta = 1e10, tb = 0;
+      for(int i=0; i<selectedNotes.size(); i++) {
+        ta = min(ta, selectedNotes[i]->startTime);
+        tb = max(tb, selectedNotes[i]->startTime + selectedNotes[i]->noteLength);
+        printf("selectedNotes[i]->startTime %f, selectedNotes[i]->noteLength %f\n", selectedNotes[i]->startTime, selectedNotes[i]->noteLength);
+      }
+      std::vector<Note*> newSelectedNotes;
+      for(int i=0; i<selectedNotes.size(); i++) {
+        // FIXME Wrap within function
+        //printf("Starting note at synth... 1\n");
+        //Note trackNote = *selectedNotes[i];
+        Note newNote(sampleRate, selectedNotes[i]->pitch, selectedNotes[i]->startTime, selectedNotes[i]->volume, selectedNotes[i]->instrumentIndex, selectedNotes[i]->instrumentTrackIndex);
+        //printf("Starting note at synth... 2\n");
+        Note *note = looperSequenceTrack->startNote(newNote, selectedNotes[i]->startTime + tb - ta);
+        
+        //double startTime = (time < 0 ? getLooperTime() : time) + 0.0001;
+        note->widthFraction = measuresPerLooperTrack * noteValueInverse;
+        note->noteValueInverse = noteValueInverse;
+        note->noteLength = (noteValueInverse * measuresPerLooperTrack == 0) ? 0 : looperTrackDuration / (noteValueInverse * measuresPerLooperTrack);
+        note->startTimeInMeasures = measuresPerLooperTrack * note->startTime / looperTrackDuration;
+        
+        //Note *ln = getActiveLooperSequenceTrack()->startNote(note, startTime);
+        setNoteSequencerRect(*note);
+        if(recordTrackNotes) {
+          recordNote(note, note->instrumentIndex);
+        }
+    
+        /*Note *newNote = looperSequenceTrack->startNote(*selectedNotes[i], selectedNotes[i]->startTime + tb - ta);
+        newSelectedNotes.push_back(newNote);*/
+        newSelectedNotes.push_back(note);
+      }
+      for(int i=0; i<selectedNotes.size(); i++) {
+        selectedNotes[i]->isSelected = false;
+      }
+      selectedNotes.clear();
+      selectedNotes = newSelectedNotes;
+      for(int i=0; i<selectedNotes.size(); i++) {
+        selectedNotes[i]->isSelected = true;
+      }
+      updateNoteSequencerRects();
+    }
     if(events.sdlKeyCode == SDLK_c && events.lControlDown) {
+    }
+    if(events.sdlKeyCode == SDLK_x && events.lControlDown) {
+    }
+    if(events.sdlKeyCode == SDLK_v && events.lControlDown) {
+    }
+    /*if(events.sdlKeyCode == SDLK_c && events.lControlDown) {
       //if(events.lShiftDown)
       if(sequenceLooper.copyTrack) delete sequenceLooper.copyTrack;
       sequenceLooper.copyTrack = new LooperSequenceTrack(getActiveLooperSequenceTrack());
     }
-    /*if(events.sdlKeyCode == SDLK_x && events.lControlDown) {
-      if(sequenceLooper.copyTrack) delete sequenceLooper.copyTrack;
-      sequenceLooper.copyTrack = new LooperSequenceTrack(getActiveLooperSequenceTrack());
-      resetCurrentLoop();
-    }*/
+    if(events.sdlKeyCode == SDLK_x && events.lControlDown) {
+    }
     if(events.sdlKeyCode == SDLK_v && events.lControlDown) {
       if(sequenceLooper.copyTrack) {
         LooperSequenceTrack *looperSequenceTrack = getActiveLooperSequenceTrack();
-        for(int i=0; i<sequenceLooper.copyTrack->numNotes; i++) {
+        for(int i=0; i<sequenceLooper.copyTrack->notes.size(); i++) {
           if(sequenceLooper.copyTrack->notes[i].volume > 0) {
             looperSequenceTrack->startNote(sequenceLooper.copyTrack->notes[i]);
           }
         }
       }
-    }
+    }*/
 
     if(events.sdlKeyCode == SDLK_KP_8 || events.sdlKeyCode == SDLK_KP_2) {
       double steps = events.sdlKeyCode == SDLK_KP_8 ? 1 : -1;
@@ -1951,7 +2095,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
   }
 
-  void setNoteSequencerRect(TrackNote &note) {
+  void setNoteSequencerRect(Note &note) {
     double pitch = note.pitch;
     if(instruments[instrumentTracks[note.instrumentTrackIndex].instrumentIndex]->instrumentType == Instrument::InstrumentType::CompositePads) {
       DrumPad *drumPad = dynamic_cast<DrumPad*>(instruments[instrumentTracks[note.instrumentTrackIndex].instrumentIndex]);
@@ -1986,7 +2130,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
 
       LooperSequenceTrack *looperSequenceTrack = getActiveLooperSequenceTrack();
 
-      for(int i=0; i<looperSequenceTrack->numNotes; i++) {
+      for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
         if(looperSequenceTrack->notes[i].volume > 0) {
           double t = looperSequenceTrack->notes[i].noteLength == 0 ? 0 : (getLooperTime() - looperSequenceTrack->notes[i].startTime) / looperSequenceTrack->notes[i].noteLength;
           //printf("%f, %f, %f, %f\n", t, getLooperTime(), looperSequenceTrack->notes[i].startTime, looperSequenceTrack->notes[i].noteLength);
@@ -2002,13 +2146,25 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
             }
           }
           else {*/
-            if(t >= 0 && t < 1) {
-              geomRenderer.strokeColor.set(1, 1, 1, 0.6 + (1.0-t)*0.3);
-              geomRenderer.fillColor.set(1, 1, 1, 0.15 + (1.0-t)*0.75);
+            if(looperSequenceTrack->notes[i].isSelected) {
+              if(t >= 0 && t < 1) {
+                geomRenderer.strokeColor.set(0.5, 0, 0, 0.8 + (1.0-t)*0.2);
+                geomRenderer.fillColor.set(0.5, 0, 0, 0.35 + (1.0-t)*0.65);
+              }
+              else {
+                geomRenderer.strokeColor.set(0.5, 0, 0, 0.8);
+                geomRenderer.fillColor.set(0.5, 0, 0, 0.35);
+              }
             }
             else {
-              geomRenderer.strokeColor.set(1, 1, 1, 0.6);
-              geomRenderer.fillColor.set(1, 1, 1, 0.15);
+              if(t >= 0 && t < 1) {
+                geomRenderer.strokeColor.set(1, 1, 1, 0.6 + (1.0-t)*0.3);
+                geomRenderer.fillColor.set(1, 1, 1, 0.15 + (1.0-t)*0.75);
+              }
+              else {
+                geomRenderer.strokeColor.set(1, 1, 1, 0.6);
+                geomRenderer.fillColor.set(1, 1, 1, 0.15);
+              }
             }
           //}
 
@@ -2056,7 +2212,12 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
         geomRenderer.strokeColor.set(1, 1, 1, 0.6);
         geomRenderer.fillColor.set(1, 1, 1, 0.3);
         geomRenderer.drawRectCorner(w2, h, x2, y);
-        
+      }
+      if(draggingNoteSelection) {
+        geomRenderer.strokeWidth = 1.5;
+        geomRenderer.strokeColor.set(1, 1, 1, 0.6);
+        geomRenderer.fillColor.set(1, 1, 1, 0.1);
+        geomRenderer.drawRect(noteSelectionRect);
       }
       if(isScreenKeysVisible()) {
         geomRenderer.strokeColor.set(0.3, 0, 0, 1.0);
@@ -2071,6 +2232,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       geomRenderer.drawLine(f, 0, f, screenH);
     }
     
+
   }
 
   void updateNoteSequencerRects() {
@@ -2090,7 +2252,7 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
     }
   }
 
-  void setNoteSequencerRect(TrackNote &note) {
+  void setNoteSequencerRect(Note &note) {
     double pitch = note.pitch;
     if(instruments[instrumentTracks[note.instrumentTrackIndex].instrumentIndex]->instrumentType == Instrument::InstrumentType::CompositePads) {
       DrumPad *drumPad = dynamic_cast<DrumPad*>(instruments[instrumentTracks[note.instrumentTrackIndex].instrumentIndex]);

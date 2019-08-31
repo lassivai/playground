@@ -100,9 +100,16 @@ struct TitleBar : public GuiElement
       geomRenderer.strokeWidth = 1;
       //geomRenderer.drawRect(size, d+size*0.5);
       //geomRenderer.drawLine(0, size.y-1, size.x, size.y-1, round(absolutePos));    
-      geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
+      //geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
+      //geomRenderer.endRendering();
       geomRenderer.drawLine(0, size.y-1, size.x, size.y-1, absolutePos);    
-      geomRenderer.endRendering();
+      //geomRenderer.endRendering();
+      //printf("at %s:\n", parent->name.c_str());
+      //geomRenderer.print();
+      
+      // FIXME Title bar line at note biquad filter don't show if not rendered with something else. Fast stroke rendering also helps.
+      // The bug arose when added fast stroke rendering at envelope preview panel.
+      geomRenderer.drawRect(0, 0, 0, 0);    
     }
 
   }

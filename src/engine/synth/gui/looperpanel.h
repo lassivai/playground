@@ -10,7 +10,7 @@ struct LooperPanel : public Panel {
   NumberBox *numLooperTracksGui = NULL;
   NumberBox *currentLoopRepeatGui = NULL;
   NumberBox *numLooperRepeatsGui = NULL;
-  NumberBox *maxNumSequenceLooperTrackNotesGui = NULL;
+  //NumberBox *maxNumSequenceLooperTrackNotesGui = NULL;
   NumberBox *measuresPerLoopGui = NULL;
   NumberBox *beatsPerMeasureGui = NULL;
   NumberBox *subdivisionsPerMeasureGui = NULL;
@@ -62,8 +62,8 @@ struct LooperPanel : public Panel {
 
     autoStepForwardGui = new CheckBox("Auto step forward", synth->progressOnNoteStartWhenPaused, 10, line+=lineHeight);
 
-    maxNumSequenceLooperTrackNotesGui = new NumberBox("Max num notes", synth->sequenceLooper.maxNumTrackNotes, NumberBox::INTEGER, 1, 1<<30, 10, line+=lineHeight, 9);
-    maxNumSequenceLooperTrackNotesGui->incrementMode = NumberBox::IncrementMode::LinearAboveOne;
+    /*maxNumSequenceLooperTrackNotesGui = new NumberBox("Max num notes", synth->sequenceLooper.maxNumTrackNotes, NumberBox::INTEGER, 1, 1<<30, 10, line+=lineHeight, 9);
+    maxNumSequenceLooperTrackNotesGui->incrementMode = NumberBox::IncrementMode::LinearAboveOne;*/
 
     defaultNoteVolumeGui = new NumberBox("Note volume", synth->defaultNoteVolume, NumberBox::FLOATING_POINT, 0, 1.0, 10, line += lineHeight, 6);
     applyDefaultVolumeToKeyboardsGui = new CheckBox("Forced", synth->applyDefaultVolumeTokeyboards, 10+200, line);
@@ -78,7 +78,7 @@ struct LooperPanel : public Panel {
     this->addChildElement(numLooperRepeatsGui);*/
     this->addChildElement(loopDurationGui);
     this->addChildElement(tempoGui);
-    this->addChildElement(maxNumSequenceLooperTrackNotesGui);
+    //this->addChildElement(maxNumSequenceLooperTrackNotesGui);
     this->addChildElement(measuresPerLoopGui);
     this->addChildElement(beatsPerMeasureGui);
     this->addChildElement(subdivisionsPerMeasureGui);
@@ -141,11 +141,11 @@ struct LooperPanel : public Panel {
         guiElement->getValue((void*)&value);
         looperPanel->synth->setLooperTracksPlaying(value);
       }
-      if(guiElement == looperPanel->maxNumSequenceLooperTrackNotesGui) {
+      /*if(guiElement == looperPanel->maxNumSequenceLooperTrackNotesGui) {
         int value;
         guiElement->getValue((void*)&value);
         looperPanel->synth->sequenceLooper.setMaxNumTrackNotes(value);
-      }
+      }*/
       if(guiElement == looperPanel->currentLoopGui) {
         guiElement->getValue((void*)&looperPanel->synth->sequenceLooper.currentTrack);
       }

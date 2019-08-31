@@ -6,7 +6,8 @@
 
 struct GeomRenderer
 {
-  enum RendererType { None = -1, Basic = 0, FastStrokeRenderer = 1 };
+  enum RendererType { None, Basic, FastStrokeRenderer };
+  std::vector<std::string> rendererTypeNames { "None", "Basic", "FastStrokeRenderer" };
 
   GlShader shaderGeom, fastStrokeShader;
   Quadx quadGeom;
@@ -37,6 +38,20 @@ struct GeomRenderer
     texture = settings.texture;
   }
 
+void print() {
+  printf("GeomRenderer:\n");
+  printf("  fillColorPrev: %f, %f, %f, %f\n", fillColorPrev.x, fillColorPrev.y, fillColorPrev.z, fillColorPrev.w);
+  printf("  strokeColorPrev: %f, %f, %f, %f\n", strokeColorPrev.x, strokeColorPrev.y, strokeColorPrev.z, strokeColorPrev.w);
+  printf("  fastStrokeColorPrev: %f, %f, %f, %f\n", fastStrokeColorPrev.x, fastStrokeColorPrev.y, fastStrokeColorPrev.z, fastStrokeColorPrev.w);
+  printf("  wPrev: %f\n", wPrev);
+  printf("  hPrev: %f\n", hPrev);
+  printf("  strokeWidthPrev: %f\n", strokeWidthPrev);
+  printf("  strokeTypePrev: %d\n", strokeTypePrev);
+  printf("  scalePrev: %f\n", scalePrev);
+  printf("  geomTypePrev: %d\n", geomTypePrev);
+  printf("  rendererActivated: %d\n", rendererActivated);
+}
+
 private:
   int geomType = 0, geomTypePrev = -1;
   double w = 0, h = 0, wPrev = -1, hPrev = -1;
@@ -49,7 +64,6 @@ private:
   double scalePrev = -1;
   //bool shaderActivatedByForce = false;
 
-  Vec4d strokeColorFastPrev;
 
   RendererType rendererActivated = None;
 
@@ -361,7 +375,7 @@ public:
   }
 
   inline void drawLine(const Vec2d &a, const Vec2d &b, const Vec2d &d, double rot = 0) {
-    if(rendererActivated == 1) {
+    if(rendererActivated == FastStrokeRenderer) {
       drawLineFast(Line(a, b), d.x, d.y, rot);
     }
     else {
@@ -370,7 +384,7 @@ public:
   }
 
   inline void drawLine(const Vec2d &a, const Vec2d &b, double dx = 0, double dy = 0, double rot = 0) {
-    if(rendererActivated == 1) {
+    if(rendererActivated == FastStrokeRenderer) {
       drawLineFast(Line(a, b), dx, dy, rot);
     }
     else {
@@ -379,7 +393,7 @@ public:
   }
 
   inline void drawLine(double x0, double y0, double x1, double y1, const Vec2d &d, double rot = 0) {
-    if(rendererActivated == 1) {
+    if(rendererActivated == FastStrokeRenderer) {
       drawLineFast(Line(x0, y0, x1, y1), d.x, d.y, rot);
     }
     else {
@@ -388,7 +402,7 @@ public:
   }
 
   inline void drawLine(double x0, double y0, double x1, double y1, double dx = 0, double dy = 0, double rot = 0) {
-    if(rendererActivated == 1) {
+    if(rendererActivated == FastStrokeRenderer) {
       drawLineFast(Line(x0, y0, x1, y1), dx, dy, rot);
     }
     else {

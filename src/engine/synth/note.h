@@ -353,12 +353,16 @@ struct Note
 
   /**************** SEQUENCER STUFF ****************/
   
+  int instrumentTrackIndex = 0;
+  int padIndex = 0;
+  
   double widthFraction = 1;
   Rect sequencerRect;
   double noteLength = 0;
   double noteValueInverse = 1;
 
   double startTimeInMeasures = 0;
+  bool isSelected = false;
   //long startMeasure = 0;
   //double startMeasureFraction = 0;
   //double lenghtMeasureFraction = 0;
@@ -372,7 +376,7 @@ struct Note
     
   /**************** VOCODER STUFF ****************/
   
-  PitchChanger pitchChanger;
+  PitchChanger *pitchChanger = NULL;
 
 
 
@@ -390,6 +394,8 @@ struct Note
     isInitialized = false;
     noteLength = 0;
     noteValueInverse = 1;
+    instrumentTrackIndex = 0;
+    padIndex = 0;
     
     instrumentName = "";
     
@@ -407,13 +413,21 @@ struct Note
     
     phasesGM.assign(phasesGM.size(), Vec2d::Zero);;
     
+    isSelected = false;
+    
     for(int i=0; i<phasesVoiceNew.size(); i++) {
       phasesVoiceNew[i].assign(phasesVoiceNew[i].size(), Vec2d::Zero);;
     }
-    pitchChanger.reset();
+    if(pitchChanger) {
+      pitchChanger->reset();
+    }
   }
 
-  virtual ~Note() {}
+  virtual ~Note() {
+    if(pitchChanger) {
+      delete pitchChanger;
+    }
+  }
   
   Note() {
     pitch = 0;
@@ -442,12 +456,21 @@ struct Note
     this->instrumentIndex = instrumentIndex;
     //pitchChanger.init(sampleRate, 0.1);
   }
+  
+  //TrackNote(double sampleRate, double pitch, double startTime, double volume) : Note(sampleRate, pitch, startTime, volume) {}
+  //TrackNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {}
+  Note(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex, int instrumentTrackIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {
+    this->instrumentTrackIndex = instrumentTrackIndex;
+  }
 
   // FIXME
   inline bool prepare(double sampleRate) {
     this->sampleRate = sampleRate;
-    if(pitchChanger.delayLine.buffer.size() == 0) {
-      pitchChanger.init(sampleRate, 0.1, 0.1);
+    if(!pitchChanger) {
+      pitchChanger = new PitchChanger();
+    }
+    if(pitchChanger->delayLine.buffer.size() == 0) {
+      pitchChanger->init(sampleRate, 0.1, 0.1);
       return true;
     }
     return false;
@@ -466,6 +489,8 @@ struct Note
     this->widthFraction = note.widthFraction;
     this->noteLength = note.noteLength;
     this->noteValueInverse = note.noteValueInverse;
+    this->instrumentTrackIndex = note.instrumentTrackIndex;
+    this->padIndex = note.padIndex;
     this->isHolding = note.isHolding;
     
     noteFullLengthSecs = note.noteFullLengthSecs;
@@ -482,7 +507,7 @@ struct Note
     noteActualLength = note.noteActualLength;
     //pitchChanger.init(sampleRate, 0.1);
 
-    pitchChanger = note.pitchChanger;
+    //pitchChanger = note.pitchChanger;
     
     startTimeInMeasures = note.startTimeInMeasures;
     
@@ -563,11 +588,11 @@ struct Note
 
 
 
-struct TrackNote : public Note {
+/*struct TrackNote : public Note {
   int instrumentTrackIndex = 0;
   int padIndex = 0;
-  /*double sampleLength = 0;
-  std::vector<Vec2d> sampledNote;*/
+  //double sampleLength = 0;
+  //std::vector<Vec2d> sampledNote;
 
   virtual void reset() {
     Note::reset();
@@ -575,13 +600,18 @@ struct TrackNote : public Note {
     padIndex = 0;
   }
 
+  void operator=(const TrackNote &trackNote) {
+    Note::operator=(trackNote);
+    this->instrumentTrackIndex = 0
+  }  
+
   TrackNote() : Note() {}
   TrackNote(double sampleRate, double pitch, double startTime, double volume) : Note(sampleRate, pitch, startTime, volume) {}
   TrackNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {}
   TrackNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex, int instrumentTrackIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {
     this->instrumentTrackIndex = instrumentTrackIndex;
   }
-};
+};*/
 
 
 

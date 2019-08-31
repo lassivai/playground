@@ -747,13 +747,13 @@ public:
       
       // FIXME should happen probably in waveform class
       if(voices[k].audioSource == Voice::AudioSource::LineIn) { // I think this functionality go by the name Vocoder usually
-        if(note.pitchChanger.delayLine.buffer.size() == 0) {
+        if(note.pitchChanger->delayLine.buffer.size() == 0) {
           printf("Warning at Instrument.getSample(), note.pitchChanger.delayLine.buffer.size() == 0, pitch %d\n", pitch);
         }
         else {
-          note.pitchChanger.transpositionAmount = modulatedFrequency.x / C4_FREQUENCY;
+          note.pitchChanger->transpositionAmount = modulatedFrequency.x / C4_FREQUENCY;
           Vec2d in = sampleIn;
-          note.pitchChanger.apply(in);
+          note.pitchChanger->apply(in);
           out += in;
         }
       }

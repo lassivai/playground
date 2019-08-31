@@ -124,7 +124,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
     else {
       if(verticalZoomMode == 1) {
         int minNote = 127, maxNote = 0;
-        for(int i=0; i<looperSequenceTrack->numNotes; i++) {
+        for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
           if(looperSequenceTrack->notes[i].volume > 0) {
             double pitch = looperSequenceTrack->notes[i].pitch;
             if(drumPad) {
@@ -144,7 +144,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
           double time = synth->getLooperTime();
           double closestStartTime = 0;
           int closestStartTimeNoteIndex = -1;
-          for(int i=0; i<looperSequenceTrack->numNotes; i++) {
+          for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
             if(looperSequenceTrack->notes[i].volume > 0 && fabs(time - looperSequenceTrack->notes[i].startTime) < fabs(time - closestStartTime)) {
               closestStartTime = looperSequenceTrack->notes[i].startTime;
               closestStartTimeNoteIndex = i;
@@ -153,7 +153,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
           if(closestStartTimeNoteIndex >= 0) {
             int verticalPositionNew = 0;
             int n = 0;
-            for(int i=0; i<looperSequenceTrack->numNotes; i++) {
+            for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
               if(looperSequenceTrack->notes[i].volume > 0 && closestStartTime == looperSequenceTrack->notes[i].startTime) {
                 double pitch = looperSequenceTrack->notes[i].pitch;
                 if(drumPad) {
@@ -174,7 +174,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
       }
     }
 
-    for(int i=0; i<looperSequenceTrack->numNotes; i++) {
+    for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
       if(looperSequenceTrack->notes[i].volume > 0 && looperSequenceTrack->notes[i].startTime > timeRange.x && looperSequenceTrack->notes[i].startTime < timeRange.y) {
         Vec2i col(1, 0);
         if(looperSequenceTrack->notes[i].noteLength != 0) {
@@ -410,7 +410,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
       if(x == 6 && y >= 0 && y < 8 && keyState == LaunchPadInterface::KeyState::PressedActive) {
         for(int i=0; i<8; i++) {
           if(launchPad->arePadsPressedAndCancelRelease(64+i)) {
-            for(int k=0; k<looperSequenceTrack->numNotes; k++) {
+            for(int k=0; k<looperSequenceTrack->notes.size(); k++) {
               if(looperSequenceTrack->notes[k].padIndex == drumPadModePadPage*8 + i) {
                 looperSequenceTrack->notes[k].reset();
               }
@@ -437,7 +437,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
               time2 = (double) (x+1) / synth->subdivisionsPerMeasure * synth->looperTrackDuration / synth->measuresPerLooperTrack;
             }
 
-            for(int i=0; i<looperSequenceTrack->numNotes; i++) {
+            for(int i=0; i<looperSequenceTrack->notes.size(); i++) {
               //if(looperSequenceTrack->notes[i].volume > 0 && pad == drumPad->pitchOffset + looperSequenceTrack->notes[i].padIndex && synth->roundLoopTimeNoteValueInverse(time) == synth->roundLoopTimeNoteValueInverse(looperSequenceTrack->notes[i].startTime)) {
               if(looperSequenceTrack->notes[i].volume > 0 && pad == looperSequenceTrack->notes[i].padIndex && looperSequenceTrack->notes[i].startTime > time && looperSequenceTrack->notes[i].startTime < time2) {
                 looperSequenceTrack->notes[i].reset();

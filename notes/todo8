@@ -1,3 +1,5 @@
+Unbeliavable problem :D Soon starting to think it has more to do with the hackers of my devices than anything else...
+
 TODO
  - save/load song files
    - including used instruments
@@ -5,11 +7,15 @@ TODO
 - next boring and big challenge, instead of song file input/output, same stuff for the whole session, including the song and all the other parameters
 - select group of notes, move an copy and paste
 - move view window according to progression of track (DONE)
+
+FIXME
 - ahe envelope offset cause clicks sometimes... (FIXED)
 - lines and rect strokes sometimes dissapear. Started after put fast stroke renderers at few spots (partially FIXED)
    - title bar line dissapears from note biquad filter panel if fast stroke renderer used at envelope preview panel......
    - but appears simultaneously with blinking text cursir in one certain text box
    - if fast stroke renderer applied at the weak spot, it works, original bug still haunts, yet not visible anywhere
+   - 31.8.2019. Halted 3 times at startup (had alsa instead of jack this time, because of halted jack server! ...this should explain all)
+   
 ----
 
 I am starting to be pleased with the appearance of that thing. I was thinking to make it look like a controlling panel from the manned moon flight era.

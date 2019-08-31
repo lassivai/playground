@@ -850,7 +850,7 @@ struct BiquadFilter : public PostProcessingEffect {
     double line = 0, lineHeight = 23;
 
     if(!panel) {
-      panel = new Panel(300, 300, 60, 10);
+      panel = new Panel("Biquad panel", 300, 300, 60, 10);
 
       panel->addGuiEventListener(new BiquadFilterPanelListener(this));
       
