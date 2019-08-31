@@ -17,10 +17,7 @@ struct StereoOscilloscope {
       
       int currentPhase = stereoOscilloscope->trailPosition;
       Vec2d mp(absolutePos.x + size.x/2, absolutePos.y + size.y/2);
-      geomRenderer.strokeColor.set(1, 1, 1, 0.7);
-      geomRenderer.strokeWidth = 1;
-      geomRenderer.strokeType = 1;
-      
+
       double maxDistanceSquared = 0;
       for(int i=0; i<stereoOscilloscope->trailLength; i++) {
         Vec2d p = stereoOscilloscope->trail[(stereoOscilloscope->maxTrailLength+currentPhase-i-1) % stereoOscilloscope->maxTrailLength];
@@ -31,6 +28,9 @@ struct StereoOscilloscope {
       double scaling = min(size.x-10, size.y-10) * 0.5 / d;
       
       geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
+      geomRenderer.strokeColor.set(1, 1, 1, 0.7);
+      geomRenderer.strokeWidth = 1;
+      geomRenderer.strokeType = 1;
       
       for(int i=1; i<stereoOscilloscope->trailLength; i++) {
         geomRenderer.drawLine(mp + stereoOscilloscope->trail[(stereoOscilloscope->maxTrailLength+currentPhase-i-1) % stereoOscilloscope->maxTrailLength] * scaling,

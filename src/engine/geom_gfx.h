@@ -43,6 +43,7 @@ private:
   double innerRadius = 0, innerRadiusPrev = -1;
   Vec4d fillColorPrev;
   Vec4d strokeColorPrev;
+  Vec4d fastStrokeColorPrev;
   double strokeWidthPrev = 0;
   int strokeTypePrev = -1;
   double scalePrev = -1;
@@ -57,9 +58,9 @@ private:
       if(rendererActivated == None) {
         fastStrokeShader.activate();
       }
-      if(strokeColor != strokeColorPrev) {
+      if(strokeColor != fastStrokeColorPrev) {
         fastStrokeShader.setUniform4f("strokeColor", strokeColor);
-        strokeColorPrev = strokeColor;
+        fastStrokeColorPrev = strokeColor;
       }
     }
     else {
@@ -152,7 +153,8 @@ public:
     }
     if(rendererType == FastStrokeRenderer) {
       fastStrokeShader.activate();
-      fastStrokeShader.setUniform4f("strokeColor", strokeColor);
+      /*fastStrokeShader.setUniform4f("strokeColor", strokeColor);
+      strokeColorPrev = strokeColor;*/
     }
   }
 

@@ -36,13 +36,13 @@ instrument {
     amplitudeEnvelope: 0
     frequencyEnvelope: -1
     waveform {
-      type: Wave10
+      type: Wave11
       waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: First zero
       waveTableSize: 2048
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.083536883, 0.083536883
+      phaseOffsets: 0.502686859, 0.502686859
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0

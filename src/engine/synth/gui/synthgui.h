@@ -75,10 +75,18 @@ struct CurrentlyPlayingNotePanel : public Panel {
     liveNoteRects.resize(synth->numCurrentlyPlayingNotes);
     recordedNoteRects.resize(synth->numCurrentlyPlayingNotesPresampled);
     
+    int recordedNotesPlaying = 0;
+    for(int i=0; i<synth->numCurrentlyPlayingNotesPresampled; i++) {
+      if(synth->currentlyPlayingNotesPresampled[i].volume > 0) {
+        recordedNotesPlaying++;
+      }
+    }
+    bool showRecordedNotes = mode == ShowLiveAndRecordedNotes || recordedNotesPlaying > 0|| synth->isLooperPlaying;
+    
     double width = 44;
     double itemHeight = 8;
-    if(mode == ShowLiveAndRecordedNotes) {
-      setSize(width, itemHeight * (synth->numCurrentlyPlayingNotes + synth->numCurrentlyPlayingNotesPresampled) + 7);
+    if(showRecordedNotes) {
+      setSize(width, itemHeight * (synth->numCurrentlyPlayingNotes + synth->numCurrentlyPlayingNotesPresampled) + 11);
     }
     else {
       setSize(width, itemHeight * (synth->numCurrentlyPlayingNotes) + 5);
@@ -121,14 +129,9 @@ struct CurrentlyPlayingNotePanel : public Panel {
       }
     }
     //geomRenderer.strokeWidth = 1.5; // FIXME something's wrong with the stroke width
-    int recordedNotesPlaying = 0;
-    for(int i=0; i<synth->numCurrentlyPlayingNotesPresampled; i++) {
-      if(synth->currentlyPlayingNotesPresampled[i].volume > 0) {
-        recordedNotesPlaying++;
-      }
-    }
-    if(mode == ShowLiveAndRecordedNotes || recordedNotesPlaying > 0|| synth->isLooperPlaying) {
-      hx = 4+2+itemHeight * synth->numCurrentlyPlayingNotes;
+
+    if(showRecordedNotes) {
+      hx = 4+4+2+itemHeight * synth->numCurrentlyPlayingNotes;
       
       for(int i=0; i<synth->numCurrentlyPlayingNotesPresampled; i++) {
         recordedNoteRects[i].set(width - padding*2, itemHeight-3, absolutePos.x+width/2, hx+absolutePos.y+itemHeight*i+(itemHeight-3)*0.5);

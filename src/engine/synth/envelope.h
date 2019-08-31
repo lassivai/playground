@@ -227,16 +227,16 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
           return 0;
         }
         else if(isKeyHolding) {
-          return max(0.0, exp(ahdHoldDecayExponent*(t-ahdAttackDuration)) + ahdOffset);
+          return max(0.0, (exp(ahdHoldDecayExponent*(t-ahdAttackDuration)) + ahdOffset) / (1+ahdOffset));
         }
         else {
           if(keyHoldDuration < ahdAttackDuration) {
             double ampAfterAttack = ahdAttackDuration == 0 ? 1.0 : lerp(0.0, 1.0, keyHoldDuration/ahdAttackDuration);
-            return max(0.0, ampAfterAttack * exp(ahdReleaseDecayExponent*(t-keyHoldDuration)) + ahdOffset);
+            return max(0.0, ampAfterAttack * (exp(ahdReleaseDecayExponent*(t-keyHoldDuration)) + ahdOffset) / (1+ahdOffset));
           }
           else {
-            double ampAfterHold = exp(ahdHoldDecayExponent*(t-ahdAttackDuration));
-            return max(0.0, ampAfterHold * exp(ahdReleaseDecayExponent*(t-keyHoldDuration)) + ahdOffset);
+            double ampAfterHold = (exp(ahdHoldDecayExponent*(t-ahdAttackDuration)) + ahdOffset) / (1+ahdOffset);
+            return max(0.0, ampAfterHold * (exp(ahdReleaseDecayExponent*(t-keyHoldDuration)) + ahdOffset) / (1+ahdOffset));
           }
         }
       }

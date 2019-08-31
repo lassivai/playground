@@ -92,14 +92,19 @@ struct TitleBar : public GuiElement
       geomRenderer.texture = NULL;
       geomRenderer.fillColor = drawBackground ? backgroundColor : Vec4d::Zero;
       geomRenderer.strokeColor = borderColor;
+
       //geomRenderer.fillColor = Vec4d(0.0, 0.0, 0.0, 1);
       //geomRenderer.strokeColor = Vec4d(0.0, 0.0, 0.0, 1);
       //geomRenderer.strokeType = drawBorder ? 1 : 0;
       geomRenderer.strokeType = 1;
       geomRenderer.strokeWidth = 1;
       //geomRenderer.drawRect(size, d+size*0.5);
-      geomRenderer.drawLine(0, size.y-1, size.x, size.y-1, round(absolutePos));    
+      //geomRenderer.drawLine(0, size.y-1, size.x, size.y-1, round(absolutePos));    
+      geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
+      geomRenderer.drawLine(0, size.y-1, size.x, size.y-1, absolutePos);    
+      geomRenderer.endRendering();
     }
+
   }
 
   /*void render(GeomRenderer &geomRenderer, TextGl &textRenderer) {

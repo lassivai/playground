@@ -40,7 +40,7 @@ instrument {
       pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: -0.3
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1

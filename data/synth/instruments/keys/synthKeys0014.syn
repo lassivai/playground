@@ -42,7 +42,7 @@ instrument {
   }
   envelope {
     type: ahe
-    parameters: 0.025, -1, -6, -0.05
+    parameters: 0.025, -1, -6, -0.003
     output: 1
   }
 }

@@ -75,7 +75,7 @@ instrument {
   }
   envelope {
     type: ahe
-    parameters: 0, -1, -10, -0.05
+    parameters: 0, -1.4, -10, -0.0007
     output: 0
   }
   envelope {

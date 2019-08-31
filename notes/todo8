@@ -1,0 +1,15 @@
+TODO
+ - save/load song files
+   - including used instruments
+- before opening instrument, check if identical instrument already exists
+- next boring and big challenge, instead of song file input/output, same stuff for the whole session, including the song and all the other parameters
+- select group of notes, move an copy and paste
+- move view window according to progression of track (DONE)
+- ahe envelope offset cause clicks sometimes... (FIXED)
+- lines and rect strokes sometimes dissapear. Started after put fast stroke renderers at few spots (partially FIXED)
+   - title bar line dissapears from note biquad filter panel if fast stroke renderer used at envelope preview panel......
+   - but appears simultaneously with blinking text cursir in one certain text box
+   - if fast stroke renderer applied at the weak spot, it works, original bug still haunts, yet not visible anywhere
+----
+
+I am starting to be pleased with the appearance of that thing. I was thinking to make it look like a controlling panel from the manned moon flight era.

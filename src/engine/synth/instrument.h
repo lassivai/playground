@@ -1600,7 +1600,7 @@ public:
         geomRenderer.texture = NULL;
         geomRenderer.strokeType = 1;
         geomRenderer.strokeWidth = 1;        
-        //geomRenderer.fillColor.set(1, 1, 1, 0.5);
+        geomRenderer.fillColor.set(1, 1, 1, 0.5);
         if(envelopeTrail.size() != (int)size.x) {
           envelopeTrail.assign(size.x, 0);
         }
@@ -1619,6 +1619,7 @@ public:
         }*/
         geomRenderer.strokeColor.set(1, 1, 1, 0.5);
         geomRenderer.startRendering(GeomRenderer::RendererType::FastStrokeRenderer);
+        //geomRenderer.startRendering();
         for(int x=1; x<size.x; x++) {
           //geomRenderer.drawLine(x-1, size.y*0.36 * (1.0 - envelopeTrail[x-1]), x, size.y*0.36 * (1.0 - envelopeTrail[x]), absolutePos);
           geomRenderer.drawLine(x-1, size.y*0.72 * (1.0 - envelopeTrail[x-1]), x, size.y*0.72 * (1.0 - envelopeTrail[x]), absolutePos);

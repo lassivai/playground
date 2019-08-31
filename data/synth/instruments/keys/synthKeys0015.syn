@@ -1,18 +1,13 @@
 instrument {
   name: Synth 3
-  volume: 1.000000
-  multiDelay {
-    gain: 1.100000
-    wet: 0.830000
-    out: 1, 1.000000
-    out: 0, 0.000000
-  }
+  volume: 1
   voice {
-    volume: 0.350000
-    tuning: 1.000000
-    stereoPhaseOffset: 0.000000
-    unison: 5
-    unisonDetuning: 0.009000
+    volume: 0.35
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.009
     unisonDetuningRandomSeeds: 4, 20
     amplitudeModulator: 0
     frequencyModulator: 0
@@ -21,22 +16,39 @@ instrument {
     waveform {
       type: Triangle
       waveTableMode: Single faster
-      waveformParameters: 2.000000
-      phaseOffsets: 0.250000, 0.250000
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 2, 0, 0
+      phaseOffsets: 0.02247191, 0.02247191
       lockedStereoPhase: 0
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
-        count: 1
-        usePattern: 0
-        frequencies: 1.000000
-        gains: 0.500000
+        pattern: Equation
+        count: 7
+        frequencyParameters: 1.2, 1.7, 0, 0, 0, 0
+        gainParameters: 0, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.579298831, 0.994974874, 0, 1, 0.55276382, 0
       }
     }
   }
   envelope {
     type: ahe
-    parameters: 0.000000, -0.500000, -6.000000
+    parameters: 0, -1, -6, -0.0005
     output: 1
   }
 }

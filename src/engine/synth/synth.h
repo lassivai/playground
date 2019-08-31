@@ -1977,7 +1977,8 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
       double f = map(getLooperTime(), sequencerTimeWindow.x, sequencerTimeWindow.y, 0, screenW);
       geomRenderer.texture = NULL;
 
-
+      geomRenderer.strokeType = 1;
+      geomRenderer.strokeWidth = 1.5;
 
       /*if(isScreenKeysVisible()) {
         geomRenderer.strokeColor.set(0, 0, 0, 0.7);
@@ -2057,14 +2058,14 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
         geomRenderer.drawRectCorner(w2, h, x2, y);
         
       }
-      //if(isScreenKeysVisible()) {
+      if(isScreenKeysVisible()) {
         geomRenderer.strokeColor.set(0.3, 0, 0, 1.0);
         geomRenderer.fillColor.set(0, 0, 0, 0.3);
-      /*}
+      }
       else {
         geomRenderer.strokeColor.set(1, 1, 1, 0.8);
         geomRenderer.fillColor.set(1, 1, 1, 0.3);
-      }*/
+      }
       geomRenderer.strokeType = 1;
       geomRenderer.strokeWidth = 1.5;
       geomRenderer.drawLine(f, 0, f, screenH);
