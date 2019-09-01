@@ -17,11 +17,11 @@ instrument {
       type: Sin bands
       waveTableMode: Single faster
       waveTableSeamMode: Linear seam
-      phaseMode: First zero
+      phaseMode: Zeros in range
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.034332308, 0.034332308
-      lockedStereoPhase: 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 0
@@ -29,16 +29,16 @@ instrument {
       pitchDependendGain: 0
       waveValueOffset: 0
       minHarmonicSmoothing: 1
-      maxHarmonicSmoothing: 300
+      maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
-      harmonicSmoothingPower: 3
+      harmonicSmoothingPower: 2
       partials {
         pattern: Graphs
         count: 10
       }
       factorDraggingGraph {
         yRange: 1, 30
-        curve: 0, 1, 0, 0.210526316, 1, 0, 0.215538847, 0.957393484, 0, 1, 0, 0
+        curve: 0, 1, 0, 0.210526316, 1, 0, 0.215538847, 0.972431078, 0, 0.706766917, 0.421052632, 0, 1, 0, 0
         roundDraggingFactors: 0
         roundToNearestDraggingFraction: 1
         clampMinDraggingFactor: 1

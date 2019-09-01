@@ -1,12 +1,13 @@
 instrument {
   name: Pad 6
-  volume: 1.000000
+  volume: 1
   voice {
-    volume: 0.150000
-    tuning: 1.000000
-    stereoPhaseOffset: 0.000000
+    volume: 0.15
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
     unison: 1
-    unisonDetuning: 0.001000
+    unisonDetuning: 0.001
     unisonDetuningRandomSeeds: 0, 0
     amplitudeModulator: 0
     frequencyModulator: 0
@@ -15,23 +16,35 @@ instrument {
     waveform {
       type: Sin
       waveTableMode: Single faster
-      waveformParameters: 1.000000
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: Equation
         count: 1
-        usePattern: 0
-        frequencies: 1.000000
-        gains: 0.500000
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 0, 0, 0, 0, 0, 0
       }
     }
   }
   modulator {
-    frequency: 1.000000
-    stereoPhaseOffset: 0.000800
-    stereoPhaseDifference: 0.000000
+    frequency: 1
+    stereoPhaseOffset: 0.0008
+    pan: 0
+    stereoPhaseDifference: 0
     relativeMode: 1
     inputAM: 3
     inputFM: -1
@@ -39,28 +52,40 @@ instrument {
     outputFM: 0
     amplitudeEnvelope: 1
     frequencyEnvelope: -1
-    depthAM: 0.400000
-    depthFM: 1.000000
+    depthAM: 0.4
+    depthFM: 1
     waveform {
       type: Sin
       waveTableMode: Single faster
-      waveformParameters: 1.000000
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: Equation
         count: 1
-        usePattern: 1
-        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
-        gainParameters: 0.900000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 0.9, 0, 0, 0, 0, 0
       }
     }
   }
   modulator {
-    frequency: 3.000000
-    stereoPhaseOffset: 0.000000
-    stereoPhaseDifference: 0.000000
+    frequency: 3
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
     relativeMode: 1
     inputAM: -1
     inputFM: -1
@@ -68,28 +93,40 @@ instrument {
     outputFM: 0
     amplitudeEnvelope: -1
     frequencyEnvelope: -1
-    depthAM: 0.500000
-    depthFM: 3.000000
+    depthAM: 0.5
+    depthFM: 3
     waveform {
       type: Sinc
       waveTableMode: Single faster
-      waveformParameters: 1.000000
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0.148021495, 0.148021495
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: Equation
         count: 1
-        usePattern: 0
-        frequencies: 1.000000
-        gains: 1.000000
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 0, 0, 0, 0, 0, 0
       }
     }
   }
   modulator {
-    frequency: 2.000000
-    stereoPhaseOffset: 0.500000
-    stereoPhaseDifference: 0.000000
+    frequency: 2
+    stereoPhaseOffset: 0.5
+    pan: 0
+    stereoPhaseDifference: 0
     relativeMode: 0
     inputAM: 4
     inputFM: -1
@@ -97,27 +134,40 @@ instrument {
     outputFM: -1
     amplitudeEnvelope: -1
     frequencyEnvelope: -1
-    depthAM: 8.000000
-    depthFM: 0.900000
+    depthAM: 8
+    depthFM: 0.9
     waveform {
       type: Saw
       waveTableMode: Single faster
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0.000488282
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: Equation
         count: 1
-        usePattern: 1
-        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
-        gainParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 0, 0, 0, 0, 0, 0
       }
     }
   }
   modulator {
-    frequency: 0.250000
-    stereoPhaseOffset: 0.000000
-    stereoPhaseDifference: 0.000000
+    frequency: 0.25
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
     relativeMode: 0
     inputAM: -1
     inputFM: -1
@@ -125,28 +175,40 @@ instrument {
     outputFM: -1
     amplitudeEnvelope: -1
     frequencyEnvelope: -1
-    depthAM: 0.700000
-    depthFM: 1.000000
+    depthAM: 0.7
+    depthFM: 1
     waveform {
       type: Sin
       waveTableMode: Single faster
-      waveformParameters: 1.000000
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: None
         count: 1
-        usePattern: 0
-        frequencies: 1.000000
-        gains: 0.500000
+        frequencies: 1
+        gains: 0.5
       }
     }
   }
   modulator {
-    frequency: 0.500000
-    stereoPhaseOffset: 0.000000
-    stereoPhaseDifference: 0.000000
+    frequency: 0.5
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
     relativeMode: 1
     inputAM: -1
     inputFM: -1
@@ -154,26 +216,38 @@ instrument {
     outputFM: 0
     amplitudeEnvelope: -1
     frequencyEnvelope: -1
-    depthAM: 1.000000
-    depthFM: 1.000000
+    depthAM: 1
+    depthFM: 1
     waveform {
       type: Saw
       waveTableMode: Single faster
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: None
         count: 1
-        usePattern: 0
-        frequencies: 1.000000
-        gains: 0.500000
+        frequencies: 1
+        gains: 0.5
       }
     }
   }
   envelope {
     type: ahe
-    parameters: 0.500000, 0.000000, -1.000000
+    parameters: 0.5, 0, -1, -0.05
     output: 1
   }
 }

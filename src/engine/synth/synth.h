@@ -1755,10 +1755,15 @@ struct Synth : public PortAudioInterface, public HierarchicalTextFileParser
         selectedNotes[i]->volume = -1;
       }
       selectedNotes.clear();
-
+      
       for(int i=getActiveLooperSequenceTrack()->notes.size()-1; i>=0; i--) {
         if(getActiveLooperSequenceTrack()->notes[i].volume <= 0) {
           getActiveLooperSequenceTrack()->notes.erase(getActiveLooperSequenceTrack()->notes.begin()+i);
+          /*int k = i;
+          for(; k>=0 && getActiveLooperSequenceTrack()->notes[k].volume <= 0; k--) {}
+          getActiveLooperSequenceTrack()->notes.erase(getActiveLooperSequenceTrack()->notes.begin()+k, getActiveLooperSequenceTrack()->notes.begin()+i);
+          printf("removed notes from %d to %d\n", i, k);
+          i = k;*/
         }
       }
       updateActiveNoteSequencerRects();

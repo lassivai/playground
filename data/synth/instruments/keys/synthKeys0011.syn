@@ -49,7 +49,7 @@ instrument {
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0.000001
+      waveValueOffset: 0
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -75,12 +75,12 @@ instrument {
   }
   envelope {
     type: ahe
-    parameters: 0, -1.4, -10, -0.0007
+    parameters: 0, -1.4, -5, -0.0007
     output: 0
   }
   envelope {
     type: ahe
-    parameters: 0, -10, -10, -0.05
+    parameters: 0, -9, -9, -0.05
     output: 1
   }
   noteFilter {

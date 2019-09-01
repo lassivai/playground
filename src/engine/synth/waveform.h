@@ -1516,7 +1516,22 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     }
   }
 
-
+  // TODO integrate properly
+  void setCenterOffset() {
+    double total = 0;
+    for(int i=0; i<waveTable.size(); i++) {
+      total += waveTable[i] - waveValueOffset;
+    }
+    waveValueOffset = -total / waveTable.size();
+    if(waveValueOffsetGui) {
+      waveValueOffsetGui->setValue(waveValueOffset);
+      //waveValueOffsetGui->prerenderingNeeded = true;
+    }
+    //printf("waveValueOffset %f\n", waveValueOffset);
+    prepareWaveTable();
+  }
+  
+  
 
   void update() {
     prepareWaveTable();
@@ -2880,6 +2895,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
 
       if(guiElement == waveForm->pitchDependendPartialAttenuationGui && guiElement->isPointWithin(events.m) && events.mouseButton == 1) {
         waveForm->partialAttenuationDraggingGraph.toggleVisibility();
+      }
+      if(guiElement == waveForm->waveValueOffsetGui && waveForm->waveValueOffsetGui->isPointWithin(events.m) && events.mouseButton == 1) {
+        waveForm->setCenterOffset();
       }
     }
     

@@ -1,6 +1,6 @@
 synth {
   instrument {
-    name: Synth 19
+    name: Synth organ 1
     volume: 1
     reverb {
       subtype: Zita

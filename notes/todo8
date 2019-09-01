@@ -7,6 +7,7 @@ TODO
 - next boring and big challenge, instead of song file input/output, same stuff for the whole session, including the song and all the other parameters
 - select group of notes, move an copy and paste
 - move view window according to progression of track (DONE)
+- change note vector to list
 
 FIXME
 - ahe envelope offset cause clicks sometimes... (FIXED)

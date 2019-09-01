@@ -20,7 +20,7 @@ instrument {
       phaseMode: First zero
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.106811625, 0.106811625
+      phaseOffsets: 0.033378633, 0.033378633
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0
@@ -39,7 +39,7 @@ instrument {
       factorDraggingGraph {
         yRange: 1, 20
         curve: 0, 1, 0, 0.253132832, 1, 0, 0.43358396, 0.904761905, 0, 0.817042607, 0.558897243, 0, 1, 0, 0
-        roundDraggingFactors: 0
+        roundDraggingFactors: 1
         roundToNearestDraggingFraction: 1
         clampMinDraggingFactor: 1
       }

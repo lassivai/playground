@@ -33,14 +33,14 @@ instrument {
       phaseMode: First zero
       waveTableSize: 2048
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.00048852, 0.00048852
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: 0.0008
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -72,14 +72,14 @@ instrument {
       phaseMode: First zero
       waveTableSize: 2048
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0, 0
+      phaseOffsets: 0.255007328, 0.255007328
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: 0.05
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -121,6 +121,7 @@ instrument {
   }
   noteFilter {
     subtype: Low-pass
+    keyTrackingMode: Pitch
     gain: 1
     wet: 1
     frequency: 2000
@@ -132,6 +133,7 @@ instrument {
   }
   voiceCrossModulation {
     mode: Frequency modulation
+    amplitudeMode: Constant
     numVoices: 2
     amounts: 0, 0, 0, 0
   }

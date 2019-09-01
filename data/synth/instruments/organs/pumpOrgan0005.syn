@@ -20,7 +20,7 @@ instrument {
       phaseMode: First zero
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.121116754, 0.121116754
+      phaseOffsets: 0.096321198, 0.096321198
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0
@@ -29,7 +29,7 @@ instrument {
       pitchDependendGain: 0
       waveValueOffset: 0
       minHarmonicSmoothing: 1
-      maxHarmonicSmoothing: 300
+      maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
       harmonicSmoothingPower: 3
       partials {
@@ -39,7 +39,7 @@ instrument {
       factorDraggingGraph {
         yRange: 1, 30
         curve: 0, 1, 0, 0.253132832, 1, 0, 0.258145363, 0.889724311, 0, 0.4160401, 0.892230576, 0, 0.436090226, 0.719298246, 0, 0.666666667, 0.719298246, 0, 0.784461153, 0.368421053, 0, 1, 0, 0
-        roundDraggingFactors: 0
+        roundDraggingFactors: 1
         roundToNearestDraggingFraction: 1
         clampMinDraggingFactor: 1
       }

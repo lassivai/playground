@@ -1,61 +1,60 @@
 instrument {
-  volume: 1.000000
   name: Organ 1
-  multiDelay {
-    gain: 1.080000
-    wet: 0.880000
-    out: 1.000000, 1.000000
-    out: 0.000000, 0.000000
-    out: 0.000000, 0.000000
-  }
+  volume: 0.85
   biquadFilter {
     subtype: Low-pass
-    gain: 1.000000
-    wet: 1.000000
-    frequency: 1200.000000
-    dbGain: 3.000000
-    bandwidth: 2.000000
-    qualityFactor: 1.000000
-  }
-  biquadFilter {
-    subtype: High-pass
-    gain: 1.000000
-    wet: 1.000000
-    frequency: 1.000000
-    dbGain: 3.000000
-    bandwidth: 2.000000
-    qualityFactor: 1.000000
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 2600
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
   }
   voice {
-    volume: 0.800000
-    tuning: 1.000000
-    stereoPhaseOffset: 0.600000
-    unison: 2.000000
-    unisonDetuning: 0.006000
-    unisonDetuningRandomSeeds: 4.000000, 14.000000
-    amplitudeModulator: 0.000000
-    frequencyModulator: 0.000000
-    amplitudeEnvelope: 1.000000
-    frequencyEnvelope: -1.000000
+    volume: 0.7
+    tuning: 1
+    stereoPhaseOffset: 0.6
+    pan: 0
+    unison: 2
+    unisonDetuning: 0.006
+    unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
     waveform {
-      waveformParameters: 0.800000
-      phaseOffsets: 0.000030, 1.000000
-      lockedStereoPhase: 0.000000
-      numSteps: 1.000000
-      gaussianSmoothing: 0.000000
       type: Wave02
       waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 0.8, 0, 0
+      phaseOffsets: 0.00003, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
-        count: 8.000000
-        usePattern: 1.000000
-        frequencyParameters: 1.000000, 2.000000, 0.000000, 0.000000, 0.000000, 0.000000
-        gainParameters: 1.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        pattern: Equation
+        count: 8
+        frequencyParameters: 1, 2, 0, 0, 0, 0
+        gainParameters: 1, 0, 0, 0, 0, 0
       }
     }
   }
   envelope {
-    parameters: 0.020000, -0.000000, -2.000000
-    output: 1.000000
     type: ahe
+    parameters: 0.02, -0, -40, -0.05
+    output: 1
   }
 }
