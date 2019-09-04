@@ -1,0 +1,131 @@
+instrument {
+  name: Lead 22
+  volume: 1
+  reverb {
+    subtype: Zita
+    gain: 0.55
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.69
+    rt60: 1
+    rt60factorLow: 1
+    rt60factorHigh: 0.6
+    dcCutFrequency: 2.5
+    lfo1: 0.7
+    lfo2: 0.6
+    lfoFactor: 0.6
+    spin: 0.7
+    spinFactor: 0.09
+    xOverLow: 0.07
+    xOverHigh: 3000
+    apFeedback: 0
+    lowPass: 10000
+    highPass: 4
+  }
+  voice {
+    volume: 0.55
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.01
+    unisonDetuningRandomSeeds: 1, 2
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 600
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 2
+      partials {
+        pattern: Graphs
+        count: 15
+      }
+      factorDraggingGraph {
+        yRange: 1, 29
+        curve: 0, 1, 0.5, 0.614035088, 0.847117794, 0, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 15
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0.5, 0.127819549, 0.794486216, 0.5, 0.86716792, 0.912280702, 0.5, 1, 1, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.4
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.01
+    unisonDetuningRandomSeeds: 2, 3
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0.23365043, 0.23365043
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 2000
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 3
+      partials {
+        pattern: Graphs
+        count: 15
+      }
+      factorDraggingGraph {
+        yRange: 2, 30
+        curve: 0, 1, 0, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 15
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0.5, 0.152882206, 0.79197995, 0.5, 0.536340852, 1, 0.5, 1, 1, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.03, 0, -20, -0.00008
+    output: 0
+  }
+}

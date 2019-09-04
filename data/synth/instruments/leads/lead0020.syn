@@ -20,7 +20,7 @@ instrument {
     xOverLow: 1
     xOverHigh: 200
     apFeedback: 0
-    lowPass: 30000
+    lowPass: 24000
     highPass: 20
   }
   voice {
@@ -64,7 +64,7 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.525876461, 1, 0, 0.792988314, 0.859296482, 0, 1, 0.010050251, 0
+        curve: 0, 1, 0, 0.4557596, 1, 0, 0.792988314, 0.859296482, 0, 1, 0.010050251, 0
       }
     }
   }

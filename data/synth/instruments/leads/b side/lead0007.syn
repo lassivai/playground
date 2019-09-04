@@ -1,7 +1,7 @@
 instrument {
   name: Synth 27
   volume: 1
-  noteFilterFrequencyModular: -1, 1, 3000, 30000
+  noteFilterFrequencyModular: -1, 1, 2000, 20000
   voice {
     volume: 0.45
     tuning: 1
@@ -14,7 +14,6 @@ instrument {
     frequencyModulator: 0
     amplitudeEnvelope: 0
     frequencyEnvelope: -1
-    filterFrequencyModular: -1, 1, 100, 1000
     waveform {
       type: Saw
       waveTableMode: Single faster

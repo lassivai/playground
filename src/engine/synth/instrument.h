@@ -178,7 +178,7 @@ struct Instrument : public HierarchicalTextFileParser {
 
   bool isSustainActive = false;
 
-  std::unordered_map<int, Note*> sustainedNotes;
+  std::unordered_map<int, SynthesisNote*> sustainedNotes;
 
   std::vector<ModularParameter*> modularParameters;
   bool areModularConnections = false;
@@ -192,6 +192,36 @@ struct Instrument : public HierarchicalTextFileParser {
   NoteBiquadFilter *biquadFilter = NULL;
 
   bool isSynthesisActive = false;
+
+
+  std::map<std::pair<double, double>, RecordedNote> recordedNotes;
+
+  void clearRecordedNotes() {
+    recordedNotes.clear();
+  }
+
+  struct RecordedNotesPanel : public Panel {
+    Instrument *instrument = NULL;
+    RecordedNotesPanel(Instrument *instrument) : Panel("Recorded notes panel") {
+      this->instrument = instrument;
+    }
+    virtual void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
+      std::string str = "recorded notes";
+      int i = 0;
+      for(auto &pair : instrument->recordedNotes) {
+        str += "\n";
+        i++;
+        RecordedNote &note = pair.second;
+        str += format("notes %d, %f,  %f", note.numSequencerNotes, note.pitch, note.fullLengthInSecs);
+      }
+      Vec2d dim = textRenderer.getDimensions(str, 10);
+      Vec2d size = dim + Vec2d(10, 10);
+      setSize(size);
+      textRenderer.setColor(1, 1, 1, 1);
+      textRenderer.print(str, absolutePos.x+5, absolutePos.y+5, 10);
+    }
+  };
+
 
   void reinitialize() {
     voiceCrossModulation.reset();
@@ -387,7 +417,7 @@ struct Instrument : public HierarchicalTextFileParser {
   }
 
 private:
-  Note previewNote;
+  SynthesisNote previewNote;
 
   void initPreviewNote(double noteFrequency = 261.63) {
     previewNote.set(delayLine.sampleRate, freqToNote(noteFrequency), 0, 1.0, -1/*instrumentIndex*/);
@@ -397,7 +427,7 @@ private:
   }
 public:
   
-  void preparePreviewNote(Note &note) {
+  void preparePreviewNote(SynthesisNote &note) {
     note = previewNote;
     // fix this too:
     note.voiceOutputs = previewNote.voiceOutputs;
@@ -415,7 +445,7 @@ public:
   }
 
   // testing...
-  void threadSafePreparedPreviewNoteReset(Note &note) {
+  void threadSafePreparedPreviewNoteReset(SynthesisNote &note) {
     for(int i=0; i<previewNote.phasesGM.size(); i++) {
       note.phasesGM[i] = previewNote.phasesGM[i];
     }
@@ -510,11 +540,12 @@ public:
   }
 
   // TODO maybe preinitialization of notes. Not nesessary to init max amount of mods/voices
-  void initializeNote(Note &note) {
+  void initializeNote(SynthesisNote &note) {
     //printf("... "); note.print();
-    if(note.frequency < 0) {
+    /*if(note.pitch < 0) {
       note.print();
-    }
+    }*/
+    note.frequency = noteToFreq(note.pitch);
     
     note.instrumentName = name;
     
@@ -588,9 +619,9 @@ public:
       }
     }
     
-    if(!note.isRecorded) {
-      note.noteFullLengthSecs = getNoteMaxLength(note);
-    }
+    //if(!note.isRecorded) {
+      note.noteFullLengthSecs = getNoteMaxLength(note.lengthInSecs);
+    //}
     
     note.isInitialized = true;
     
@@ -623,7 +654,8 @@ public:
 
   // FIXME combined action of envelopes with bigger max value than 1.0 might make the note even longer
   // Currently above (and issue with multiple voices) fixed, but not optimal in many other cases.
-  double getNoteMaxLength(const Note &note) {
+  //double getNoteMaxLength(const Note &note) {
+  double getNoteMaxLength(double lengthInSecs) {
     double maxLength = 0;
 
     for(int k=0; k<numVoices; k++) {
@@ -636,17 +668,17 @@ public:
         }
       }
     }
-    return maxLength + note.noteLength;
+    return maxLength + lengthInSecs;
   }
 
-  double getNoteActualLength(const Note &note) {
+  double getNoteActualLength(double lengthInSecs, bool isHolding = false) {
     double length = 0;
 
     for(int k=0; k<numVoices; k++) {
       if(voices[k].inputAmplitudeEnvelope >= 0) {
        for(int i=0; i<numEnvelopes; i++) {
          if(envelopes[i].outputIndex == voices[k].inputAmplitudeEnvelope) {
-           double el = envelopes[i].getEnvelopeLength(note.isHolding ? -1 : max(note.noteLength, note.keyHoldDuration));
+           double el = envelopes[i].getEnvelopeLength(isHolding ? -1 : lengthInSecs);
            length = max(el, length);
           }
         }
@@ -654,6 +686,21 @@ public:
     }
     return length;
   }
+  /*double getNoteActualLength(const Note &note) {
+    double length = 0;
+
+    for(int k=0; k<numVoices; k++) {
+      if(voices[k].inputAmplitudeEnvelope >= 0) {
+       for(int i=0; i<numEnvelopes; i++) {
+         if(envelopes[i].outputIndex == voices[k].inputAmplitudeEnvelope) {
+           double el = envelopes[i].getEnvelopeLength(note.isHolding ? -1 : max(note.lengthInSecs, note.keyHoldDuration));
+           length = max(el, length);
+          }
+        }
+      }
+    }
+    return length;
+  }*/
 
   
   inline bool isStopAllNotesRequested() {
@@ -683,7 +730,7 @@ public:
     }
   }
 
-  virtual void getSample(Vec2d &sampleOut, const Vec2d &sampleIn, double dt, double t, Note &note, bool applyVolume = true) {
+  virtual void getSample(Vec2d &sampleOut, const Vec2d &sampleIn, double dt, double t, SynthesisNote &note, bool applyVolume = true) {
     if(isStopAllNotesRequested() || isMuted || t < 0 || !note.isInitialized) return;
     
     /*if(midiLatencyTestActivated) {
@@ -692,24 +739,35 @@ public:
       midiLatencyTestActivated = false;
     }*/
     
-    if(note.isRecorded && note.isReadyToPlayRecorded) {
-      if(t * note.sampledNoteSampleRate < note.samples.size()) {
-        sampleOut += note.samples[(int)(t *  note.sampledNoteSampleRate)] * volume * note.volume;
-        return;
+    bool isRecordedNoteAvailable = recordedNotes.count({note.pitch, note.lengthInSecs});
+    if(isRecordedNoteAvailable) {
+      /*
+      RecordedNote 
+      if(note.isRecorded && note.isReadyToPlayRecorded) {
+        if(t * note.sampledNoteSampleRate < note.samples.size()) {
+          sampleOut += note.samples[(int)(t *  note.sampledNoteSampleRate)] * volume * note.volume;
+          return;
+        }
+        //if(t >= note.noteFullLengthSecs) {
+        else {
+          note.volume = -1.5;
+          return;
+        }
       }
-      //if(t >= note.noteFullLengthSecs) {
-      else {
-        note.volume = -1.5;
+      else if(note.noteActualLength >= 0 && t > note.noteActualLength) {
+        note.volume = -2;
         return;
-      }
+      }*/
     }
-    else if(note.noteActualLength >= 0 && t > note.noteActualLength) {
+    
+    if(note.noteFullLengthSecs >= 0 && t > note.noteFullLengthSecs) {
       note.volume = -2;
       return;
     }
       
-    double keyHoldTime = max(note.keyHoldDuration, note.noteLength);
-    bool isKeyHolding = note.isHolding || t <= keyHoldTime;
+    //double keyHoldTime = max(note.keyHoldDuration, note.lengthInSecs);
+    //bool isKeyHolding = note.isHolding || t <= keyHoldTime;
+    bool isKeyHolding = note.isHolding || t <= note.lengthInSecs;
     
     unsigned char pitch = (unsigned char)clamp(note.pitch, 0.0, 127.0);
     
@@ -719,7 +777,7 @@ public:
       note.envelopeOutputs[k] = 1;
     }
     for(int k=0; k<numEnvelopes; k++) {
-      envelopes[k].apply(t, keyHoldTime, isKeyHolding, note.envelopeOutputs);
+      envelopes[k].apply(t, note.lengthInSecs, isKeyHolding, note.envelopeOutputs);
     }
     for(int k=numModulators; k >= 0; k--) {
       note.amplitudeModulatorOutputsPrevious[k] = note.amplitudeModulatorOutputs[k];
@@ -1889,7 +1947,7 @@ public:
       int updateIntervalMillis = 160;
       double spectrumLenghtSecs = 2;
       std::vector<double> wave;//(previewPanel->spectrumLenghtSecs * previewPanel->instrument->delayLine.sampleRate);
-      Note previewNote;
+      SynthesisNote previewNote;
       
       PreviewPanelListener *previewPanelListener = NULL;
       
@@ -2067,6 +2125,7 @@ public:
     Instrument *instrument = NULL;
     GuiElement *parentGuiElement = NULL;
 
+    RecordedNotesPanel *recordedNotesPanel = NULL;
     
     InstrumentPanel(Instrument *instrument, GuiElement *parentGuiElement) : Panel("Instrument panel") {
       init(instrument, parentGuiElement);
@@ -2151,6 +2210,8 @@ public:
       instrument->biquadFilter->getPanel()->setVisible(this->instrument->biquadFilter->isActive);
       instrument->biquadFilter->getPanel()->setPosition(voicesPanel->size.x + 5, envelopesPanel->size.y + 23 + 5);
 
+      addChildElement(recordedNotesPanel = new RecordedNotesPanel(instrument));
+      recordedNotesPanel->setPosition(0, 300);
 
       update();
 
@@ -2537,10 +2598,56 @@ public:
     }
     return 0;
   }
+  
+  
+  
+  
+
 };
 
 
-static bool recordNoteSamples(Instrument *instrument, Note *note, int sampleRate, double maxLengthSecs) {
+//static bool recordNoteSamples(Instrument *instrument, SequencerNote *sequencerNote, int sampleRate, double maxLengthSecs) {
+static bool recordNoteSamples(Instrument *instrument, double pitch, double lengthInSecs, int sampleRate, double maxLengthSecs) {
+
+  //if(recordedNotes.count(pitchLenght) > 0) return true;
+  bool alreadyExists = instrument->recordedNotes.count(std::pair<double, double>(pitch, lengthInSecs)) > 0;
+  
+  RecordedNote &recordedNote = alreadyExists ? instrument->recordedNotes[std::pair<double, double>(pitch, lengthInSecs)] : instrument->recordedNotes[std::pair<double, double>(pitch, lengthInSecs)] = RecordedNote();
+  //RecordedNote &recordedNote = instrument->recordedNotes[std::pair<double, double>(pitch, lengthInSecs)] = RecordedNote();
+  recordedNote.numSequencerNotes++;
+  if(alreadyExists) {
+    return true;
+  }
+  
+  SynthesisNote synthesisNote(sampleRate, pitch, 0, 1, -1);
+  synthesisNote.lengthInSecs = lengthInSecs;
+  instrument->initializeNote(synthesisNote);
+  //note->isRecorded = false;
+  recordedNote.sampleRate = sampleRate;
+  recordedNote.fullLengthInSecs = instrument->getNoteActualLength(lengthInSecs, false);
+  recordedNote.pitch = pitch;
+  
+  //printf("Recording started %s, %d, %f\n", instrument->name.c_str(), note->sampledNoteSampleRate, note->noteFullLengthSecs);
+  recordedNote.fullLengthInSecs = min(recordedNote.fullLengthInSecs, maxLengthSecs);
+  
+  recordedNote.lengthInSamples = int(recordedNote.fullLengthInSecs*sampleRate);
+  recordedNote.samples.assign(recordedNote.lengthInSamples, Vec2d::Zero);
+  
+  double dt = 1.0 / sampleRate;
+  double t = 0;
+  Vec2d tmp;
+  for(int i=0; i<recordedNote.samples.size(); i++) {
+    instrument->getSample(recordedNote.samples[i], tmp, dt, t, synthesisNote, false);
+    t += dt;
+  }
+
+  recordedNote.isReadyToPlayRecorded = true;
+  //printf("Note recorded.\n");
+
+  return true;
+}
+
+/*static bool recordNoteSamples(Instrument *instrument, Note *note, int sampleRate, double maxLengthSecs) {
   Note noteTmp = *note;
   instrument->initializeNote(noteTmp);
   note->isRecorded = false;
@@ -2566,7 +2673,7 @@ static bool recordNoteSamples(Instrument *instrument, Note *note, int sampleRate
   //printf("Note recorded.\n");
 
   return true;
-}
+}*/
 
 
 

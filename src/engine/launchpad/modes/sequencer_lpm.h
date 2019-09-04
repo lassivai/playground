@@ -81,7 +81,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
 
 
   void onUpdateGrid(double time, double dt) {
-
+/*
     memset(grid.data(), 0, grid.size() * sizeof(Vec2i));
     
     double loopFraction = synth->getLooperTime()/synth->looperTrackDuration;
@@ -262,10 +262,10 @@ struct SequencerLaunchpadMode : public LaunchpadMode
       launchPad->setPadState(8, i, east[i].x, east[i].y); 
       launchPad->setPadState(i, 8, north[i].x, north[i].y); 
     }
-      
+      */
   }
   
-  void onAction(int x, int y, LaunchPadInterface::KeyState keyState) {
+  void onAction(int x, int y, LaunchPadInterface::KeyState keyState) {/*
     DrumPad *drumPad = dynamic_cast<DrumPad*>(synth->instruments[synth->instrumentTracks[instrumentTrackIndex].instrumentIndex]);
     LooperSequenceTrack *looperSequenceTrack = synth->getActiveLooperSequenceTrack();
     
@@ -377,11 +377,7 @@ struct SequencerLaunchpadMode : public LaunchpadMode
       }
     }
     
-    /*if(x == 8 && keyState == LaunchPadInterface::KeyState::ReleasedInactive) {
-      instrumentTrackIndex = y;
-      return;
-    }*/
-                                                
+                              
     if(drumPad) {
       if(x >= 0 && x < 8 && y == 0 && keyState == LaunchPadInterface::KeyState::PressedActive) {
         for(int i=0; i<8; i++) {
@@ -462,122 +458,18 @@ struct SequencerLaunchpadMode : public LaunchpadMode
     // FIXME
     else {
       //printf("1. %d %d %d\n", x, y, keyState);
-      /*if(launchPad->arePadsPressedAndCancelRelease(70, 71)) {
-        verticalZoomMode = (verticalZoomMode+1) % 4;
-      }
-      else if(launchPad->arePadsPressedAndCancelRelease(69, 70)) {
-        horizontalZoomMode = 1 - horizontalZoomMode;
-      }*/
-      /*else if(y == 8 && keyState == LaunchPadInterface::KeyState::ReleasedInactive && launchPad->arePadsPressedAndCancelRelease(65)) {
-        if(x < synth->sequenceLooper.numTracks) {
-          synth->sequenceLooper.currentTrack = x;
-          synth->looperTime = 0;
-          if(synth->isLooperPlaying) {
-            synth->onStart();
-          }
-        }
-      }*/
-      /*else if(y == 8 && keyState == LaunchPadInterface::KeyState::ReleasedInactive && launchPad->arePadsPressedAndCancelRelease(64)) {
-        synth->looperTime = synth->looperTrackDuration / 8.0 * x;
-      }*/
-      /*else if(x == 8 && keyState == LaunchPadInterface::KeyState::ReleasedInactive) {
-        if(y == 0) {
-          verticalPosition = synth->screenKeyboardMaxNote - 7;
-        }
-        if(y == 1) {
-          verticalPosition = min(verticalPosition+12, synth->screenKeyboardMaxNote - 7);
-        }
-        if(y == 2) {
-          verticalPosition = min(verticalPosition+4, synth->screenKeyboardMaxNote - 7);
-        }
-        if(y == 3) {
-          verticalPosition = min(verticalPosition+1, synth->screenKeyboardMaxNote - 7);
-        }
-        if(y == 4) {
-          verticalPosition = max(verticalPosition-1, synth->screenKeyboardMinNote);
-        }
-        if(y == 5) {
-          verticalPosition = max(verticalPosition-4, synth->screenKeyboardMinNote);
-        }
-        if(y == 6) {
-          verticalPosition = max(verticalPosition-12, synth->screenKeyboardMinNote);
-        }
-        if(y == 7) {
-          verticalPosition = synth->screenKeyboardMinNote; 
-        }
-      }*/
+
 
       //if(synth->isLooperPlaying) {
         if(x >= 0 && x < 8 && y >= 0 && y < 8 && keyState == LaunchPadInterface::KeyState::PressedActive) {
           int pitch = 32 + x + y*8;
-          /*if(verticalZoomMode == 0 || verticalZoomMode == 1) {
-            pitch = noteRange.x + 7 - y;
-          }
-          else {
-            pitch = synth->screenKeyboardMinNote + 7 - y;  
-          }*/
+
           Note *note = synth->startInstrumentTrackNote(pitch, synth->defaultNoteVolume, instrumentTrackIndex);
           note->noteActualLength = synth->instruments[synth->instrumentTracks[instrumentTrackIndex].instrumentIndex]->getNoteActualLength(*note);
         //}
       }
-      /*else {
-        if(x >= 0 && x < 8 && y >= 0 && y < 8 && ((keyState == LaunchPadInterface::KeyState::PressedActive && !launchPad->isSquareGridReleased(x+y*8)) || keyState == LaunchPadInterface::KeyState::ReleasedInactive)) {
-          
-          if(drumPad) {
-            //printf("2. %d %d %d\n", x, y, keyState);
-            LooperSequenceTrack *looperSequenceTrack = synth->getActiveLooperSequenceTrack();
-            //LooperSequenceTrack *looperSequenceTrack = synth->sequenceLooper.tracks[instrumentTrackIndex];
-            
-            int pad = drumPad->pitchOffset + 7 - y;
-            double time = timeRange.x + (timeRange.y-timeRange.x) / 8.0 * x;
-            if(keyState == LaunchPadInterface::KeyState::PressedActive) {
-              for(int i=0; i<64; i++) {
-                if(i != x + y*8 && launchPad->arePadsPressedAndCancelRelease(i)) {
-                  launchPad->padKeyStates[x+y*8] = LaunchPadInterface::KeyState::ReleasedInactive;
-                  
-                  int kx = i % 8;
-                  int ky = i / 8;
-                  
-                  pad = drumPad->pitchOffset + 7 - ky;
-                  time = timeRange.x + (timeRange.y-timeRange.x) / 8.0 * kx;
-
-                  time += (double)x / synth->noteValueInverse * synth->looperTrackDuration / synth->measuresPerLooperTrack;
-                  break;
-                }
-              }
-            }
-            bool noteRemoved = false;
-            for(int i=0; i<looperSequenceTrack->numNotes; i++) {
-              if(looperSequenceTrack->notes[i].volume > 0 && pad == drumPad->pitchOffset + looperSequenceTrack->notes[i].padIndex && synth->roundLoopTimeNoteValueInverse(time) == synth->roundLoopTimeNoteValueInverse(looperSequenceTrack->notes[i].startTime)) {
-                looperSequenceTrack->notes[i].reset();
-                noteRemoved = true;
-              }
-            }
-            if(!noteRemoved) {
-              Note *note = synth->startInstrumentTrackNote(pad, synth->defaultNoteVolume, instrumentTrackIndex, time);
-              if(note) {
-                note->noteLength = 1.0/synth->noteValueInverse*synth->looperTrackDuration/synth->measuresPerLooperTrack;
-                note->keyHoldDuration = note->noteLength;
-                note->isHolding = false;
-              }
-            }
-          }
-
-          if(synth->instruments[synth->instrumentTracks[instrumentTrackIndex].instrumentIndex]->instrumentType == Instrument::InstrumentType::DefaultInstrument) {
-            int pitch;
-            if(verticalZoomMode == 0 || verticalZoomMode == 1) {
-              pitch = noteRange.x + 7 - y;
-            }
-            else {
-              pitch = synth->screenKeyboardMinNote + 7 - y;  
-            }
-            double time = timeRange.x + (timeRange.y-timeRange.x) / 8.0 * x;
-            synth->startInstrumentTrackNote(pitch, synth->defaultNoteVolume, instrumentTrackIndex, time);
-          }
-
-        }
-      }*/
-    }
+  
+    }*/
   }
   
   

@@ -16,17 +16,7 @@ struct Reverb : public PostProcessingEffect {
   enum Type { FreeVerb, CCRMA, Lexicon224, Progenitor, Zita, Mverb, numTypes };
   const std::vector<std::string> typeNames = { "FreeVerb", "CCRMA", "Lexicon224", "Progenitor", "Zita", "MVerb" };
   
-/*  segfault bug in Zita. Crashed when changed synth0028 (with Lexicon224 reverb) to synth0027b (with Zita reverb)
 
-#0  fv3::noisegen_pink_frac_::process (this=<optimized out>) at ../freeverb/efilter_t.hpp:252
-#1  fv3::noisegen_pink_frac_::operator() (this=<optimized out>) at ../freeverb/efilter_t.hpp:254
-#2  fv3::strev_::processreplace (this=0x55b43d83c218, inputL=0x7fea14000b60, inputR=0x7fea14000ba0, outputL=0x7fea14000c00, 
-    outputR=0x7fea14000c40, numsamples=1) at ../freeverb/strev.cpp:109
-#3  0x000055b3aefd5c53 in Reverb::apply(Vec2d&) ()
-#4  0x000055b3aeff089f in Instrument::applyFilters() ()
-#5  0x000055b3af00e670 in Synth::synthStereo(Vec2d&, Vec2d const&, double, double, std::vector<Note, std::allocator<Note> >&, int, std::vector<Note, std::allocator<Note> >&, int, DelayLine&, std::vector<Instrument*, std::allocator<Instrument*> >&) ()
-#6  0x000055b3af00eb0b in Synth::streamCallbackSynth(void const*, void*, unsigned long, PaStreamCallbackTimeInfo const*, unsigned long, void*) ()
-*/
   
   double sampleRate;
   

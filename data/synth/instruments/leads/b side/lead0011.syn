@@ -29,7 +29,7 @@ instrument {
       phaseMode: First zero
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.049591112, 0.049591112
+      phaseOffsets: 0.104904275, 0.104904275
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
@@ -62,7 +62,7 @@ instrument {
   }
   envelope {
     type: ahe
-    parameters: 0.05, -1.7, -20, -0.00001
+    parameters: 0.05, 0, -20, -0.00001
     output: 0
   }
 }

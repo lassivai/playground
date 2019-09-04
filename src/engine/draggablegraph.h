@@ -406,7 +406,7 @@ struct DraggableGraph : public HierarchicalTextFileParser {
     //if(events.numModifiersDown > 0) {
       if(draggableGraphPanel->isPointWithin(events.m)) {
         isInfoHover = true;
-        infoHoverDataPoint = (int)clamp(map(events.m.x, draggableGraphPanel->absolutePos.x+borderWidth, draggableGraphPanel->absolutePos.x + draggableGraphPanel->size.x - borderWidth, 0, numDataPoints), 0, numDataPoints-1);
+        infoHoverDataPoint = (int)round(clamp(map(events.m.x, draggableGraphPanel->absolutePos.x+borderWidth, draggableGraphPanel->absolutePos.x + draggableGraphPanel->size.x - borderWidth, 0, numDataPoints-1), 0, numDataPoints-1));
         infoHoverValue = getDataPointValue(infoHoverDataPoint);
         infoHoverPos = events.m;
         //printf("info hover: %d - %f\n", infoHoverDataPoint, infoHoverValue);
@@ -436,13 +436,12 @@ struct DraggableGraph : public HierarchicalTextFileParser {
       draggingPointIndex = closestPointIndex;
       actionHappened = true;
     }
-    if(events.mouseButton == 1 && draggingPointIndex == -1) {
+    if(events.mouseButton == 1 && draggingPointIndex == -1 && events.numModifiersDown == 0) {
       if(closestPointIndex == -1) {
         for(int i=0; i<curve.size()-1; i++) {
           if(mp.x > curve[i].x && mp.x < curve[i+1].x) {
             curve.insert(curve.begin()+i+1, mp);
             closestPointIndex = i+1;
-            update();
             actionHappened = true;
             break;
           }
@@ -452,12 +451,46 @@ struct DraggableGraph : public HierarchicalTextFileParser {
         curve.erase(curve.begin()+closestPointIndex);
         closestPointIndex = -1;
         actionHappened = true;
-        update();
       }
     }
-    if(events.mouseButton == 2 && closestPointIndex != -1) {
+    if(events.mouseButton == 2 && closestPointIndex != -1 && events.numModifiersDown == 0) {
       curve[closestPointIndex].cubicInterpolationCurvature = 0.5;
       actionHappened = true;
+    }
+    
+    if(events.lControlDown && events.mouseNowDownM) {
+      for(int i=curve.size()-2; i>=1; i--) {
+        curve.erase(curve.begin()+i);
+      }
+      actionHappened = true;
+    }
+    if(events.lControlDown && events.mouseNowDownR) {
+      if(curve.size() != numDataPoints) {
+        for(int i=curve.size()-2; i>=1; i--) {
+          curve.erase(curve.begin()+i);
+        }
+        for(int i=0; i<curve.size(); i++) {
+          curve[i].y = 1;
+          curve[i].cubicInterpolationCurvature = 0;
+        }
+        for(int i=1; i<numDataPoints-1; i++) {
+          curve.insert(curve.begin()+i, CurvePoint((double)i/(numDataPoints-1), 1, 0));
+        }
+      }
+      else {
+        for(int i=1; i<curve.size()-1; i++) {
+          curve[i].x = (double)i/(numDataPoints-1);
+          curve[i].cubicInterpolationCurvature = 0;
+        }
+        int i = round(clamp(mp.x*(curve.size()-1), 0, curve.size()-1));
+        curve[i].y = clamp(mp.y, 0, 1);
+      }
+      actionHappened = true;
+      
+      draggingBars = true;
+    }
+    
+    if(actionHappened) {
       update();
     }
     
@@ -466,12 +499,16 @@ struct DraggableGraph : public HierarchicalTextFileParser {
     return actionHappened;
   }
   
+  bool draggingBars = false;
+  
   virtual void onMouseReleased(const Events &events) {
     if(!draggableGraphPanel || !graphRendered) return;
     
     if(events.mouseButton == 0) {
       draggingPointIndex = -1;
     }
+    
+    draggingBars = false;
   }
 
   
@@ -487,43 +524,53 @@ struct DraggableGraph : public HierarchicalTextFileParser {
     
     
     if(events.lControlDown || events.rControlDown) {
+      //md *= 0.1;
+      
+    }
+    
+    if(events.lShiftDown || events.rShiftDown) {
       md *= 0.1;
     }
-    if(events.lShiftDown || events.rShiftDown) {
-      md *= 0.01;
-    }
+    
     int previousClosestPointIndex = closestPointIndex;
     closestPointIndex = -1;
     
-    if(draggingPointIndex == -1) {
-      double minDistance = 1e10;
-      for(int i=0; i<curve.size(); i++) {
-        double d = distance(mp, curve[i]);
-        if(d < maxDragDistance / max(w, h) && d < minDistance) {
-          minDistance = d;
-          closestPointIndex = i;
-        }
-      }
-      if(closestPointIndex != previousClosestPointIndex) {
-        draggableGraphPanel->prerenderingNeeded = true;
-      }
+    if(draggingBars) {
+      int i = round(clamp(mp.x*(curve.size()-1), 0, curve.size()-1));
+      curve[i].y = clamp(mp.y, 0, 1);
+      update();
     }
     else {
-      curve[draggingPointIndex].y += md.y;
-      
-      if(draggingPointIndex != 0 && draggingPointIndex != curve.size() - 1) {
-        curve[draggingPointIndex].x += md.x;
-        curve[draggingPointIndex].x = clamp(curve[draggingPointIndex].x, 1.0/w, 1.0-1.0/w);
+      if(draggingPointIndex == -1) {
+        double minDistance = 1e10;
+        for(int i=0; i<curve.size(); i++) {
+          double d = distance(mp, curve[i]);
+          if(d < maxDragDistance / max(w, h) && d < minDistance) {
+            minDistance = d;
+            closestPointIndex = i;
+          }
+        }
+        if(closestPointIndex != previousClosestPointIndex) {
+          draggableGraphPanel->prerenderingNeeded = true;
+        }
       }
-      
-      if((events.lAltDown || events.rAltDown) && gridDensity > 0) {
-        double q = map(h-1.0-curve[draggingPointIndex].y, 0, 1.0, verticalLimits.x, verticalLimits.y);
-        q = round(q*gridDensity) / gridDensity;
-        curve[draggingPointIndex].y = 1.0-map(q, verticalLimits.x, verticalLimits.y, 0, 1.0);
+      else {
+        curve[draggingPointIndex].y += md.y;
+        
+        if(draggingPointIndex != 0 && draggingPointIndex != curve.size() - 1) {
+          curve[draggingPointIndex].x += md.x;
+          curve[draggingPointIndex].x = clamp(curve[draggingPointIndex].x, 1.0/w, 1.0-1.0/w);
+        }
+        
+        if((events.lAltDown || events.rAltDown) && gridDensity > 0) {
+          double q = map(h-1.0-curve[draggingPointIndex].y, 0, 1.0, verticalLimits.x, verticalLimits.y);
+          q = round(q*gridDensity) / gridDensity;
+          curve[draggingPointIndex].y = 1.0-map(q, verticalLimits.x, verticalLimits.y, 0, 1.0);
+        }
+        curve[draggingPointIndex].y = clamp(curve[draggingPointIndex].y, 0, 1);
+        
+        update();
       }
-      curve[draggingPointIndex].y = clamp(curve[draggingPointIndex].y, 0, 1);
-      
-      update();
     }
     
     updateInfoHover(events);

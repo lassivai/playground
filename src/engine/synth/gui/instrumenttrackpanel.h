@@ -141,7 +141,7 @@ struct InstrumentPreviewPanel : public Panel {
       else {
         double minValue = 1e10, maxValue = -1e10;
         if(leftDb <= 0) {
-          Note note;
+          SynthesisNote note;
           instrument->preparePreviewNote(note);
           
           double dt = (double)1.0/waveForm.size()/note.frequency;

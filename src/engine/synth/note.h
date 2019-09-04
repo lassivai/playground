@@ -11,6 +11,11 @@
  *
  * - calculate note length = noteLength + envelope release time
  */
+ 
+ /*  I am not sure if I should change the paradigm of these note variables to such that I would include oscillator objects per note.
+  * And the oscillator objects would include the phases, and those filters. 
+  */
+ 
 
 struct OscillatorBiquadFilter  {
   //BiquadFilter *biquadFilter = NULL;
@@ -301,12 +306,11 @@ struct OscillatorBiquadFilter  {
 };
 
 
-struct Note
+
+
+struct DeprecatedNote
 {
-  /*  I am not sure if I should change the paradigm of these note variables to such that I would include oscillator objects per note.
-   * And the oscillator objects would include the phases, and those filters. 
-   */
-  
+
   
   double pitch = 0, frequency = 0, volume = -1;
   double startTime = 0, keyHoldDuration = 0;
@@ -423,20 +427,20 @@ struct Note
     }
   }
 
-  virtual ~Note() {
+  virtual ~DeprecatedNote() {
     if(pitchChanger) {
       delete pitchChanger;
     }
   }
   
-  Note() {
+  DeprecatedNote() {
     pitch = 0;
     volume = -1;
     startTime = 0;
     instrumentIndex = 0;
   }
   
-  Note(double sampleRate, double pitch, double startTime, double volume) {
+  DeprecatedNote(double sampleRate, double pitch, double startTime, double volume) {
     this->sampleRate = sampleRate;
     this->pitch = pitch;
     frequency = noteToFreq(pitch);
@@ -446,7 +450,7 @@ struct Note
     //pitchChanger.init(sampleRate, 0.1);
   }
 
-  Note(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) {
+  DeprecatedNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) {
     this->sampleRate = sampleRate;
     this->pitch = pitch;
     this->startTime = startTime;
@@ -459,7 +463,7 @@ struct Note
   
   //TrackNote(double sampleRate, double pitch, double startTime, double volume) : Note(sampleRate, pitch, startTime, volume) {}
   //TrackNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {}
-  Note(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex, int instrumentTrackIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {
+  DeprecatedNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex, int instrumentTrackIndex) : DeprecatedNote(sampleRate, pitch, startTime, volume, instrumentIndex) {
     this->instrumentTrackIndex = instrumentTrackIndex;
   }
 
@@ -476,7 +480,7 @@ struct Note
     return false;
   }
 
-  void operator=(const Note &note) {
+  void operator=(const DeprecatedNote &note) {
     reset();
     this->pitch = note.pitch;
     this->startTime = note.startTime;
@@ -514,7 +518,7 @@ struct Note
     //phase.set(0, 0);
   }
   
-  void set(const Note &note) {
+  void set(const DeprecatedNote &note) {
     reset();
     this->pitch = note.pitch;
     this->startTime = note.startTime;
@@ -543,8 +547,6 @@ struct Note
     noteActualLength = note.noteActualLength;
     //pitchChanger.init(sampleRate, 0.1);
 
-    
-    //phase.set(0, 0);
   }
 
 
@@ -556,23 +558,9 @@ struct Note
     this->volume = volume;
     this->instrumentIndex = instrumentIndex;
     frequency = noteToFreq(pitch);
-    //phase.set(0, 0);
-//    pitchChanger.init(sampleRate, 0.1);
+
   }
-  /*void set(Note &note) {
-    reset();
-    this->pitch = note.pitch;
-    this->startTime = note.startTime;
-    this->volume = note.volume;
-    this->instrumentIndex = note.instrumentIndex;
-    this->frequency = note.frequency;
-    this->keyHoldDuration = note.keyHoldDuration;
-    this->insertTime = note.insertTime;
-    this->widthFraction = note.widthFraction;
-    this->noteLength = note.noteLength;
-    this->noteValueInverse = note.noteValueInverse;
-    //phase.set(0, 0);
-  }*/
+
 
   void print() {
     printf("pitch %.2f, volume %.2f, start %.2f, hold %.2f, holding %d, insert %.2f, freq. %.2f\n", pitch, volume, startTime, keyHoldDuration, isHolding, insertTime, frequency);
@@ -588,31 +576,279 @@ struct Note
 
 
 
-/*struct TrackNote : public Note {
-  int instrumentTrackIndex = 0;
-  int padIndex = 0;
-  //double sampleLength = 0;
-  //std::vector<Vec2d> sampledNote;
+
+
+
+
+
+
+
+
+struct RecordedNote
+{
+  double pitch = 0;
+  //double volume = -1;
+  double fullLengthInSecs = 0;
+
+  double sampleRate = 1;
+    
+  std::vector<Vec2d> samples;
+  //double noteFullLengthSecs = 0, noteActualLength = -1;
+  int lengthInSamples = 0;
+  //double sampledNoteStart = 0;
+  //int sampledNoteSampleRate = 0;
+  bool isReadyToPlayRecorded = false;
+
+  int numSequencerNotes = 0;
+
+  /*RecordedNote() {}
+  RecordedNote(double sampleRate, double pitch, double noteLength) {
+    
+  }*/
+
+  void resetSamples() {
+    pitch = 0;
+    //volume = 0;
+    fullLengthInSecs = 0;
+    sampleRate = 1;
+      
+    samples.clear();
+    //noteFullLengthSecs = 0;
+    //noteActualLength = -1;
+    int sampledNoteLengthSamples = 0;
+    bool isReadyToPlayRecorded = false;
+
+  }
+};
+
+
+
+
+struct SynthesisNote
+{
+  double pitch = 0, frequency = 0, volume = -1;
+  double startTime = 0;
+  double lengthInSecs = 0;
+  //double keyHoldDuration = 0;
+  double insertTime = 0;
+
+  bool isHolding = false;
+  int instrumentIndex = 0;
+
+  long initializeID = -1;
+  bool isInitialized = false;
+
+  //FIXME
+  int noteIndex = -1;
+
+  double sampleRate = 1;
+
+  double noteFullLengthSecs = 0;
+  
+  std::string instrumentName;
+
+  /**************** OSCILLATOR STUFF ****************/
+  
+  std::vector<Vec2d> phasesGM;
+  std::vector<std::vector<Vec2d>> phasesVoiceNew;
+
+  std::vector<Vec2d> amplitudeModulatorOutputs;
+  std::vector<Vec2d> frequencyModulatorOutputs;
+  std::vector<Vec2d> amplitudeModulatorOutputsPrevious;
+  std::vector<Vec2d> frequencyModulatorOutputsPrevious;
+  std::vector<double> envelopeOutputs;
+  std::vector<Vec2d> voiceOutputs;
+  
+
+  /**************** PER NOTE FILTERS ****************/
+  
+  std::vector<OscillatorBiquadFilter> voiceBiquadFilters;
+  OscillatorBiquadFilter biquadFilter;
+  //std::vector<OscillatorBiquadFilter> modulatorBiquadFilters;
+    
+    
+  /**************** VOCODER STUFF ****************/
+  
+  PitchChanger *pitchChanger = NULL;
+
+
+
 
   virtual void reset() {
-    Note::reset();
-    instrumentTrackIndex = 0;
-    padIndex = 0;
+    instrumentName = "";
+    pitch = 0;
+    frequency = 0;
+    volume = -1;
+    startTime = 0;
+    lengthInSecs = 0;
+    
+    insertTime = 0;
+
+    isHolding = false;
+    instrumentIndex = 0;
+
+    initializeID = -1;
+    isInitialized = false;
+
+    noteIndex = -1;
+    
+    sampleRate = 1;
+    
+    noteFullLengthSecs = 0;
+    
+    phasesGM.assign(phasesGM.size(), Vec2d::Zero);;
+    
+    for(int i=0; i<phasesVoiceNew.size(); i++) {
+      phasesVoiceNew[i].assign(phasesVoiceNew[i].size(), Vec2d::Zero);;
+    }
+    if(pitchChanger) {
+      pitchChanger->reset();
+    }
   }
 
-  void operator=(const TrackNote &trackNote) {
-    Note::operator=(trackNote);
-    this->instrumentTrackIndex = 0
-  }  
+  virtual ~SynthesisNote() {
+    if(pitchChanger) {
+      delete pitchChanger;
+    }
+  }
+  
+  SynthesisNote() {}
 
-  TrackNote() : Note() {}
-  TrackNote(double sampleRate, double pitch, double startTime, double volume) : Note(sampleRate, pitch, startTime, volume) {}
-  TrackNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {}
-  TrackNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex, int instrumentTrackIndex) : Note(sampleRate, pitch, startTime, volume, instrumentIndex) {
+
+  SynthesisNote(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) {
+    this->sampleRate = sampleRate;
+    this->pitch = pitch;
+    this->startTime = startTime;
+    this->volume = volume;
+    this->instrumentIndex = instrumentIndex;
+  }
+  
+
+  // FIXME
+  inline bool prepare(double sampleRate) {
+    this->sampleRate = sampleRate;
+    if(!pitchChanger) {
+      pitchChanger = new PitchChanger();
+    }
+    if(pitchChanger->delayLine.buffer.size() == 0) {
+      pitchChanger->init(sampleRate, 0.1, 0.1);
+      return true;
+    }
+    return false;
+  }
+
+  void operator=(const SynthesisNote &note) {
+    pitch = note.pitch;
+    frequency = note.frequency;
+
+    startTime = note.startTime;
+    lengthInSecs = note.lengthInSecs;
+    
+    insertTime = note.insertTime;
+
+    isHolding = note.isHolding;
+    instrumentIndex = note.instrumentIndex;
+
+    initializeID = -1;
+    isInitialized = false;
+
+    noteIndex = note.noteIndex;
+
+    sampleRate = note.sampleRate;
+    
+    noteFullLengthSecs = note.noteFullLengthSecs;
+    
+    instrumentName = note.instrumentName;
+  }
+  
+
+  void set(double sampleRate, double pitch, double startTime, double volume, int instrumentIndex) {
+    reset();
+    this->sampleRate = sampleRate;
+    this->pitch = pitch;
+    this->startTime = startTime;
+    this->volume = volume;
+    this->instrumentIndex = instrumentIndex;
+  }
+
+
+  void print() {
+    printf("pitch %.2f, volume %.2f, start %.2f, length %.2f, holding %d, isInitialized %d\n", pitch, volume, startTime, lengthInSecs, isHolding, isInitialized);
+  }
+
+};
+
+
+
+
+
+
+struct SequencerNote
+{  
+  double pitch = 0, volume = -1;
+  double startTime = 0;
+  double lengthInSecs = 0;
+
+  int instrumentTrackIndex = 0;
+
+  // FIXME set us to at initialization
+  double widthFraction = 1;
+  Rect sequencerRect;
+  double noteValueInverse = 1;
+
+  double startTimeInMeasures = 0;
+  bool isSelected = false;
+
+  SequencerNote() {}
+  
+  SequencerNote(double pitch, double lengthInSecs, double startTime, double volume, double instrumentTrackIndex) {
+    this->pitch = pitch;
+    this->lengthInSecs = lengthInSecs;
+    this->startTime = startTime;
+    this->volume = volume;
     this->instrumentTrackIndex = instrumentTrackIndex;
   }
-};*/
+  
 
+  void reset() {
+    pitch = 0;
+    volume = -1;
+    startTime = 0;
+
+    
+    instrumentTrackIndex = 0;
+    
+    widthFraction = 1;
+    sequencerRect.set(0, 0, 0, 0);
+    lengthInSecs = 0;
+    noteValueInverse = 1;
+
+    startTimeInMeasures = 0;
+    isSelected = false;
+  }
+
+
+
+  /*SequencerNote(double pitch, double noteLength, double startTime, double volume, int instrumentTrackIndex) {
+    this->pitch = pitch;
+    this->noteLength = noteLength;
+    this->startTime = startTime;
+    this->volume = volume;
+    frequency = noteToFreq(pitch);
+    this->instrumentTrackIndex = instrumentTrackIndex;
+  }*/
+  
+
+  void print() {
+    //printf("pitch %.2f, volume %.2f, start %.2f, hold %.2f, holding %d, insert %.2f, freq. %.2f\n", pitch, volume, startTime, lengthInSecs, isHolding, insertTime, frequency);
+  }
+
+  void transpose(double steps) {
+    pitch += steps;
+    //frequency = noteToFreq(pitch);
+  }
+
+};
 
 
 

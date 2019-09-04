@@ -1,7 +1,7 @@
 instrument {
   name: Lead 16
   volume: 1
-  noteFilterFrequencyModular: -1, 1, 2000, 20000
+  noteFilterFrequencyModular: -1, 1, 3000, 20000
   reverb {
     subtype: MVerb
     gain: 1
@@ -40,7 +40,7 @@ instrument {
       pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0.55
+      waveValueOffset: 0.537078451
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -66,30 +66,27 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.525876461, 1, 0, 0.666110184, 0.974874372, 0, 0.861435726, 0.874371859, 0, 1, 0.306532663, 0
+        curve: 0, 1, 0, 0.422370618, 1, 0, 0.662771286, 0.929648241, 0, 0.846410684, 0.708542713, 0, 1, 0.306532663, 0
       }
     }
   }
   envelope {
     type: ahe
-    parameters: 0.000001, -0, -6, -0.05
+    parameters: 0.03, -0, -6, -0.05
     output: 0
   }
   envelope {
     type: ahe
-    parameters: 0, -20, -20, -0.05
+    parameters: 0, -3, -3, -0.05
     output: 1
   }
   noteFilter {
     subtype: Low-pass
-    keyTrackingMode: Pitch
     gain: 1
     wet: 1
     frequency: 2000
     dbGain: 3
     bandwidth: 2
     qualityFactor: 1
-    frequencyKeyTracking: 0
-    bandwidthKeyTracking: 0
   }
 }

@@ -1114,13 +1114,15 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   std::vector<double> tempTableIn, tempTableOut;
   bool harmonicBandConvolutionChanged = true;
   double harmonicBandCyclesPerWaveTable = 1000;
+
   
 
   void prepareHarmonicBandConvolution() {
     if(harmonicBandConvolutionChanged) {
       if(harmonicBandConvolution) delete harmonicBandConvolution;
       
-      harmonicBandConvolution = new VariableGaussianConvolution(minHarmonicSmoothing, maxHarmonicSmoothing, [this](double t) -> double {
+      harmonicBandConvolution = new VariableGaussianConvolution(harmonicBandCyclesPerWaveTable/1000.0*minHarmonicSmoothing,
+                                                                harmonicBandCyclesPerWaveTable/1000.0*maxHarmonicSmoothing, [this](double t) -> double {
         //return harmonicBandwidthDraggingGraph.getDataPointValue(clamp(t*numDataPoints, 0, numDataPoints-1);
         if(partialSet.numPartials <= 1) return 0;
         
@@ -1160,10 +1162,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     //if(harmonicBandWaveTable.size() != harmonicBandWaveTableSize) {
     //  harmonicBandWaveTable.resize(harmonicBandWaveTableSize);
     //}
-    if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->harmonicBandWaveTableSize) {
-      waveForm->harmonicBandFReverseFFTW.initialize(waveForm->harmonicBandWaveTableSize, false, FFTW3Interface::Reverse);
-      waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
-      waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
+    if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->waveTableSize) {
+      waveForm->harmonicBandFReverseFFTW.initialize(waveForm->waveTableSize, false, FFTW3Interface::Reverse);
+      waveForm->tempTableIn.resize(waveForm->waveTableSize);
+      waveForm->tempTableOut.resize(waveForm->waveTableSize);
     }
     printf("starting to prepare sin band wavetable 3...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
@@ -1173,9 +1175,11 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     memset(waveForm->tempTableIn.data(), 0, sizeof(waveForm->tempTableIn[0]) * waveForm->tempTableIn.size());
     memset(waveForm->tempTableOut.data(), 0, sizeof(waveForm->tempTableOut[0]) * waveForm->tempTableOut.size());
     
+    printf("cycles %f\n", waveForm->harmonicBandCyclesPerWaveTable);
+    
     for(int i=0; i<waveForm->partialSet.numPartials; i++) {
-      long freq = waveForm->cyclesPerWaveTable * waveForm->partialSet.factors[i];
-      if(freq >= 0 && freq < waveForm->harmonicBandWaveTableSize*0.5) {
+      long freq = waveForm->harmonicBandCyclesPerWaveTable * waveForm->partialSet.factors[i];
+      if(freq >= 0 && freq < waveForm->waveTableSize*0.5) {
         waveForm->tempTableIn[freq] = waveForm->partialSet.gains[i];
         maxIndex = max(maxIndex, freq + waveForm->harmonicBandConvolution->getFilterMaxSize());
       }
@@ -1189,7 +1193,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     printf("starting to prepare sin band wavetable 5...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
     
-    for(int i=0; i<waveForm->harmonicBandWaveTableSize; i++) {
+    for(int i=0; i<waveForm->waveTableSize; i++) {
       waveForm->harmonicBandFReverseFFTW.setReverseInput(i, waveForm->tempTableOut[i], Random::getDouble(0, 2*PI));
     }
     printf("starting to prepare sin band wavetable 6...\n");
@@ -1200,9 +1204,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     printf("starting to prepare sin band wavetable 7...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
     
-    if(waveForm->waveTable.size() != waveForm->harmonicBandWaveTableSize) {
+    /*if(waveForm->waveTable.size() != waveForm->harmonicBandWaveTableSize) {
       waveForm->setWaveTableSize(waveForm->harmonicBandWaveTableSize);
-    }
+    }*/
     
     printf("starting to prepare sin band wavetable 8...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
@@ -1746,10 +1750,28 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       }
       waveTablePreparingThreads->clear();
     }
-    if(waveTable.size() != waveTableSize) {
+    
+    
+    if(type == WaveForm::Type::Sample) {
+      if(waveTableSize != sampleBuffer.size() + 1) {
+        setWaveTableSize(sampleBuffer.size() + 1);
+      }
+    }
+    else if(type == WaveForm::Type::SinBands) {
+      if(waveTableSize != harmonicBandWaveTableSize) {
+        setWaveTableSize(harmonicBandWaveTableSize);
+      }
+    }
+    else {
+      if(waveTableSize != waveTableSizeDefault) {
+        setWaveTableSize(waveTableSizeDefault);
+      }
+    }
+    
+    /*if(waveTable.size() != waveTableSize) {
       waveTable.resize(waveTableSize);
     }    
-    waveTableSizeM1 = waveTableSize -1;
+    waveTableSizeM1 = waveTableSize -1;*/
     
     bool pitchTables = usePitchDependendPartialAttenuation || usePitchDependendGaussianSmoothing;
     
@@ -2419,6 +2441,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         }
       }
     };
+    NumberBox* cyclesPerWaveTableGui = NULL;
     NumberBox* minHarmonicSmoothingGui = NULL;
     NumberBox* maxHarmonicSmoothingGui = NULL;
     NumberBox* harmonicSmoothingSlopeGui = NULL;
@@ -2437,6 +2460,8 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
 
       line -= lineHeight;*/
       ConstantWidthColumnPlacer layoutPlacer(250-20, 0, 10, 10);
+
+      addChildElement(cyclesPerWaveTableGui = new NumberBox("Wavetable cycles", waveForm->harmonicBandCyclesPerWaveTable, NumberBox::FLOATING_POINT, 1, 1e10, layoutPlacer, 7));
 
       addChildElement(minHarmonicSmoothingGui = new NumberBox("First bandwidth", waveForm->minHarmonicSmoothing, NumberBox::INTEGER, 1, 10000, layoutPlacer, 7));
       
@@ -2461,6 +2486,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     }
 
     void update() {
+      cyclesPerWaveTableGui->setValue(waveForm->harmonicBandCyclesPerWaveTable);
       minHarmonicSmoothingGui->setValue(waveForm->minHarmonicSmoothing);
       maxHarmonicSmoothingGui->setValue(waveForm->maxHarmonicSmoothing);
       harmonicSmoothingSlopeGui->setValue(waveForm->harmonicSmoothingSlope);
@@ -2474,6 +2500,12 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         this->harmonicSmoothingPanel = harmonicSmoothingPanel;
       }
       void onValueChange(GuiElement *guiElement) {
+        if(guiElement == harmonicSmoothingPanel->cyclesPerWaveTableGui) {
+          guiElement->getValue((void*)&harmonicSmoothingPanel->waveForm->harmonicBandCyclesPerWaveTable);
+          harmonicSmoothingPanel->waveForm->harmonicBandConvolutionChanged = true;
+          printf("changed cycles %f\n", harmonicSmoothingPanel->waveForm->harmonicBandCyclesPerWaveTable);
+          harmonicSmoothingPanel->waveForm->prepareWaveTable();
+        }
         if(guiElement == harmonicSmoothingPanel->minHarmonicSmoothingGui) {
           guiElement->getValue((void*)&harmonicSmoothingPanel->waveForm->minHarmonicSmoothing);
           harmonicSmoothingPanel->bandwidthCurvePreview->prerenderingNeeded = true;
@@ -2544,9 +2576,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     waveTableModeGui->setItems(waveTableModeNames);
     waveTableModeGui->setValue(waveTableMode);
     
-    panel->addChildElement(waveTableSizeGui = new NumberBox("Wavetable size", waveTableSize, NumberBox::INTEGER, 4, 1<<20, layoutPlacer, 10));
-    waveTableSizeGui->incrementMode = NumberBox::IncrementMode::Linear;
-    //waveTableSizeGui->keyboardInputEnabled = false;
+    panel->addChildElement(waveTableSizeGui = new NumberBox("Wavetable size", waveTableSize, NumberBox::INTEGER, 4, 1<<22, layoutPlacer, 10));
+    //waveTableSizeGui->incrementMode = NumberBox::IncrementMode::Linear;
+    waveTableSizeGui->incrementMode = NumberBox::IncrementMode::Power;
+    waveTableSizeGui->keyboardInputEnabled = false;
 
     numStepsGui = new NumberBox("Step count", numSteps, NumberBox::INTEGER, 1, 100, layoutPlacer, 12);
     numStepsGui->incrementMode = NumberBox::IncrementMode::Linear;
@@ -2714,7 +2747,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         guiElement->getValue((void*)&waveForm->type);
         //if(waveForm->waveTableMode != WaveForm::WaveTableMode::None) {
           //printf("(debugging) at WaveformPanelListener.onValueChange: 3...\n");
-          if(waveForm->type == WaveForm::Type::Sample) {
+          /*if(waveForm->type == WaveForm::Type::Sample) {
             if(waveForm->waveTableSize != waveForm->sampleBuffer.size() + 1) {
               waveForm->setWaveTableSize(waveForm->sampleBuffer.size() + 1);
             }
@@ -2728,7 +2761,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
             if(waveForm->waveTableSize != waveForm->waveTableSizeDefault) {
               waveForm->setWaveTableSize(waveForm->waveTableSizeDefault);
             }
-          }
+          }*/
           
           waveForm->prepareWaveTable();
         //}
@@ -2776,9 +2809,12 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         guiElement->getValue((void*)&size);
         if(waveForm->type != WaveForm::Type::Sample && waveForm->type != WaveForm::Type::SinBands) {
           waveForm->waveTableSizeDefault = size;
-          waveForm->setWaveTableSize(size);
-          waveForm->prepareWaveTable();
+          //waveForm->setWaveTableSize(size);
         }
+        if(waveForm->type == WaveForm::Type::SinBands) {
+          waveForm->harmonicBandWaveTableSize = size;          
+        }
+        waveForm->prepareWaveTable();
       }
       if(guiElement == waveForm->gaussianSmoothingGui) {
         guiElement->getValue((void*)&waveForm->smoothingWindowLengthInCycles);
@@ -3525,10 +3561,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     if(usePitchDependendGain) {
       pitchGainDraggingGraph.update();
     }
-    if(type == Type::SinBands) {
+    /*if(type == Type::SinBands) {
       //setWaveTableSize(harmonicBandWaveTableSize);
       waveTableSize = harmonicBandWaveTableSize;
-    }
+    }*/
     
     
     readyToPrepareWaveTable = true;

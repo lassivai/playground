@@ -5,7 +5,7 @@
 struct LooperSequenceTrack
 {
   int trackNumber;
-  std::vector<Note> notes;
+  std::vector<SequencerNote> sequencerNotes;
 
   double sampleRate = 1;
 
@@ -18,69 +18,72 @@ struct LooperSequenceTrack
 
   LooperSequenceTrack(LooperSequenceTrack *looperSequenceTrack) {
     this->trackNumber = looperSequenceTrack->trackNumber;
-    this->notes = std::vector<Note>(looperSequenceTrack->notes);
+    this->sequencerNotes = std::vector<SequencerNote>(looperSequenceTrack->sequencerNotes);
     this->sampleRate = looperSequenceTrack->sampleRate;
-    //memcpy(this->notes, looperSequenceTrack->notes, sizeof(Note)*numNotes);
+    //memcpy(this->sequencerNotes, looperSequenceTrack->sequencerNotes, sizeof(Note)*numNotes);
   }
 
-
-  Note *startNote(double pitch, double startTime, double volume, int instrumentIndex, int instrumentTrackIndex) {
-    notes.push_back(Note(sampleRate, pitch, startTime, volume, instrumentIndex, instrumentTrackIndex));
-    return &notes[notes.size()-1];
+  SequencerNote *startNote(double pitch, double lengthInSecs, double startTime, double volume, int instrumentTrackIndex) {
+    sequencerNotes.push_back(SequencerNote(pitch, lengthInSecs, startTime, volume, instrumentTrackIndex));
+    return &sequencerNotes[sequencerNotes.size()-1];
   }
+  /*Note *startNote(double pitch, double startTime, double volume, int instrumentIndex, int instrumentTrackIndex) {
+    sequencerNotes.push_back(Note(sampleRate, pitch, startTime, volume, instrumentIndex, instrumentTrackIndex));
+    return &sequencerNotes[sequencerNotes.size()-1];
+  }*/
 
-  Note *startNote(Note note, double startTime = -1) {
+  /*SequencerNote *startNote(Note note, double startTime = -1) {
     printf("Starting note at looper track 1...\n");
-    notes.push_back(note);
+    sequencerNotes.push_back(note);
     printf("Starting note at looper track 2...\n");
     if(startTime >= 0) {
-      notes[notes.size()-1].startTime = startTime;
+      sequencerNotes[sequencerNotes.size()-1].startTime = startTime;
     }
     printf("Starting note at looper track 3...\n");
-    return &notes[notes.size()-1];
-  }
+    return &sequencerNotes[sequencerNotes.size()-1];
+  }*/
 
   // FIXME
   double cancelNote() {
     double startTime = 0;
-    if(notes.size() > 0) {
-      startTime = notes[notes.size()-1].startTime;
-      notes[notes.size()-1].reset();
-      notes.erase(notes.begin()+notes.size()-1);
+    if(sequencerNotes.size() > 0) {
+      startTime = sequencerNotes[sequencerNotes.size()-1].startTime;
+      sequencerNotes[sequencerNotes.size()-1].reset();
+      sequencerNotes.erase(sequencerNotes.begin()+sequencerNotes.size()-1);
     }
     return startTime;
   }
   void print() {
-    for(int i=0; i<notes.size(); i++) {
-      printf("note %d: %f\n", i, notes[i].volume);
+    for(int i=0; i<sequencerNotes.size(); i++) {
+      printf("note %d: %f\n", i, sequencerNotes[i].volume);
     }
   }
   void resetNote(int index) {
-    if(index >= 0 && index < notes.size()) {
-      notes.erase(notes.begin()+index);
+    if(index >= 0 && index < sequencerNotes.size()) {
+      sequencerNotes.erase(sequencerNotes.begin()+index);
     }
   }
   void reset() {
-    for(int i=0; i<notes.size(); i++) {
-      notes[i].reset();
+    for(int i=0; i<sequencerNotes.size(); i++) {
+      sequencerNotes[i].reset();
     }
-    notes.clear();
+    sequencerNotes.clear();
   }
 
   void reset(int instrumentTrackIndex) {
-    for(int i=0; i<notes.size(); i++) {
-      if(notes[i].instrumentTrackIndex == instrumentTrackIndex) {
-        notes[i].reset();
-        notes.erase(notes.begin()+i);
+    for(int i=0; i<sequencerNotes.size(); i++) {
+      if(sequencerNotes[i].instrumentTrackIndex == instrumentTrackIndex) {
+        sequencerNotes[i].reset();
+        sequencerNotes.erase(sequencerNotes.begin()+i);
       }
     }
   }
 
   
   void transposeTrack(double steps, int instrumentTrackIndex = -1) {
-    for(int i=0; i<notes.size(); i++) {
-      if(instrumentTrackIndex == -1 || instrumentTrackIndex == notes[i].instrumentTrackIndex) {
-        notes[i].transpose(steps);
+    for(int i=0; i<sequencerNotes.size(); i++) {
+      if(instrumentTrackIndex == -1 || instrumentTrackIndex == sequencerNotes[i].instrumentTrackIndex) {
+        sequencerNotes[i].transpose(steps);
       }
     }
   }

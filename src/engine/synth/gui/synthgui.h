@@ -43,7 +43,7 @@ struct CurrentlyPlayingNotePanel : public Panel {
     setSize(40, 200);
   }
 
-  void renderNoteInfo(Vec2d pos, Note &note, GeomRenderer &geomRenderer, TextGl &textRenderer) {
+  void renderNoteInfo(Vec2d pos, SynthesisNote &note, GeomRenderer &geomRenderer, TextGl &textRenderer) {
     geomRenderer.texture = NULL;
     geomRenderer.strokeType = 1;
     geomRenderer.strokeWidth = 1;
@@ -111,7 +111,7 @@ struct CurrentlyPlayingNotePanel : public Panel {
         }
         else {
           geomRenderer.fillColor.set(0, 0, 0, 0.7);
-          progress = clamp((time-synth->currentlyPlayingNotes[i].startTime) / synth->currentlyPlayingNotes[i].noteActualLength, 0, 1);
+          progress = clamp((time-synth->currentlyPlayingNotes[i].startTime) / synth->currentlyPlayingNotes[i].noteFullLengthSecs, 0, 1);
         }
         geomRenderer.strokeColor.set(1, 1, 1, 1);
         
@@ -137,7 +137,7 @@ struct CurrentlyPlayingNotePanel : public Panel {
         recordedNoteRects[i].set(width - padding*2, itemHeight-3, absolutePos.x+width/2, hx+absolutePos.y+itemHeight*i+(itemHeight-3)*0.5);
         if(synth->currentlyPlayingNotesPresampled[i].volume > 0) {
           double progress = clamp((time-synth->currentlyPlayingNotesPresampled[i].startTime) / synth->currentlyPlayingNotesPresampled[i].noteFullLengthSecs, 0, 1);
-          if(time-synth->currentlyPlayingNotesPresampled[i].startTime < synth->currentlyPlayingNotesPresampled[i].noteLength) {
+          if(time-synth->currentlyPlayingNotesPresampled[i].startTime < synth->currentlyPlayingNotesPresampled[i].lengthInSecs) {
             geomRenderer.fillColor.set(0, 0, 0, 0.7);
           }
           else {

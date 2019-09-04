@@ -1,13 +1,31 @@
-Unbeliavable problem :D Soon starting to think it has more to do with the hackers of my devices than anything else...
 
 TODO
- - save/load song files
+- seperate note class into 3 smaller classes:
+  - synthesis notes (DONE)
+  - recorded notes (partially DONE)
+  - sequencer notes (partially DONE)
+- I need some sort of hash association to the recorded note from other notes
+ - lot of boring work today (and days to come maybe), but the sequencer will work so much smoother after this: for example no need to record every single note, but one instance of similar pitch and length notes can be shared
+Renaming part behind. Then I need a new note recording system for the sequencer notes.
+
+/\ now this /\ (will take several days maybe - with so many things made unusable at the same time, and the success depending on the new working parts, this feels like trying to jump over very wide abyss, lot of debugging follows. Scariest part behind.)
+
+- cool features coming later
+  - drawing of a synth beat by 2D spectrum map
+   - external 2D grayscale image or even video could be applied also
+  - drawing of a synth beat by 2D stereo-oscilloscope line figure
+  - automation or keyframe based aural "animation" for instrument parameters (similar as that fractal animation in visual form)
+  
+- save/load song files
    - including used instruments
 - before opening instrument, check if identical instrument already exists
 - next boring and big challenge, instead of song file input/output, same stuff for the whole session, including the song and all the other parameters
 - select group of notes, move an copy and paste
 - move view window according to progression of track (DONE)
 - change note vector to list
+
+Sin bands needs to manage higher notes with high partials. The unmanaged problem is that higher frequency partials fold back from the frequency sampleRate/2.
+ - perhaps own wavetable for each octave
 
 FIXME
 - ahe envelope offset cause clicks sometimes... (FIXED)

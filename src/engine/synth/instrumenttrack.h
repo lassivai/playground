@@ -11,5 +11,5 @@ struct InstrumentTrack {
   bool isMuted = false;
   //bool isSolo = false;
   
-  std::vector<Note> notes;
+  //std::vector<Note> notes;
 };
