@@ -26,6 +26,7 @@ Renaming part behind. Then I need a new note recording system for the sequencer 
 
 Sin bands needs to manage higher notes with high partials. The unmanaged problem is that higher frequency partials fold back from the frequency sampleRate/2.
  - perhaps own wavetable for each octave
+ - what about just lowpass filtering...
 
 FIXME
 - ahe envelope offset cause clicks sometimes... (FIXED)

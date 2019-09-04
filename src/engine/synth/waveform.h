@@ -1162,10 +1162,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     //if(harmonicBandWaveTable.size() != harmonicBandWaveTableSize) {
     //  harmonicBandWaveTable.resize(harmonicBandWaveTableSize);
     //}
-    if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->waveTableSize) {
-      waveForm->harmonicBandFReverseFFTW.initialize(waveForm->waveTableSize, false, FFTW3Interface::Reverse);
-      waveForm->tempTableIn.resize(waveForm->waveTableSize);
-      waveForm->tempTableOut.resize(waveForm->waveTableSize);
+    if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->harmonicBandWaveTableSize) {
+      waveForm->harmonicBandFReverseFFTW.initialize(waveForm->harmonicBandWaveTableSize, false, FFTW3Interface::Reverse);
+      waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
+      waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
     }
     printf("starting to prepare sin band wavetable 3...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
@@ -1204,9 +1204,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     printf("starting to prepare sin band wavetable 7...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
     
-    /*if(waveForm->waveTable.size() != waveForm->harmonicBandWaveTableSize) {
+    if(waveForm->waveTable.size() != waveForm->harmonicBandWaveTableSize) {
       waveForm->setWaveTableSize(waveForm->harmonicBandWaveTableSize);
-    }*/
+    }
     
     printf("starting to prepare sin band wavetable 8...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
