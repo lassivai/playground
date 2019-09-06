@@ -27,7 +27,7 @@ static inline double noteToFreq(double note) {
 }
 
 static inline double freqToNote(double freq) {
-  /*freq = pow(SIGMA, note-69.0) * 440.0;
+  /*freq = pow(SIGMA, note-69.0) * 440.0; 
   freq / 440.0 = pow(SIGMA, note-69.0)
   SIGMA^(note-69.0) = freq / 440.0
   log SIGMA^(note-69.0) = log freq / 440.0

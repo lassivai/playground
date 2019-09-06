@@ -1,0 +1,77 @@
+instrument {
+  name: Synth keys 24
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 1000, 6000
+  voice {
+    volume: 0.5
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: Zeros in range
+      waveTableSize: 4194304
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: -0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 500
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 4
+      partials {
+        pattern: Graphs
+        count: 36
+      }
+      factorDraggingGraph {
+        yRange: 1, 100
+        curve: 0, 1, 0.5, 0.185463659, 0.726817043, 0.5, 0.448621554, 0.556390977, 0.5, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 36
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.000005, -2, -2, -0.05
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -5, -5, -0.0001
+    output: 1
+  }
+  noteFilter {
+    subtype: Low-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 2000
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+}

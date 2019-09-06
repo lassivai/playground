@@ -1115,6 +1115,14 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   bool harmonicBandConvolutionChanged = true;
   double harmonicBandCyclesPerWaveTable = 1000;
 
+  bool useHarmonicBandAntiAliasing = true;
+  std::vector<std::vector<double>> harmonicBandWaveTables = std::vector<std::vector<double>>(6);
+  //std::vector<int> antiAliasingPitches = {108, 96, 84, 72, 60, 0};
+  std::vector<int> antiAliasingPitches = {0, 60, 72, 84, 96, 108, 128};
+  int antiAliasingCount = 6;
+  
+  std::vector<double> harmonicBandPhases;
+  
   
 
   void prepareHarmonicBandConvolution() {
@@ -1152,6 +1160,125 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   static void prepareHarmonicBandWaveTable(WaveForm *waveForm) {
     //waveForm->stopAllNotesRequested = true;
     //long sampleRate = 96000;
+    if(waveForm->waveTablePreparationStopRequested) return;
+    
+    waveForm->prepareHarmonicBandConvolution();
+    
+    if(waveForm->waveTablePreparationStopRequested) return;
+    //if(harmonicBandWaveTable.size() != harmonicBandWaveTableSize) {
+    //  harmonicBandWaveTable.resize(harmonicBandWaveTableSize);
+    //}
+    //if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->harmonicBandWaveTableSize) {
+      //waveForm->harmonicBandFReverseFFTW.initialize(waveForm->harmonicBandWaveTableSize, false, FFTW3Interface::Reverse);
+      //waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
+      //waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
+    //}
+    if(waveForm->tempTableIn.size() != waveForm->harmonicBandWaveTableSize) {
+      waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
+      waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
+    }
+    
+    if(waveForm->harmonicBandPhases.size() != waveForm->harmonicBandWaveTableSize) {
+      waveForm->harmonicBandPhases.resize(waveForm->harmonicBandWaveTableSize);
+      for(int i=0; i<waveForm->harmonicBandWaveTableSize; i++) {
+        waveForm->harmonicBandPhases[i] = Random::getDouble(0, 2*PI);
+      }
+    }
+    
+    if(waveForm->useHarmonicBandAntiAliasing) {
+      if(waveForm->harmonicBandWaveTables[0].size() != waveForm->harmonicBandWaveTableSize) {
+        for(int i=0; i<waveForm->harmonicBandWaveTables.size(); i++) {
+          waveForm->harmonicBandWaveTables[i].resize(waveForm->harmonicBandWaveTableSize);
+        }
+      }
+    }
+    
+    if(waveForm->waveTablePreparationStopRequested) return;
+    
+    long maxIndex = 0;
+    
+    memset(waveForm->tempTableIn.data(), 0, sizeof(waveForm->tempTableIn[0]) * waveForm->tempTableIn.size());
+    memset(waveForm->tempTableOut.data(), 0, sizeof(waveForm->tempTableOut[0]) * waveForm->tempTableOut.size());
+    
+    
+    for(int i=0; i<waveForm->partialSet.numPartials; i++) {
+      long freq = waveForm->harmonicBandCyclesPerWaveTable * waveForm->partialSet.factors[i];
+      if(freq >= 0 && freq < waveForm->waveTableSize*0.5) {
+        waveForm->tempTableIn[freq] = waveForm->partialSet.gains[i];
+        maxIndex = max(maxIndex, freq + waveForm->harmonicBandConvolution->getFilterMaxSize());
+      }
+    }
+    if(waveForm->waveTablePreparationStopRequested) return;
+    
+    // TODO apply only in the areas of partials
+    long antialiasingCount = waveForm->harmonicBandWaveTables.size();
+    
+    
+    long frequencyLimit = waveForm->sampleRate / 2;
+    long prevMaxInd = 0;
+    
+    for(int k=0; k<waveForm->antiAliasingCount; k++) {
+      if(prevMaxInd > maxIndex) {
+        waveForm->harmonicBandWaveTables[k] = waveForm->harmonicBandWaveTables[k-1];
+        continue;
+      }
+      
+      int p = waveForm->antiAliasingCount - k - 1;
+      
+      long maxInd = (frequencyLimit/noteToFreq(waveForm->antiAliasingPitches[p+1])) * waveForm->harmonicBandCyclesPerWaveTable;
+      
+      
+      waveForm->harmonicBandConvolution->apply(waveForm->tempTableIn, waveForm->tempTableOut, prevMaxInd, maxInd);
+      printf("%d: maxPitch %d, prevMaxInd %lu, maxInd %lu, maxIndex %lu\n", k, waveForm->antiAliasingPitches[p+1], prevMaxInd, maxInd, maxIndex);
+      
+      prevMaxInd = maxInd;
+      
+      
+      //waveForm->harmonicBandConvolution->apply(waveForm->tempTableIn, waveForm->tempTableOut, maxIndex);
+      
+      if(waveForm->waveTablePreparationStopRequested) return;
+      
+      for(int i=0; i<waveForm->waveTableSize; i++) {
+        waveForm->harmonicBandFReverseFFTW.setReverseInput(i, waveForm->tempTableOut[i], waveForm->harmonicBandPhases[i]);
+      }
+      if(waveForm->waveTablePreparationStopRequested) return;
+      
+      waveForm->harmonicBandFReverseFFTW.transformReverse();
+      
+      if(waveForm->waveTablePreparationStopRequested) return;
+      
+      
+      for(long i=0; i<waveForm->waveTableSize; i++) {
+        waveForm->harmonicBandWaveTables[k][i] = waveForm->harmonicBandFReverseFFTW.reverseOutput[i];
+      }
+      waveForm->harmonicBandWaveTables[k][waveForm->waveTableSizeM1] = waveForm->harmonicBandWaveTables[k][0];
+      
+      Vec2d limits = waveForm->normalizeWaveTable(waveForm->harmonicBandWaveTables[k]);
+      printf("waveform min %f, max %f\n", limits.x, limits.y);
+      
+      /*if(waveForm->waveTable.size() != waveForm->harmonicBandWaveTableSize) {
+        waveForm->setWaveTableSize(waveForm->harmonicBandWaveTableSize);
+      }
+      
+      if(waveForm->waveTablePreparationStopRequested) return;
+      
+      for(long i=0; i<waveForm->waveTableSize; i++) {
+        waveForm->waveTable[i] = waveForm->harmonicBandFReverseFFTW.reverseOutput[i];
+      }
+      waveForm->waveTable[waveForm->waveTableSizeM1] = waveForm->waveTable[0];
+      
+      waveForm->normalizeWaveTable(waveForm->waveTable);*/
+    }
+    
+    waveForm->updatePhase();
+    
+    printf("sin band wavetable prepared!\n");
+    waveForm->preparationFinished();
+  }
+
+  /*static void prepareHarmonicBandWaveTable(WaveForm *waveForm) {
+    //waveForm->stopAllNotesRequested = true;
+    //long sampleRate = 96000;
     printf("starting to prepare sin band wavetable 1...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
     
@@ -1162,11 +1289,16 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     //if(harmonicBandWaveTable.size() != harmonicBandWaveTableSize) {
     //  harmonicBandWaveTable.resize(harmonicBandWaveTableSize);
     //}
-    if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->harmonicBandWaveTableSize) {
-      waveForm->harmonicBandFReverseFFTW.initialize(waveForm->harmonicBandWaveTableSize, false, FFTW3Interface::Reverse);
+    //if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->harmonicBandWaveTableSize) {
+      //waveForm->harmonicBandFReverseFFTW.initialize(waveForm->harmonicBandWaveTableSize, false, FFTW3Interface::Reverse);
+      //waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
+      //waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
+    //}
+    if(waveForm->tempTableIn.size() != waveForm->harmonicBandWaveTableSize) {
       waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
       waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
     }
+    
     printf("starting to prepare sin band wavetable 3...\n");
     if(waveForm->waveTablePreparationStopRequested) return;
     
@@ -1225,7 +1357,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     
     printf("sin band wavetable prepared!\n");
     waveForm->preparationFinished();
-  }
+  }*/
   
   
   void setWaveTableSize(int size) {
@@ -1235,6 +1367,12 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     waveTable.resize(waveTableSize);
     if(waveTableSizeGui) {
       waveTableSizeGui->setValue(waveTableSize);
+    }
+    // FIXME only when type == SinBands
+    if(harmonicBandWaveTables[0].size() != size) {
+      for(int i=0; i<harmonicBandWaveTables.size(); i++) {
+        harmonicBandWaveTables[i].resize(waveTableSize);
+      }
     }
     //harmonicBandwidthDraggingGraph.setNumDataPoints(size);
   }
@@ -1495,30 +1633,131 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   }*/
   
   void updatePhase() {
-    phaseZeroPoints.clear();
-    double previousValue = waveTable[waveTableSizeM1-1];
-    
-    for(int i=0; i<waveTableSizeM1; i++) {
-      if(waveTable[i] == 0 || sign(previousValue) != sign(waveTable[i])) {
-        double x = (double)i/waveTableSizeM1*cyclesPerWaveTable;
-        if(phaseMode != PhaseMode::ZerosWithinRange || (x >= phaseStartLimits.x*cyclesPerWaveTable && x <= phaseStartLimits.y*cyclesPerWaveTable)) {
-          phaseZeroPoints.push_back(x);
+    if(type == Type::SinBands) {
+      updateHarmonicBandPhases();
+    }
+    else {
+      phaseZeroPoints.clear();
+      double previousValue = waveTable[waveTableSizeM1-1];
+      
+      for(int i=0; i<waveTableSizeM1; i++) {
+        if(waveTable[i] == 0 || sign(previousValue) != sign(waveTable[i])) {
+          double x = (double)i/waveTableSizeM1*cyclesPerWaveTable;
+          if(phaseMode != PhaseMode::ZerosWithinRange || (x >= phaseStartLimits.x*cyclesPerWaveTable && x <= phaseStartLimits.y*cyclesPerWaveTable)) {
+            phaseZeroPoints.push_back(x);
+          }
+        }
+        previousValue = waveTable[i];
+      }
+      if(phaseZeroPoints.size() == 0) {
+        phaseZeroPoints.push_back(0);
+        printf("########## TESTING PHASES ##########\n");
+      }
+      if(phaseMode == PhaseMode::FirstZero) {
+        phaseStartLimits.x = phaseStartLimits.y = phaseZeroPoints[0];
+        if(phaseStartMinGui && phaseStartMaxGui) {
+          phaseStartMinGui->setValue(phaseZeroPoints[0]);
+          phaseStartMaxGui->setValue(phaseZeroPoints[0]);
         }
       }
-      previousValue = waveTable[i];
     }
-    if(phaseZeroPoints.size() == 0) {
-      phaseZeroPoints.push_back(0);
-      printf("########## TESTING PHASES ##########\n");
+  }
+  //std::vector<Vec2d> phaseStartLimitsHB = std::vector<Vec2d>(antiAliasingCount);
+  std::vector<std::vector<double>> phaseZeroPointsHB = std::vector<std::vector<double>>(antiAliasingCount);
+  
+  void updateHarmonicBandPhases() {
+    for(int k=0; k<antiAliasingCount; k++) {
+      phaseZeroPointsHB[k].clear();
+      double previousValue = harmonicBandWaveTables[k][waveTableSizeM1-1];
+      
+      for(int i=0; i<waveTableSizeM1; i++) {
+        if(harmonicBandWaveTables[k][i] == 0 || sign(previousValue) != sign(harmonicBandWaveTables[k][i])) {
+          double x = (double)i/waveTableSizeM1*cyclesPerWaveTable;
+          if(phaseMode != PhaseMode::ZerosWithinRange || (x >= phaseStartLimits.x*cyclesPerWaveTable && x <= phaseStartLimits.y*cyclesPerWaveTable)) {
+            phaseZeroPointsHB[k].push_back(x);
+          }
+        }
+        previousValue = harmonicBandWaveTables[k][i];
+      }
+      if(phaseZeroPointsHB[k].size() == 0) {
+        phaseZeroPointsHB[k].push_back(0);
+      }
+      /*if(phaseMode == PhaseMode::FirstZero) {
+        phaseStartLimitsHB[k].x = phaseStartLimitsHB[k].y = phaseZeroPointsHB[k][0];
+        if(phaseStartMinGui && phaseStartMaxGui) {
+          phaseStartMinGui->setValue(phaseZeroPoints[0]);
+          phaseStartMaxGui->setValue(phaseZeroPoints[0]);
+        }
+      }*/
     }
     if(phaseMode == PhaseMode::FirstZero) {
-      phaseStartLimits.x = phaseStartLimits.y = phaseZeroPoints[0];
+      phaseStartLimits.x = phaseStartLimits.y = phaseZeroPointsHB[0][0];
       if(phaseStartMinGui && phaseStartMaxGui) {
         phaseStartMinGui->setValue(phaseZeroPoints[0]);
         phaseStartMaxGui->setValue(phaseZeroPoints[0]);
       }
     }
   }
+  
+  
+  void initPhase(Vec2d &phase, unsigned char pitch) {
+    if(type == Type::SinBands) {
+      int k = 0; // FIXME
+      if(pitch < antiAliasingPitches[1]) k = 5;
+      else if(pitch < antiAliasingPitches[2]) k = 4;
+      else if(pitch < antiAliasingPitches[3]) k = 3;
+      else if(pitch < antiAliasingPitches[4]) k = 2;
+      else if(pitch < antiAliasingPitches[5]) k = 1;
+      else if(pitch < antiAliasingPitches[6]) k = 0;
+      
+      if(phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
+        double p = phaseStartLimits.getRandomDoubleFromTheRange();
+        phase.set(p, p);
+        if(!sameLeftAndRightPhase) {
+          phase.y = phaseStartLimits.getRandomDoubleFromTheRange();
+        }
+      }
+      else if(phaseMode == WaveForm::PhaseMode::ZerosWithinRange) {
+        double p = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPoints.size()-1)];
+        phase.set(p, p);
+        if(!sameLeftAndRightPhase) {
+          phase.y = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPoints.size()-1)];
+        }
+      }
+      else if(phaseMode == WaveForm::PhaseMode::FirstZero) {
+        double p = phaseZeroPointsHB[k][0];
+        phase.set(p, p);
+      }
+      else if(phaseMode == WaveForm::PhaseMode::LeftAndRight) {
+        phase.set(phaseStartLimits.x, phaseStartLimits.y);
+      }
+    }
+    else {
+      if(phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
+        double p = phaseStartLimits.getRandomDoubleFromTheRange();
+        phase.set(p, p);
+        if(!sameLeftAndRightPhase) {
+          phase.y = phaseStartLimits.getRandomDoubleFromTheRange();
+        }
+      }
+      else if(phaseMode == WaveForm::PhaseMode::ZerosWithinRange) {
+        double p = phaseZeroPoints[Random::getInt(0, phaseZeroPoints.size()-1)];
+        phase.set(p, p);
+        if(!sameLeftAndRightPhase) {
+          phase.y = phaseZeroPoints[Random::getInt(0, phaseZeroPoints.size()-1)];
+        }
+      }
+      else if(phaseMode == WaveForm::PhaseMode::FirstZero) {
+        double p = phaseZeroPoints[0];
+        phase.set(p, p);
+      }
+      else if(phaseMode == WaveForm::PhaseMode::LeftAndRight) {
+        phase.set(phaseStartLimits.x, phaseStartLimits.y);
+      }
+    }
+  }
+  
+  
 
   // TODO integrate properly
   void setCenterOffset() {
@@ -1768,6 +2007,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       }
     }
     
+    if(!harmonicBandFReverseFFTW.isInitialized() || harmonicBandFReverseFFTW.getSize() != harmonicBandWaveTableSize) {
+      harmonicBandFReverseFFTW.initialize(harmonicBandWaveTableSize, false, FFTW3Interface::Reverse);
+    }
+    
     /*if(waveTable.size() != waveTableSize) {
       waveTable.resize(waveTableSize);
     }    
@@ -1857,7 +2100,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     }
   }
   
-  inline void normalizeWaveTable(std::vector<double> &waveTable) {
+  inline Vec2d normalizeWaveTable(std::vector<double> &waveTable) {
     double maxAmp = -1e10, minAmp = 1e10;
     for(int i=0; i<waveTableSizeM1 && !waveTablePreparationStopRequested; i++) {
       maxAmp = max(maxAmp, waveTable.at(i));
@@ -1868,6 +2111,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         waveTable.at(i) = map(waveTable.at(i), minAmp, maxAmp, -1.0, 1.0) + waveValueOffset;
       }
     }
+    return Vec2d(minAmp, maxAmp);
   }
   static void prepareWaveTableX(WaveForm *waveForm, std::vector<double> *waveTable, Type type, int pitch, int threadNumber, int numThreads, bool isMainTable = false) {
     if(waveForm->waveTablePreparationStopRequested) {
@@ -2082,6 +2326,27 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     //double gain = usePitchDependendGain ? pitchDependendGains[pitch] : 1.0;
     double gain = 1;
     x /= cyclesPerWaveTable;
+    
+    if(type == Type::SinBands) {
+      if(pitch < antiAliasingPitches[1]) {
+        return gain * harmonicBandWaveTables[5][int(x * waveTableSizeM1) % waveTableSizeM1];
+      }
+      else if(pitch < antiAliasingPitches[2]) {
+        return gain * harmonicBandWaveTables[4][int(x * waveTableSizeM1) % waveTableSizeM1];
+      }
+      else if(pitch < antiAliasingPitches[3]) {
+        return gain * harmonicBandWaveTables[3][int(x * waveTableSizeM1) % waveTableSizeM1];
+      }
+      else if(pitch < antiAliasingPitches[4]) {
+        return gain * harmonicBandWaveTables[2][int(x * waveTableSizeM1) % waveTableSizeM1];
+      }
+      else if(pitch < antiAliasingPitches[5]) {
+        return gain * harmonicBandWaveTables[1][int(x * waveTableSizeM1) % waveTableSizeM1];
+      }
+      else if(pitch < antiAliasingPitches[6]) {
+        return gain * harmonicBandWaveTables[0][int(x * waveTableSizeM1) % waveTableSizeM1];
+      }
+    }
     
     if(usePitchDependendGaussianSmoothing && usePitchDependendPartialAttenuation) {
       if(waveTableMode == WaveTableMode::Single) {
@@ -2336,7 +2601,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         double s = fx <= 0.5 ? 1.0 : -1.0;
         return s * sqrt(0.25*0.25 - (f2x-0.25)*(f2x-0.25));
       }
-
+      
       case WaveForm::Type::WhiteNoise:
         return Random::getDouble(-1, 1);
 
@@ -2812,7 +3077,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
           //waveForm->setWaveTableSize(size);
         }
         if(waveForm->type == WaveForm::Type::SinBands) {
-          waveForm->harmonicBandWaveTableSize = size;          
+          waveForm->harmonicBandWaveTableSize = size;
         }
         waveForm->prepareWaveTable();
       }

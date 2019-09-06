@@ -558,7 +558,8 @@ public:
 
     note.phasesGM.resize(maxNumModulators);
     for(int i=0; i<maxNumModulators; i++) {
-      if(modulators[i].waveForm.phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
+      modulators[i].waveForm.initPhase(note.phasesGM[i], note.pitch);
+      /*if(modulators[i].waveForm.phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
         double p = modulators[i].waveForm.phaseStartLimits.getRandomDoubleFromTheRange();
         note.phasesGM[i].set(p, p);
         if(!modulators[i].waveForm.sameLeftAndRightPhase) {
@@ -578,7 +579,7 @@ public:
       }
       else if(modulators[i].waveForm.phaseMode == WaveForm::PhaseMode::LeftAndRight) {
         note.phasesGM[i].set(modulators[i].waveForm.phaseStartLimits.x, modulators[i].waveForm.phaseStartLimits.y);
-      }
+      }*/
     }
 
     note.biquadFilter.init(biquadFilter, note.frequency, note.volume);
@@ -595,7 +596,8 @@ public:
       note.phasesVoiceNew[j].resize(maxUnison);
       note.voiceBiquadFilters[j].init(voices[j].biquadFilter, note.frequency, note.volume);
       for(int k=0; k<maxUnison; k++) {
-        if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
+        voices[j].waveForm.initPhase(note.phasesVoiceNew[j][k], note.pitch);
+        /*if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
           double p = voices[j].waveForm.phaseStartLimits.getRandomDoubleFromTheRange();
           note.phasesVoiceNew[j][k].set(p, p);
           if(!voices[j].waveForm.sameLeftAndRightPhase) {
@@ -616,6 +618,7 @@ public:
         else if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::LeftAndRight) {
           note.phasesVoiceNew[j][k].set(voices[j].waveForm.phaseStartLimits.x, voices[j].waveForm.phaseStartLimits.y);
         }
+        */
       }
     }
     
