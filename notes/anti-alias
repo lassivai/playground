@@ -1,0 +1,12 @@
+I can't apply the same method for reducing aliasing for sin band wave mode as for other waves (which is called "pitch smoothing"), because the wavetable has to be so much bigger in sin bands and the smoothing is quite slow. In the case of sin bands I was thinking about making seperate wavetables too, but maybe for each octave (not for each pitch) and just drop the higher partials out from the higher octaves in the original fftw conversion.
+
+Aliasing is when higher frequencies go beyound the frequency threshold 0.5 * sampling rate and fold back to lower frequencies. All sorts of annoying sounds and noises appear. I have previously used quite high sampling rate 96000 Hz, which makes that threshold farther away. Now I have used that more normal number 48000 Hz, which reminds me of the aliasing problem.
+
+I start making those reduced wavetables starting from octave starting from pitch 60. Six + one times (60, 72, 84, 96, 108, 120) still needed to do the expesive fftw conversion (which I could still optimize further by reducing few unnesessary array copies).
+
+>> ps = [120 108 96 84 72 60 0];
+>> limit./pitchToFreq(ps)
+ans =  2.8667      5.7334     11.4668     22.9335     45.8671     91.7342   2935.4929
+These should be the max partial frequency factors usable for each (anti-aliased) octave in 48000 Hz sampling rate
+
+Weirdly it worked just as I wanted it to work in the first attempt. Little bit fine tuning and optimization follows.
