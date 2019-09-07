@@ -1990,6 +1990,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       waveTablePreparingThreads->clear();
     }
     
+
     
     if(type == WaveForm::Type::Sample) {
       if(waveTableSize != sampleBuffer.size() + 1) {
@@ -1997,9 +1998,14 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       }
     }
     else if(type == WaveForm::Type::SinBands) {
-      if(waveTableSize != harmonicBandWaveTableSize) {
-        setWaveTableSize(harmonicBandWaveTableSize);
+      /*if(harmonicBandWaveTables[0].size() != waveTableSize) {
+        for(int i=0; i<harmonicBandWaveTables.size(); i++) {
+          harmonicBandWaveTables[i].resize(waveTableSize);
+        }
       }
+      if(waveTableSize != harmonicBandWaveTableSize) {*/
+        setWaveTableSize(harmonicBandWaveTableSize);
+      //}
     }
     else {
       if(waveTableSize != waveTableSizeDefault) {
