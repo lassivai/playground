@@ -33,7 +33,7 @@ instrument {
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0.01
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
@@ -46,6 +46,12 @@ instrument {
         count: 1
         frequencyParameters: 1, 1, 0, 0, 1, 0
         gainParameters: 0, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.544240401, 0.994974874, 0, 0.734557596, 0.869346734, 0, 0.883138564, 0.557788945, 0, 1, 0, 0
       }
     }
   }
@@ -61,7 +67,6 @@ instrument {
     frequencyModulator: 0
     amplitudeEnvelope: 2
     frequencyEnvelope: -1
-    filterFrequencyModular: -1, -1, 100, 1000
     waveform {
       type: Wave04
       waveTableMode: Single
@@ -73,7 +78,7 @@ instrument {
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
@@ -86,6 +91,12 @@ instrument {
         count: 1
         frequencies: 1
         gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.477462437, 0.994974874, 0, 0.659432387, 0.814070352, 0, 0.876460768, 0.412060302, 0, 1, 0, 0
       }
     }
   }

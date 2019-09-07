@@ -68,4 +68,16 @@ instrument {
     parameters: 0.008, 0, -20, -0.05
     output: 0
   }
+  noteFilter {
+    subtype: High-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 200
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 1
+    bandwidthKeyTracking: 0
+  }
 }

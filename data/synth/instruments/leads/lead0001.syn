@@ -1,5 +1,5 @@
 instrument {
-  name: Synth 33
+  name: Lead 1
   volume: 1
   reverb {
     subtype: MVerb
@@ -29,6 +29,7 @@ instrument {
       type: Sin bands
       waveTableMode: Single faster
       waveTableSeamMode: No seam
+      phaseMode: Random in range
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
       phaseOffsets: 0, 0

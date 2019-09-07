@@ -1,39 +1,60 @@
 instrument {
   name: Accordion 2
-  volume: 1.000000
+  volume: 1
   multiDelay {
-    gain: 1.060000
-    wet: 0.860000
-    out: 1, 1.000000
+    gain: 1.06
+    wet: 0.86
+    samplerate: 48000
+    out: 1, 1
   }
-
   voice {
-    volume: 0.200000
-    tuning: 1.000000
-    stereoPhaseOffset: 0.600000
+    volume: 0.2
+    tuning: 1
+    stereoPhaseOffset: 0.6
+    pan: 0
     unison: 1
-    unisonDetuning: 0.010000
+    unisonDetuning: 0.01
     unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: 0
+    frequencyModulator: 0
     amplitudeEnvelope: 1
+    frequencyEnvelope: -1
     waveform {
       type: Wave06
       waveTableMode: Single faster
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: Equation
         count: 21
-        usePattern: 1
-        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
-        gainParameters: 5.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 5, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.412353923, 1, 0, 0.651085142, 0.939698492, 0, 0.874791319, 0.648241206, 0, 1, 0, 0
       }
     }
   }
   envelope {
-    output: 1
     type: ahe
-    parameters: 0.060000, 0.000000, -6.000000
+    parameters: 0.06, 0, -6, -0.05
+    output: 1
   }
-
 }

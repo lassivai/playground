@@ -1,5 +1,5 @@
 instrument {
-  name: Synth 47
+  name: Lead 5
   volume: 1
   voice {
     volume: 0.65

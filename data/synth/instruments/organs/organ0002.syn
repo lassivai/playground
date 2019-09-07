@@ -26,7 +26,7 @@ instrument {
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
@@ -39,6 +39,12 @@ instrument {
         count: 8
         frequencyParameters: 1, 2, 0, 0, 0, 0
         gainParameters: 1, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.409015025, 1, 0, 0.614357262, 0.894472362, 0, 0.83639399, 0.708542714, 0, 1, 0, 0
       }
     }
   }

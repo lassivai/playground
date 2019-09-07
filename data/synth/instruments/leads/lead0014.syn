@@ -28,7 +28,7 @@ instrument {
     frequencyEnvelope: -1
     waveform {
       type: Square
-      waveTableMode: Single
+      waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: Random in range
       waveTableSize: 2048
@@ -40,7 +40,7 @@ instrument {
       pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: 0.043945312
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -66,8 +66,20 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.425709516, 1, 0, 0.853088481, 0.864321608, 0, 1, 0.306532663, 0
+        curve: 0, 1, 0, 0.43572621, 1, 0, 0.651085142, 0.854271357, 0, 0.828046745, 0.567839196, 0, 1, 0, 0
       }
+    }
+    biquadFilter {
+      subtype: High-pass
+      keyTrackingMode: Pitch
+      gain: 1
+      wet: 1
+      frequency: 250
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+      frequencyKeyTracking: 1
+      bandwidthKeyTracking: 0
     }
   }
   envelope {

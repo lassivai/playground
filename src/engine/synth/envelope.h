@@ -3,8 +3,8 @@
 #include <ctgmath>
 #include "../util.h"
 
-enum EnvelopeType { AttackHoldExpDecay, AttackDecaySustainRelease, FourPoints, FivePoints, AttackHoldPartialDecays, PowerAttackDecay };
-static const std::vector<std::string> envelopeTypeShortNames = { "ahe", "adsr", "fourPoint", "fivePoint", "ahpd", "pad" };
+enum EnvelopeType { AttackHoldExpDecay, AttackHoldExpDecay2, AttackDecaySustainRelease, FourPoints, FivePoints/*, AttackHoldPartialDecays*/, PowerAttackDecay };
+static const std::vector<std::string> envelopeTypeShortNames = { "ahe", "ahe2", "adsr", "fourPoint", "fivePoint"/*, "ahpd"*/, "pad" };
 
 
 struct EnvelopePreset {
@@ -41,7 +41,7 @@ static EnvelopePreset epFourpoint04("4-point 04", EnvelopeType::FourPoints, {0, 
 static EnvelopePreset epFivepoint01("5-point 01", EnvelopeType::FivePoints, {1, 1, 0.4, 0, 0, 0, 0.1, 0, 6.0, 0.5});
 static EnvelopePreset epFivepoint02("5-point 02", EnvelopeType::FivePoints, {1, 1, 0.5, 0, 0, 0, 0.3, 0, 4.0, 0.1});
 static EnvelopePreset epFivepoint03("5-point 03", EnvelopeType::FivePoints, {0, 1, 1, 0, 0, 0.02, 0.07, 0, 4.0, 0.5});
-static EnvelopePreset epAHPD01("AHPD 01", EnvelopeType::AttackHoldPartialDecays, {0, -1, -8, 0.5, 0.5});
+//static EnvelopePreset epAHPD01("AHPD 01", EnvelopeType::AttackHoldPartialDecays, {0, -1, -8, 0.5, 0.5});
 static EnvelopePreset epPAD01("PAD 01", EnvelopeType::PowerAttackDecay, {0, 0, 3, 5});
 static EnvelopePreset epPAD02("PAD 02", EnvelopeType::PowerAttackDecay, {0, 0, 3, 0.4});
 static EnvelopePreset epPAD03("PAD 03", EnvelopeType::PowerAttackDecay, {0, 0, 0.5, 3});
@@ -54,7 +54,7 @@ static EnvelopePreset epPAD09("PAD 09", EnvelopeType::PowerAttackDecay, {0, 0, 0
 static EnvelopePreset epPAD10("PAD 10", EnvelopeType::PowerAttackDecay, {0, 0, 3, 10});
 static EnvelopePreset epPAD11("PAD 11", EnvelopeType::PowerAttackDecay, {0, 0, 3, 20});
 
-static std::vector<EnvelopePreset> envelopePresets = { epAHE01, epADSR01, epFourpoint01, epFourpoint02, epFourpoint03, epFivepoint01, epFivepoint02, epAHPD01};
+static std::vector<EnvelopePreset> envelopePresets = { epAHE01, epADSR01, epFourpoint01, epFourpoint02, epFourpoint03, epFivepoint01, epFivepoint02};
 
 
 struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
@@ -63,17 +63,22 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
   double ahdReleaseDecayExponent = -6;
   double ahdOffset = -0.05;
 
+  double ahd2AttackDuration = 0.0;
+  double ahd2HoldDecayExponent = -1, ahd2HoldDecayPower = 0;
+  double ahd2ReleaseDecayExponent = -6;
+  double ahd2Offset = -0.05;
+
   double adsrAttackDuration = 0.0;
   double adsrDecayDuration = 0.1;
   double adsrSustainLevel = 1.0;
   double adsrReleaseDuration = 1.0;
 
-  double ahpdAttackDuration = 0.0;
+  /*double ahpdAttackDuration = 0.0;
   double ahpdHoldDecayExponent = -1.0;
   double ahpdReleaseDecayExponent = -6.0;
   double ahpdPartialDecayCoefficient = 0.0;
   double ahpdPartialDecayCoefficient2 = 0.5;
-  std::vector<double> ahpdPartialDecayFactors;
+  std::vector<double> ahpdPartialDecayFactors;*/
 
   std::vector<double> fourPointLevels = {1, 1, 1, 0};
   std::vector<double> fourPointDurations = {0, 0, 0, 0};
@@ -95,16 +100,25 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
   virtual ~Envelope() {}
 
   Envelope() {
-    ahpdPartialDecayFactors.resize(PartialSet::maxNumPartials);
+    //ahpdPartialDecayFactors.resize(PartialSet::maxNumPartials);
     prepare();
   }
 
   inline void operator=(const Envelope &a) {
     this->type = a.type;
+    
     this->ahdAttackDuration = a.ahdAttackDuration;
     this->ahdHoldDecayExponent = a.ahdHoldDecayExponent;
     this->ahdReleaseDecayExponent = a.ahdReleaseDecayExponent;
     this->ahdOffset = a.ahdOffset;
+
+    this->ahd2AttackDuration = a.ahd2AttackDuration;
+    this->ahd2HoldDecayPower = a.ahd2HoldDecayPower;
+    this->ahd2HoldDecayExponent = a.ahd2HoldDecayExponent;
+    this->ahd2ReleaseDecayExponent = a.ahd2ReleaseDecayExponent;
+    this->ahd2Offset = a.ahd2Offset;
+
+    
     //this->keyHoldEnabled = a.keyHoldEnabled;
     this->adsrAttackDuration = a.adsrAttackDuration;
     this->adsrDecayDuration = a.adsrDecayDuration;
@@ -119,11 +133,11 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       this->fivePointDurations[i] = a.fivePointDurations[i];
     }
 
-    this->ahpdAttackDuration = a.ahpdAttackDuration;
+    /*this->ahpdAttackDuration = a.ahpdAttackDuration;
     this->ahpdHoldDecayExponent = a.ahpdHoldDecayExponent;
     this->ahpdReleaseDecayExponent = a.ahpdReleaseDecayExponent;
     this->ahpdPartialDecayCoefficient = a.ahpdPartialDecayCoefficient;
-    this->ahpdPartialDecayCoefficient2 = a.ahpdPartialDecayCoefficient2;
+    this->ahpdPartialDecayCoefficient2 = a.ahpdPartialDecayCoefficient2;*/
 
     this->padAttackDuration = a.padAttackDuration;
     this->padAttackPower = a.padAttackPower;
@@ -154,13 +168,13 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       ahdHoldDecayExponent = envelopePreset.args.size() > 1 ? envelopePreset.args[1] : 0;
       ahdReleaseDecayExponent = envelopePreset.args.size() > 2 ? envelopePreset.args[2] : 0;
     }
-    if(type == EnvelopeType::AttackHoldPartialDecays) {
+    /*if(type == EnvelopeType::AttackHoldPartialDecays) {
       ahpdAttackDuration = envelopePreset.args.size() > 0 ? envelopePreset.args[0] : 0;
       ahpdHoldDecayExponent = envelopePreset.args.size() > 1 ? envelopePreset.args[1] : 0;
       ahpdReleaseDecayExponent = envelopePreset.args.size() > 2 ? envelopePreset.args[2] : 0;
       ahpdPartialDecayCoefficient = envelopePreset.args.size() > 3 ? envelopePreset.args[3] : 0;
       ahpdPartialDecayCoefficient2 = envelopePreset.args.size() > 4 ? envelopePreset.args[4] : 0;
-    }
+    }*/
     if(type == EnvelopeType::AttackDecaySustainRelease) {
       adsrAttackDuration = envelopePreset.args.size() > 0 ? envelopePreset.args[0] : 0;
       adsrDecayDuration = envelopePreset.args.size() > 1 ? envelopePreset.args[1] : 0;
@@ -192,12 +206,13 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
 
   void prepare() {
     updateAhd();
+    updateAhd2();
     
-    if(type == AttackHoldPartialDecays) {
+    /*if(type == AttackHoldPartialDecays) {
       for(int i=0; i<PartialSet::maxNumPartials; i++) {
         ahpdPartialDecayFactors[i] =  1.0 / (1.0 + pow(i * ahpdPartialDecayCoefficient, ahpdPartialDecayCoefficient2));
       }
-    }
+    }*/
     if(useLut) {
       prepareLookupBuffers();
     }
@@ -223,10 +238,10 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
         return lerp(0.0, 1.0, t/ahdAttackDuration);
       }
       else {
-        if(t >= ahdMaxLength) {
+        /*if(t >= ahdMaxLength) {
           return 0;
         }
-        else if(isKeyHolding) {
+        else */if(isKeyHolding) {
           return max(0.0, (exp(ahdHoldDecayExponent*(t-ahdAttackDuration)) + ahdOffset) / (1+ahdOffset));
         }
         else {
@@ -235,13 +250,39 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
             return max(0.0, ampAfterAttack * (exp(ahdReleaseDecayExponent*(t-keyHoldDuration)) + ahdOffset) / (1+ahdOffset));
           }
           else {
-            double ampAfterHold = (exp(ahdHoldDecayExponent*(t-ahdAttackDuration)) + ahdOffset) / (1+ahdOffset);
-            return max(0.0, ampAfterHold * (exp(ahdReleaseDecayExponent*(t-keyHoldDuration)) + ahdOffset) / (1+ahdOffset));
+            //double ampAfterHold = (exp(ahdHoldDecayExponent*(t-ahdAttackDuration)) + ahdOffset) / (1+ahdOffset);
+            double ampAfterHold = (exp(ahdHoldDecayExponent*(keyHoldDuration-ahdAttackDuration))) ;
+            return max(0.0, (ampAfterHold * exp(ahdReleaseDecayExponent*(t-keyHoldDuration)) + ahdOffset) / (1+ahdOffset));
           }
         }
       }
     }
-    else if(type == AttackHoldPartialDecays) {
+    else if(type == AttackHoldExpDecay2) {
+      if(t < ahd2AttackDuration && isKeyHolding) {
+        if(ahd2AttackDuration == 0) return 1;
+        return lerp(0.0, 1.0, t/ahd2AttackDuration);
+      }
+      else {
+        /*if(t >= ahd2MaxLength) {
+          return 0;
+        }
+        else */if(isKeyHolding) {
+          return max(0.0, (exp(ahd2HoldDecayExponent*pow(t-ahd2AttackDuration, ahd2HoldDecayPower)) + ahd2Offset) / (1+ahd2Offset));
+        }
+        else {
+          if(keyHoldDuration < ahd2AttackDuration) {
+            double ampAfterAttack = ahd2AttackDuration == 0 ? 1.0 : lerp(0.0, 1.0, keyHoldDuration/ahd2AttackDuration);
+            return max(0.0, ampAfterAttack * (exp(ahd2ReleaseDecayExponent*(t-keyHoldDuration)) + ahd2Offset) / (1+ahd2Offset));
+          }
+          else {
+            //double ampAfterHold = (exp(ahd2HoldDecayExponent*pow(t-ahd2AttackDuration, ahd2HoldDecayPower)) + ahd2Offset) / (1+ahd2Offset);
+            double ampAfterHold = (exp(ahd2HoldDecayExponent*pow(keyHoldDuration-ahd2AttackDuration, ahd2HoldDecayPower)) ) ;
+            return max(0.0, (ampAfterHold * exp(ahd2ReleaseDecayExponent*(t-keyHoldDuration)) + ahd2Offset) / (1+ahd2Offset));
+          }
+        }
+      }
+    }
+    /*else if(type == AttackHoldPartialDecays) {
       if(t < 0.0) {
         return 0;
       }
@@ -261,7 +302,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
           return ampAfterHold * exp(ahpdReleaseDecayExponent*(t-t1) * ahpdPartialDecayFactors[partial]);
         }
       }
-    }
+    }*/
     else if(type == FourPoints) {
       double d2 = max(fourPointDurations[0] + fourPointDurations[1] + fourPointDurations[2], keyHoldDuration);
 
@@ -376,6 +417,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
 
 
   double ahdMaxLength = 0;
+  double ahd2MaxLength = 0;
   
   inline void updateAhd() {
     if(ahdOffset >= 0 || ahdHoldDecayExponent >= 0) ahdMaxLength = 1e10;
@@ -389,8 +431,8 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       return 1e10;
     }
     else {
+      updateAhd();
       if(ahdMaxLength <= holdDuration || holdDuration < 0 || ahdReleaseDecayExponent == ahdHoldDecayExponent) {
-        updateAhd();
         return ahdMaxLength;
       }
       else {
@@ -400,8 +442,40 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
         }
         else if(ahdHoldDecayExponent < 0 && holdDuration > ahdAttackDuration) {
           levelAfterHold = exp(ahdHoldDecayExponent*(holdDuration-ahdAttackDuration));
+          //levelAfterHold = (exp(ahdHoldDecayExponent*(holdDuration-ahdAttackDuration)) + ahdOffset) / (1+ahdOffset);
         }
         double d = log(-ahdOffset/levelAfterHold) / ahdReleaseDecayExponent;
+        return holdDuration + d;
+      }
+    }
+  }
+  
+  inline void updateAhd2() {
+    if(ahd2Offset >= 0 || ahd2HoldDecayExponent >= 0) ahd2MaxLength = 1e10;
+    else ahd2MaxLength = ahd2AttackDuration + pow(log(-ahd2Offset) / ahd2HoldDecayExponent, 1.0/ahd2HoldDecayPower);
+    //printf("max ahd t %f\n", ahdMaxLength);
+  }
+  
+  inline double getAhd2Length(double holdDuration = -1) {
+    //printf("Getting ahd lenght...\n");
+    if(ahd2Offset >= 0 || ahd2ReleaseDecayExponent >= 0) {
+      return 1e10;
+    }
+    else {
+      updateAhd2();
+      if(ahd2MaxLength <= holdDuration || holdDuration < 0 /*|| ahdReleaseDecayExponent == ahdHoldDecayExponent*/) {
+        return ahd2MaxLength;
+      }
+      else {
+        double levelAfterHold = 1;
+        if(holdDuration < ahd2AttackDuration) {
+          levelAfterHold = lerp(0.0, 1.0, holdDuration/ahd2AttackDuration);
+        }
+        else if(ahd2HoldDecayExponent < 0 && holdDuration > ahd2AttackDuration) {
+          levelAfterHold = exp(ahd2HoldDecayExponent*pow(holdDuration-ahd2AttackDuration, ahd2HoldDecayPower));
+          //levelAfterHold = (exp(ahd2HoldDecayExponent*pow(holdDuration-ahd2AttackDuration, ahd2HoldDecayPower)) + ahd2Offset) / (1+ahd2Offset);
+        }
+        double d = log(-ahd2Offset/levelAfterHold) / ahd2ReleaseDecayExponent;
         return holdDuration + d;
       }
     }
@@ -442,9 +516,11 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       }
       else if(type == EnvelopeType::AttackHoldExpDecay) {
         envelopeLength = getAhdLength(holdDuration);
-        //printf("<> ahd t %f\n", envelopeLength);
       }
-      else if(type == EnvelopeType::AttackHoldPartialDecays) {
+      else if(type == EnvelopeType::AttackHoldExpDecay2) {
+        envelopeLength = getAhd2Length(holdDuration);
+      }
+      /*else if(type == EnvelopeType::AttackHoldPartialDecays) {
         // FIXME
         envelopeLength += ahpdAttackDuration;
         if(ahpdReleaseDecayExponent >= 0) {
@@ -453,7 +529,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
         else {
           envelopeLength += ahpdReleaseDecayExponent > -0.001 ? log(zeroLevel) / -0.001 : log(zeroLevel) / ahpdReleaseDecayExponent;
         }
-      }
+      }*/
       else if(type == EnvelopeType::PowerAttackDecay) {
         envelopeLength += padAttackDuration;
         envelopeLength += padReleaseDuration;
@@ -521,10 +597,13 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
     if(type == EnvelopeType::AttackHoldExpDecay) {
       envelopeMaxGain = 1;
     }
-    if(type == EnvelopeType::AttackHoldPartialDecays) {
-      envelopeLength += ahpdAttackDuration;
+    if(type == EnvelopeType::AttackHoldExpDecay2) {
       envelopeMaxGain = 1;
     }
+    /*if(type == EnvelopeType::AttackHoldPartialDecays) {
+      envelopeLength += ahpdAttackDuration;
+      envelopeMaxGain = 1;
+    }*/
     if(type == EnvelopeType::PowerAttackDecay) {
       envelopeMaxGain = 1;
     }
@@ -603,9 +682,9 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
 
     double keyHoldTime = 0;
 
-    if(type == EnvelopeType::AttackHoldExpDecay || type == EnvelopeType::PowerAttackDecay) {
+    if(type == EnvelopeType::AttackHoldExpDecay || type == EnvelopeType::AttackHoldExpDecay2 || type == EnvelopeType::PowerAttackDecay) {
       //keyHoldTime = envelopeLength;
-      keyHoldTime = 1;
+      keyHoldTime = 2;
     }
     if(type == EnvelopeType::FivePoints) {
       keyHoldTime = fivePointDurations[0] + fivePointDurations[1] + fivePointDurations[3];
@@ -649,16 +728,22 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
     }
   }
 
+  // FIXME new panel class etc.
+
   Panel *panel = NULL;
   SynthTitleBar *titleBar = NULL;
   ListBox *presetsGui = NULL;
   ListBox *envelopeTypeGui = NULL;
+  
   NumberBox *ahdAttackDurationGui = NULL, *ahdHoldDecayExponentGui = NULL, *ahdReleaseDecayExponentGui = NULL, *ahdOffsetGui = NULL;
+  
+  NumberBox *ahd2AttackDurationGui = NULL, *ahd2HoldDecayPowerGui = NULL, *ahd2HoldDecayExponentGui = NULL, *ahd2ReleaseDecayExponentGui = NULL, *ahd2OffsetGui = NULL;
+
   NumberBox *adsrAttackDurationGui = NULL, *adsrDecayDurationGui = NULL, *adsrSustainLevelGui = NULL, *adsrReleaseDurationGui = NULL;
 
-  NumberBox *ahpdAttackDurationGui = NULL, *ahpdHoldDecayExponentGui = NULL;
+  /*NumberBox *ahpdAttackDurationGui = NULL, *ahpdHoldDecayExponentGui = NULL;
   NumberBox *ahpdPartialDecayCoefficientGui = NULL, *ahpdReleaseDecayExponentGui = NULL;
-  NumberBox *ahpdPartialDecayCoefficient2Gui = NULL;
+  NumberBox *ahpdPartialDecayCoefficient2Gui = NULL;*/
 
   NumberBox *padAttackDurationGui = NULL, *padAttackPowerGui = NULL;
   NumberBox *padReleaseDurationGui = NULL, *padReleasePowerGui = NULL;
@@ -693,7 +778,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       ConstantWidthColumnPlacer layoutPlacer(250-20, 0, 10, titleBar->size.y+5);
       
       panel->addChildElement(envelopeTypeGui = new ListBox("Type", layoutPlacer, 9));
-      envelopeTypeGui->addItems("AHE", "ADSR", "4-point", "5-point", "AHPD", "PAD");
+      envelopeTypeGui->addItems("AHE", "AHE2", "ADSR", "4-point", "5-point", "PAD");
       envelopeTypeGui->setValue(type);
 
       /*presetsGui = new ListBox("Preset", 10, line+=lineHeight, 12);
@@ -714,17 +799,24 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       panel->deleteChildElement(ahdHoldDecayExponentGui);
       panel->deleteChildElement(ahdReleaseDecayExponentGui);
       panel->deleteChildElement(ahdOffsetGui);
+
+      panel->deleteChildElement(ahd2AttackDurationGui);
+      panel->deleteChildElement(ahd2HoldDecayExponentGui);
+      panel->deleteChildElement(ahd2HoldDecayPowerGui);
+      panel->deleteChildElement(ahd2ReleaseDecayExponentGui);
+      panel->deleteChildElement(ahd2OffsetGui);
+      
       panel->deleteChildElement(adsrAttackDurationGui);
       panel->deleteChildElement(adsrDecayDurationGui);
       panel->deleteChildElement(adsrSustainLevelGui);
       panel->deleteChildElement(adsrReleaseDurationGui);
       panel->deleteChildElement(durationLabel);
       panel->deleteChildElement(gainLabel);
-      panel->deleteChildElement(ahpdAttackDurationGui);
+      /*panel->deleteChildElement(ahpdAttackDurationGui);
       panel->deleteChildElement(ahpdHoldDecayExponentGui);
       panel->deleteChildElement(ahpdPartialDecayCoefficientGui);
       panel->deleteChildElement(ahpdPartialDecayCoefficient2Gui);
-      panel->deleteChildElement(ahpdReleaseDecayExponentGui);
+      panel->deleteChildElement(ahpdReleaseDecayExponentGui);*/
       panel->deleteChildElement(padAttackDurationGui);
       panel->deleteChildElement(padAttackPowerGui);
       panel->deleteChildElement(padReleasePowerGui);
@@ -745,17 +837,24 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       ahdHoldDecayExponentGui = NULL;
       ahdReleaseDecayExponentGui = NULL;
       ahdOffsetGui = NULL;
+
+      ahd2AttackDurationGui = NULL;
+      ahd2HoldDecayExponentGui = NULL;
+      ahd2HoldDecayPowerGui = NULL;
+      ahd2ReleaseDecayExponentGui = NULL;
+      ahd2OffsetGui = NULL;
+      
       adsrAttackDurationGui = NULL;
       adsrDecayDurationGui = NULL;
       adsrSustainLevelGui = NULL;
       adsrReleaseDurationGui = NULL;
       durationLabel = NULL;
       gainLabel = NULL;
-      ahpdAttackDurationGui = NULL;
+      /*ahpdAttackDurationGui = NULL;
       ahpdHoldDecayExponentGui = NULL;
       ahpdPartialDecayCoefficientGui = NULL;
       ahpdPartialDecayCoefficient2Gui = NULL;
-      ahpdReleaseDecayExponentGui = NULL;
+      ahpdReleaseDecayExponentGui = NULL;*/
       padAttackDurationGui = NULL;
       padAttackPowerGui = NULL;
       padReleaseDurationGui = NULL;
@@ -778,7 +877,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       panel->addChildElement(padReleasePowerGui);
     }
 
-    if(type == EnvelopeType::AttackHoldExpDecay) {
+    else if(type == EnvelopeType::AttackHoldExpDecay) {
       ahdAttackDurationGui = new NumberBox("attack duration", ahdAttackDuration, NumberBox::FLOATING_POINT, 0.0, 1e10, layoutPlacer, 10);
       ahdHoldDecayExponentGui = new NumberBox("hold decay exp.", ahdHoldDecayExponent, NumberBox::FLOATING_POINT, -1e10, 1e10, layoutPlacer, 10);
       ahdReleaseDecayExponentGui = new NumberBox("release decay exp.", ahdReleaseDecayExponent, NumberBox::FLOATING_POINT, -1e10, 1e10, layoutPlacer, 10);
@@ -788,7 +887,21 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       panel->addChildElement(ahdReleaseDecayExponentGui);
       panel->addChildElement(ahdOffsetGui);
     }
-    else if(type == EnvelopeType::AttackHoldPartialDecays) {
+    
+    else if(type == EnvelopeType::AttackHoldExpDecay2) {
+      ahd2AttackDurationGui = new NumberBox("attack duration", ahd2AttackDuration, NumberBox::FLOATING_POINT, 0.0, 1e10, layoutPlacer, 10);
+      ahd2HoldDecayExponentGui= new NumberBox("hold decay exp.", ahd2HoldDecayExponent, NumberBox::FLOATING_POINT, -1e10, 1e10, layoutPlacer, 10);
+      ahd2HoldDecayPowerGui = new NumberBox("hold decay power", ahd2HoldDecayPower, NumberBox::FLOATING_POINT, 1e-2, 1, layoutPlacer, 10);
+      ahd2ReleaseDecayExponentGui = new NumberBox("release decay exp.", ahd2ReleaseDecayExponent, NumberBox::FLOATING_POINT, -1e10, 1e10, layoutPlacer, 10);
+      ahd2OffsetGui = new NumberBox("offset", ahd2Offset, NumberBox::FLOATING_POINT, -1e10, 0, layoutPlacer, 10);
+      panel->addChildElement(ahd2AttackDurationGui);
+      panel->addChildElement(ahd2HoldDecayExponentGui);
+      panel->addChildElement(ahd2HoldDecayPowerGui);
+      panel->addChildElement(ahd2ReleaseDecayExponentGui);
+      panel->addChildElement(ahd2OffsetGui);
+    }
+    
+    /*else if(type == EnvelopeType::AttackHoldPartialDecays) {
       ahpdAttackDurationGui = new NumberBox("attack duration", ahpdAttackDuration, NumberBox::FLOATING_POINT, 0.0, 1e10, layoutPlacer, 10);
       ahpdHoldDecayExponentGui = new NumberBox("hold decay exp.", ahpdHoldDecayExponent, NumberBox::FLOATING_POINT, -1e10, 1e10, layoutPlacer, 10);
       ahpdReleaseDecayExponentGui = new NumberBox("release decay exp.", ahpdReleaseDecayExponent, NumberBox::FLOATING_POINT, -1e10, 1e10, layoutPlacer, 10);
@@ -799,7 +912,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       panel->addChildElement(ahpdReleaseDecayExponentGui);
       panel->addChildElement(ahpdPartialDecayCoefficientGui);
       panel->addChildElement(ahpdPartialDecayCoefficient2Gui);
-    }
+    }*/
     else if(type == EnvelopeType::AttackDecaySustainRelease) {
       adsrAttackDurationGui = new NumberBox("attack duration", adsrAttackDuration, NumberBox::FLOATING_POINT, 0.0, 100, layoutPlacer, 10);
       adsrDecayDurationGui = new NumberBox("decay duration", adsrDecayDuration, NumberBox::FLOATING_POINT, 0.0, 100, layoutPlacer, 10);
@@ -870,15 +983,22 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
     ahdHoldDecayExponentGui = NULL;
     ahdReleaseDecayExponentGui = NULL;
     ahdOffsetGui = NULL;
+    
+    ahd2AttackDurationGui = NULL;
+    ahd2HoldDecayExponentGui = NULL;
+    ahd2HoldDecayPowerGui = NULL;
+    ahd2ReleaseDecayExponentGui = NULL;
+    ahd2OffsetGui = NULL;
+
     adsrAttackDurationGui = NULL;
     adsrDecayDurationGui = NULL;
     adsrSustainLevelGui = NULL;
     adsrReleaseDurationGui = NULL;
-    ahpdAttackDurationGui = NULL;
+    /*ahpdAttackDurationGui = NULL;
     ahpdHoldDecayExponentGui = NULL;
     ahpdPartialDecayCoefficientGui = NULL;
     ahpdPartialDecayCoefficient2Gui = NULL;
-    ahpdReleaseDecayExponentGui = NULL;
+    ahpdReleaseDecayExponentGui = NULL;*/
     padAttackDurationGui = NULL;
     padAttackPowerGui = NULL;
     padReleaseDurationGui = NULL;
@@ -927,7 +1047,7 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       }
 
 
-      if(guiElement == envelope->ahpdAttackDurationGui) {
+      /*if(guiElement == envelope->ahpdAttackDurationGui) {
         guiElement->getValue((void*)&envelope->ahpdAttackDuration);
       }
       if(guiElement == envelope->ahpdHoldDecayExponentGui) {
@@ -949,11 +1069,10 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       }
       if(guiElement == envelope->ahpdPartialDecayCoefficient2Gui) {
         guiElement->getValue((void*)&envelope->ahpdPartialDecayCoefficient2);
-      }
+      }*/
 
       if(guiElement == envelope->ahdAttackDurationGui) {
         guiElement->getValue((void*)&envelope->ahdAttackDuration);
-        
       }
       if(guiElement == envelope->ahdOffsetGui) {
         guiElement->getValue((void*)&envelope->ahdOffset);
@@ -972,6 +1091,32 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
           envelope->ahdHoldDecayExponentGui->setValue(envelope->ahdHoldDecayExponent);
         }
       }
+      
+      if(guiElement == envelope->ahd2AttackDurationGui) {
+        guiElement->getValue((void*)&envelope->ahd2AttackDuration);
+      }
+      if(guiElement == envelope->ahd2OffsetGui) {
+        guiElement->getValue((void*)&envelope->ahd2Offset);
+      }
+      if(guiElement == envelope->ahd2HoldDecayPowerGui) {
+        guiElement->getValue((void*)&envelope->ahd2HoldDecayPower);
+      }
+      if(guiElement == envelope->ahd2HoldDecayExponentGui) {
+        guiElement->getValue((void*)&envelope->ahd2HoldDecayExponent);
+        if(envelope->ahd2HoldDecayExponent < envelope->ahd2ReleaseDecayExponent) {
+          envelope->ahd2ReleaseDecayExponent = envelope->ahd2HoldDecayExponent;
+          envelope->ahd2ReleaseDecayExponentGui->setValue(envelope->ahd2ReleaseDecayExponent);
+        }
+      }
+      if(guiElement == envelope->ahd2ReleaseDecayExponentGui) {
+        guiElement->getValue((void*)&envelope->ahd2ReleaseDecayExponent);
+        if(envelope->ahd2HoldDecayExponent < envelope->ahd2ReleaseDecayExponent) {
+          envelope->ahd2HoldDecayExponent = envelope->ahd2ReleaseDecayExponent;
+          envelope->ahd2HoldDecayExponentGui->setValue(envelope->ahd2HoldDecayExponent);
+        }
+      }
+            
+      
       if(guiElement == envelope->adsrAttackDurationGui) {
         guiElement->getValue((void*)&envelope->adsrAttackDuration);
       }
@@ -1112,6 +1257,13 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
       getNumericParameter("parameters", ahdReleaseDecayExponent, 2);
       getNumericParameter("parameters", ahdOffset, 3);
     }
+    else if(type == EnvelopeType::AttackHoldExpDecay2) {
+      getNumericParameter("parameters", ahd2AttackDuration, 0);
+      getNumericParameter("parameters", ahd2HoldDecayExponent, 1);
+      getNumericParameter("parameters", ahd2HoldDecayPower, 2);
+      getNumericParameter("parameters", ahd2ReleaseDecayExponent, 3);
+      getNumericParameter("parameters", ahd2Offset, 4);
+    }
     else if(type == EnvelopeType::AttackDecaySustainRelease) {
       getNumericParameter("parameters", adsrAttackDuration, 0);
       getNumericParameter("parameters", adsrDecayDuration, 1);
@@ -1130,13 +1282,13 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
         getNumericParameter("parameters", fivePointDurations[i], 5+i);
       }
     }
-    else if(type == EnvelopeType::AttackHoldPartialDecays) {
+    /*else if(type == EnvelopeType::AttackHoldPartialDecays) {
       getNumericParameter("parameters", ahpdAttackDuration, 0);
       getNumericParameter("parameters", ahpdHoldDecayExponent, 1);
       getNumericParameter("parameters", ahpdReleaseDecayExponent, 2);
       getNumericParameter("parameters", ahpdPartialDecayCoefficient, 3);
       getNumericParameter("parameters", ahpdPartialDecayCoefficient2, 4);
-    }
+    }*/
     else if(type == EnvelopeType::PowerAttackDecay) {
       getNumericParameter("parameters", padAttackDuration, 0);
       getNumericParameter("parameters", padAttackPower, 1);
@@ -1153,6 +1305,9 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
     
     if(type == EnvelopeType::AttackHoldExpDecay) {
       putNumericParameter("parameters", {ahdAttackDuration, ahdHoldDecayExponent, ahdReleaseDecayExponent, ahdOffset});
+    }
+    else if(type == EnvelopeType::AttackHoldExpDecay2) {
+      putNumericParameter("parameters", {ahd2AttackDuration, ahd2HoldDecayExponent, ahd2HoldDecayPower, ahd2ReleaseDecayExponent, ahd2Offset});
     }
     else if(type == EnvelopeType::AttackDecaySustainRelease) {
       putNumericParameter("parameters", {adsrAttackDuration, adsrDecayDuration, adsrSustainLevel, adsrReleaseDuration});
@@ -1175,9 +1330,9 @@ struct Envelope : public PanelInterface, public HierarchicalTextFileParser {
         doubleParameters[doubleParameters.size()-1].values.push_back(fivePointDurations[i]);
       }
     }
-    else if(type == EnvelopeType::AttackHoldPartialDecays) {
+    /*else if(type == EnvelopeType::AttackHoldPartialDecays) {
       putNumericParameter("parameters", {ahpdAttackDuration, ahpdHoldDecayExponent, ahpdReleaseDecayExponent, ahpdPartialDecayCoefficient, ahpdPartialDecayCoefficient2});
-    }
+    }*/
     else if(type == EnvelopeType::PowerAttackDecay) {
       putNumericParameter("parameters", {padAttackDuration, padAttackPower, padReleaseDuration, padReleasePower});
     }

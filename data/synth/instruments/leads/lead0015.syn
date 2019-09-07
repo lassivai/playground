@@ -28,7 +28,7 @@ instrument {
     frequencyEnvelope: -1
     waveform {
       type: Square
-      waveTableMode: Single
+      waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: Random in range
       waveTableSize: 2048
@@ -66,7 +66,7 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.512520868, 1, 0, 0.85475793, 0.889447236, 0, 1, 0.306532663, 0
+        curve: 0, 1, 0, 0.512520868, 1, 0, 0.789649416, 0.668341708, 0, 1, 0, 0
       }
     }
   }

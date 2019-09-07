@@ -76,7 +76,7 @@ instrument {
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
@@ -89,6 +89,12 @@ instrument {
         count: 7
         frequencyParameters: 1, 2, 0, 0, 0, 0
         gainParameters: 1, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.409015025, 1, 0, 0.647746244, 0.939698492, 0, 0.886477462, 0.738693467, 0, 1, 0, 0
       }
     }
   }
@@ -115,7 +121,7 @@ instrument {
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
@@ -128,6 +134,12 @@ instrument {
         count: 7
         frequencyParameters: 1, 2, 0, 0, 0, 0
         gainParameters: 1, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.412353923, 1, 0, 0.656093489, 0.914572864, 0, 0.888146912, 0.733668342, 0, 1, 0, 0
       }
     }
   }

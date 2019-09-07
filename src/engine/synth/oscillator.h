@@ -118,7 +118,7 @@ static VoicePreset vpBass01("Bass 01", 0.25, 1, epAHE11, epFourpoint03, ppPiano0
 
 
 
-static VoicePreset vpPiano01("Piano 01", 0.25, 1, epAHPD01, epFourpoint03, ppPiano01, WaveForm::Type::Wave13, {2, 2, 10}, WaveForm::WaveTableMode::ForEachPartialFaster, 1, 8, 2, 0.001);
+static VoicePreset vpPiano01("Piano 01", 0.25, 1, epAHE02, epFourpoint03, ppPiano01, WaveForm::Type::Wave13, {2, 2, 10}, WaveForm::WaveTableMode::ForEachPartialFaster, 1, 8, 2, 0.001);
 // + Multidelay preset 3, wet 0.9, gain 1.1
 
 static VoicePreset vpPiano02("Piano 02", 0.25, 1, epAHE05, epFourpoint03, ppPiano02, WaveForm::Type::Wave06, WaveForm::WaveTableMode::SingleFaster, 1, 16, 2, 0.004);

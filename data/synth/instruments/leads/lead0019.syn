@@ -49,7 +49,7 @@ instrument {
       pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: 0.336057433
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -72,5 +72,17 @@ instrument {
     type: ahe
     parameters: 0.000007, 0, -100, -0.05
     output: 1
+  }
+  noteFilter {
+    subtype: High-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 200
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 1
+    bandwidthKeyTracking: 0
   }
 }

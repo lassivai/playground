@@ -28,7 +28,7 @@ instrument {
     frequencyEnvelope: -1
     waveform {
       type: Wave02
-      waveTableMode: Single
+      waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: Random in range
       waveTableSize: 2048
@@ -82,11 +82,14 @@ instrument {
   }
   noteFilter {
     subtype: Low-pass
+    keyTrackingMode: Pitch
     gain: 1
     wet: 1
     frequency: 2000
     dbGain: 3
     bandwidth: 2
     qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
   }
 }

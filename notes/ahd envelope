@@ -1,0 +1,31 @@
+in search of the perfect amplitude envelope for piano like sounds...
+
+I think I found quite nice: 
+(e^(p*x^t) + o) / (1+o)    , p = -2, t = 0.2, o = -0.02
+
+The previous exp decay envelope decayd too slowly in the beginning and too fast in the end. This solves both parts.
+
+Amplitude lenght calculations:
+
+y = ((e^(p*x))+o) / (1+o) = 0
+
+(e^(p*x))+o = 0
+e^(p*x) = -o
+log e^(p*x) = log(-o)
+p*x = log(-o)
+x = log(-o) / p
+
+(e^(p*x^t))+o = 0
+(e^(p*x^t)) = -o
+log(e^(p*x^t)) = log(-o)
+p*x^t = log(-o)
+x^t = log(-o) / p
+x = (log(-o) / p)^(1/t)
+
+
+(e^(p2*(x-r)) * e^(p*r)) + o = 0
+e^(p2*(x-r)) = - o / e^(p*r)
+log e^(p2*(x-r)) = log -o / e^(p*r)
+p2*(x-r) = log (-o / e^(p*r))
+(x-r) = log (-o / e^(p*r)) / p2
+x = log (-o / e^(p*r)) / p2 + r

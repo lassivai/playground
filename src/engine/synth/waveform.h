@@ -1718,10 +1718,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         }
       }
       else if(phaseMode == WaveForm::PhaseMode::ZerosWithinRange) {
-        double p = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPoints.size()-1)];
+        double p = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPointsHB[k].size()-1)];
         phase.set(p, p);
         if(!sameLeftAndRightPhase) {
-          phase.y = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPoints.size()-1)];
+          phase.y = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPointsHB[k].size()-1)];
         }
       }
       else if(phaseMode == WaveForm::PhaseMode::FirstZero) {

@@ -1,64 +1,79 @@
-synth {
-  instrument {
-    name: Accordion 4
-    volume: 1
-    biquadFilter {
-      subtype: High-pass
-      gain: 1
-      wet: 1
-      frequency: 76
-      dbGain: 3
-      bandwidth: 2
-      qualityFactor: 1
-    }
-    reverb {
-      subtype: Lexicon224
-      gain: 1
-      wet: 1
-      dry: 0.27
-      width: 0.5
-      diffusion: 0.86
-      damp: 130
-      inputDamp: 27000
-      outputDamp: 27000
-      rt60: 63
-      dcCutFrequency: 1000
-    }
-    voice {
-      volume: 0.4
-      tuning: 1
-      stereoPhaseOffset: 0.4
-      pan: 0
-      unison: 1
-      unisonDetuning: 0.02
-      unisonDetuningRandomSeeds: 4, 7
-      amplitudeModulator: 0
-      frequencyModulator: 0
-      amplitudeEnvelope: 0
-      frequencyEnvelope: -1
-      waveform {
-        type: Triangle
-        waveTableMode: Single
-        waveformParameters: 2
-        phaseOffsets: 0, 1
-        lockedStereoPhase: 1
-        numSteps: 1
-        gaussianSmoothing: 0
-        pitchDependendGaussianSmoothing: 0
-        pitchDependendPartialAttenuation: 0
-        waveValueOffset: 0
-        partials {
-          pattern: None
-          count: 15
-          frequencies: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-          gains: 0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125, 0.00390625, 0.001953125, 0.000976562, 0.000488281, 0.000244141, 0.00012207, 0.000061035, 0.000030518
-        }
+instrument {
+  name: Accordion 4
+  volume: 1
+  biquadFilter {
+    subtype: High-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 76
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+  reverb {
+    subtype: Lexicon224
+    gain: 1
+    wet: 1
+    dry: 0.27
+    width: 0.5
+    diffusion: 0.86
+    damp: 130
+    inputDamp: 24000
+    outputDamp: 24000
+    rt60: 63
+    dcCutFrequency: 1000
+  }
+  voice {
+    volume: 0.5
+    tuning: 1
+    stereoPhaseOffset: 0.4
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.02
+    unisonDetuningRandomSeeds: 4, 7
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Triangle
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 2, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 15
+        frequencies: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        gains: 0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125, 0.00390625, 0.001953125, 0.000976562, 0.000488281, 0.000244141, 0.00012207, 0.000061035, 0.000030518
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.604340568, 1, 0, 0.774624374, 0.834170854, 0, 0.901502504, 0.527638191, 0, 1, 0, 0
       }
     }
-    envelope {
-      type: ahe
-      parameters: 0.02, 0, -30, -0.05
-      output: 0
-    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.02, 0, -30, -0.05
+    output: 0
   }
 }

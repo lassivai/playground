@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
   for(int i=0; i<reps; i++) {
     double s = 0;
     for(int j=0; j<n; j++) {
-      //s += pow((double)j/n, 20.0);
-      int q = j * n / 10000;
-      if(q >= 0 && q < n) s += vec[q];
-      else s += 0;
+      s += pow((double)j/n, 0.5);
+     // int q = j * n / 10000;
+     // if(q >= 0 && q < n) s += vec[q];
+     // else s += 0;
     }
   }
   auto t1 = std::chrono::high_resolution_clock::now();
