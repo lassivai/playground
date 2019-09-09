@@ -24,7 +24,7 @@ instrument {
     bandwidthKeyTracking: 0
   }
   voice {
-    volume: 0.35
+    volume: 0.13
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -42,14 +42,14 @@ instrument {
       phaseMode: First zero
       waveTableSize: 2048
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.265266243, 0.265266243
+      phaseOffsets: 0.330727894, 0.330727894
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: -0.247884889
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -71,6 +71,24 @@ instrument {
         yRange: 0, 1
         curve: 0, 0, 0, 1, 0, 0
       }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.594323873, 1, 0, 0.868113522, 0.638190955, 0, 1, 0, 0
+      }
+    }
+    biquadFilter {
+      subtype: High-pass
+      keyTrackingMode: Pitch
+      gain: 1
+      wet: 1
+      frequency: 300
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+      frequencyKeyTracking: 1
+      bandwidthKeyTracking: 0
     }
   }
   envelope {

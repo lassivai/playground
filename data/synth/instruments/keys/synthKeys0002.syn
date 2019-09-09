@@ -15,7 +15,7 @@ instrument {
     bandwidthFrequency: 1
   }
   voice {
-    volume: 0.3
+    volume: 0.12
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -37,7 +37,7 @@ instrument {
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0.0008
@@ -51,10 +51,16 @@ instrument {
         frequencies: 1, 2, 3, 4, 5, 6
         gains: 1, 1, 0.125, 0.0625, 0.03125, 0.015625
       }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.58263773, 1.015075377, 0, 0.829716194, 0.623115578, 0, 1, 0, 0
+      }
     }
   }
   voice {
-    volume: 0.25
+    volume: 0.07
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -105,7 +111,7 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.547579299, 1, 0, 1, 0.432160804, 0
+        curve: 0, 1, 0, 0.54590985, 1, 0, 0.789649416, 0.67839196, 0, 1, 0, 0
       }
     }
   }

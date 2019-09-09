@@ -1,0 +1,141 @@
+instrument {
+  name: Strings 4
+  volume: 1
+  reverb {
+    subtype: FreeVerb
+    gain: 0.7
+    wet: 1
+    dry: 1
+    width: 1
+    roomSize: 0.1
+    damp: 0.9
+  }
+  reverb {
+    subtype: Zita
+    gain: 0.6
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.89
+    rt60: 3
+    rt60factorLow: 1
+    rt60factorHigh: 1
+    dcCutFrequency: 1
+    lfo1: 0.8
+    lfo2: 0.7
+    lfoFactor: 0
+    spin: 0.7
+    spinFactor: 0.09
+    xOverLow: 1
+    xOverHigh: 8
+    apFeedback: 0
+    lowPass: 1000
+    highPass: 20
+  }
+  biquadFilter {
+    subtype: High-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 9.2
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+  voice {
+    volume: 0.11
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 5
+    unisonDetuning: 0.008
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Saw
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.337228715, 1, 0, 0.519198664, 0.969849246, 0, 0.687813022, 0.909547739, 0, 0.776293823, 0.869346734, 0, 0.876460768, 0.547738693, 0, 1, 0, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.06
+    tuning: 0.5
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.009
+    unisonDetuningRandomSeeds: 3, 4
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.05, 0, -10, -0.05
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -10, -10, -0.05
+    output: 1
+  }
+}

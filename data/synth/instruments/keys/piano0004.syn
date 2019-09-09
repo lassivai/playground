@@ -36,7 +36,7 @@ instrument {
     highPass: 4
   }
   voice {
-    volume: 0.18
+    volume: 0.05
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -58,10 +58,10 @@ instrument {
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0.05
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: 0.340909708
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -71,6 +71,12 @@ instrument {
         count: 7
         frequencyParameters: 1, 2, 0, 0, 0, 0
         gainParameters: 0.08, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.544240401, 1, 0, 0.734557596, 0.718592965, 0, 1, 0, 0
       }
     }
   }

@@ -3,7 +3,7 @@ instrument {
   volume: 1
   noteFilterFrequencyModular: -1, 1, 1000, 6000
   voice {
-    volume: 0.5
+    volume: 0.62
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -19,7 +19,7 @@ instrument {
       waveTableMode: Single
       waveTableSeamMode: No seam
       phaseMode: Zeros in range
-      waveTableSize: 4194304
+      waveTableSize: 1048576
       waveformParameters: 0, 0, 0
       phaseOffsets: 0, 1
       lockedStereoPhase: 1
@@ -53,8 +53,8 @@ instrument {
     }
   }
   envelope {
-    type: ahe
-    parameters: 0.000005, -2, -2, -0.05
+    type: ahe2
+    parameters: 0, -2, 0.5, -6, -0.00007
     output: 0
   }
   envelope {

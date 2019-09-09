@@ -48,7 +48,7 @@ instrument {
     highPass: 20
   }
   voice {
-    volume: 0.4
+    volume: 0.21
     tuning: 1
     stereoPhaseOffset: 0.5
     pan: 0
@@ -70,10 +70,10 @@ instrument {
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0.04
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: 0.623360189
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -84,10 +84,16 @@ instrument {
         frequencyParameters: 1, 1, 0, 0, 1, 0
         gainParameters: 0, 0, 0, 0, 0, 0
       }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.544240401, 1, 0, 0.809682805, 0.577889447, 0, 1, 0, 0
+      }
     }
   }
   voice {
-    volume: 2.05
+    volume: 1.25
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -105,14 +111,14 @@ instrument {
       phaseMode: First zero
       waveTableSize: 2048
       waveformParameters: 2, 0, 0
-      phaseOffsets: 0.021494871, 0.021494871
+      phaseOffsets: 0.074255007, 0.074255007
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: 0.245662146
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -133,6 +139,12 @@ instrument {
         xRange: 0, 0
         yRange: 0, 1
         curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.589315526, 1, 0, 0.819702282, 0.618090452, 0, 1, 0, 0
       }
     }
   }

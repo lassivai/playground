@@ -2,7 +2,7 @@ instrument {
   name: Synth 3
   volume: 1
   voice {
-    volume: 0.35
+    volume: 0.14
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -42,7 +42,7 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.579298831, 0.994974874, 0, 1, 0.55276382, 0
+        curve: 0, 1, 0, 0.519198664, 1, 0, 0.784641068, 0.658291457, 0, 1, 0, 0
       }
     }
   }

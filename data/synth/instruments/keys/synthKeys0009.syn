@@ -1,43 +1,62 @@
 instrument {
-  volume: 1.000000
   name: Piano 2
+  volume: 1
   multiDelay {
-    gain: 0.910000
-    wet: 0.880000
-    out: 1.000000, 1.000000
-    out: 0.000000, 0.000000
-    out: 0.000000, 0.000000
+    gain: 0.91
+    wet: 0.88
+    samplerate: 44100
+    out: 1, 1
+    out: 0, 0
+    out: 0, 0
   }
   voice {
-    volume: 0.600000
-    tuning: 1.000000
-    stereoPhaseOffset: 0.000400
-    unison: 2.000000
-    unisonDetuning: 0.006000
-    unisonDetuningRandomSeeds: 4.000000, 14.000000
-    amplitudeModulator: 0.000000
-    frequencyModulator: 0.000000
-    amplitudeEnvelope: 1.000000
-    frequencyEnvelope: -1.000000
+    volume: 0.2
+    tuning: 1
+    stereoPhaseOffset: 0.0004
+    pan: 0
+    unison: 2
+    unisonDetuning: 0.006
+    unisonDetuningRandomSeeds: 4, 14
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
     waveform {
-      waveformParameters: 3.000000
-      phaseOffsets: 0.634000, 0.634000
-      lockedStereoPhase: 1.000000
-      numSteps: 1.000000
-      gaussianSmoothing: 0.002000
       type: Wave05
       waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 3, 0, 0
+      phaseOffsets: 0.634, 0.634
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0.002
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: -0.245203048
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
-        count: 1.000000
-        usePattern: 1.000000
-        frequencyParameters: 0.000000, 0.000000, 0.000000, 0.000000, 0.500000, 1.000000
-        gainParameters: 1.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        pattern: Equation
+        count: 1
+        frequencyParameters: 0, 0, 0, 0, 0.5, 1
+        gainParameters: 1, 0, 0, 0, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.56427379, 1, 0, 0.813021702, 0.59798995, 0, 1, 0, 0
       }
     }
   }
   envelope {
-    parameters: 0.000000, -1.000000, -2.000000
-    output: 1.000000
     type: ahe
+    parameters: 0, -1, -2, -0.05
+    output: 1
   }
 }

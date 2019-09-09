@@ -2,9 +2,9 @@ instrument {
   name: Synth keys 18
   volume: 1
   voice {
-    volume: 0.25
+    volume: 0.15
     tuning: 1
-    stereoPhaseOffset: 0.4
+    stereoPhaseOffset: 0
     pan: 0
     unison: 1
     unisonDetuning: 0.001
@@ -17,14 +17,21 @@ instrument {
       type: Wave02
       waveTableMode: Single faster
       waveTableSeamMode: Linear seam
-      waveformParameters: 9
-      phaseOffsets: 0.25, 0.25
-      lockedStereoPhase: 1
+      phaseMode: Zeros in range
+      waveTableSize: 2048
+      waveformParameters: 9, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
       waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
         pattern: Graphs
         count: 25

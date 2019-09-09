@@ -17,14 +17,21 @@ instrument {
       type: Triangle
       waveTableMode: Single faster
       waveTableSeamMode: Linear seam
-      waveformParameters: 3
-      phaseOffsets: 0.25, 0.25
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 3, 0, 0
+      phaseOffsets: 0.015632633, 0.015632633
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
-      waveValueOffset: 0
+      pitchDependendGain: 0
+      waveValueOffset: -0.146568214
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
         pattern: Graphs
         count: 25
@@ -41,6 +48,12 @@ instrument {
         xRange: 0, 0
         yRange: 0, 1
         curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.56260434, 1, 0, 0.851419032, 0.638190955, 0, 1, 0, 0
       }
     }
   }

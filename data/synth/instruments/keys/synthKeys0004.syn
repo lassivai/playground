@@ -14,7 +14,7 @@ instrument {
     bandwidthFrequency: 1
   }
   voice {
-    volume: 0.25
+    volume: 0.1
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -65,12 +65,12 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.56427379, 1, 0, 0.831385643, 0.703517588, 0, 1, 0.120603015, 0
+        curve: 0, 1, 0, 0.56427379, 1, 0, 0.831385643, 0.703517588, 0, 1, 0, 0
       }
     }
   }
   voice {
-    volume: 0.25
+    volume: 0.1
     tuning: 2
     stereoPhaseOffset: 0
     pan: 0
@@ -121,7 +121,7 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.440734558, 1, 0, 1, 0.618090452, 0
+        curve: 0, 1, 0, 0.440734558, 1, 0, 0.784641068, 0.718592965, 0, 1, 0, 0
       }
     }
   }

@@ -1,7 +1,7 @@
 instrument {
   name: Synth keyes 22
   volume: 1
-  noteFilterFrequencyModular: -1, 1, 5000, 28000
+  noteFilterFrequencyModular: -1, 1, 300, 14000
   reverb {
     subtype: Zita
     gain: 0.7
@@ -21,16 +21,16 @@ instrument {
     xOverLow: 1
     xOverHigh: 200
     apFeedback: 0
-    lowPass: 30000
+    lowPass: 22050
     highPass: 20
   }
   voice {
-    volume: 0.35
+    volume: 0.12
     tuning: 1
     stereoPhaseOffset: 0.00006
     pan: 0
     unison: 1
-    unisonDetuning: 0.008
+    unisonDetuning: 0.007
     unisonDetuningRandomSeeds: 4, 14
     amplitudeModulator: 0
     frequencyModulator: -1
@@ -40,7 +40,7 @@ instrument {
       type: Saw
       waveTableMode: Single faster
       waveTableSeamMode: No seam
-      phaseMode: Random in range
+      phaseMode: Zeros in range
       waveTableSize: 2048
       waveformParameters: 0, 0, 0
       phaseOffsets: 0, 1
@@ -50,33 +50,106 @@ instrument {
       pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: -0.299479766
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
       harmonicSmoothingPower: 1
       partials {
-        pattern: Equation
-        count: 33
-        frequencyParameters: 1, 1, 0, 0, 1, 0
-        gainParameters: 10, 0, 0, 0, 0, 0.00008
+        pattern: Graphs
+        count: 30
+      }
+      factorDraggingGraph {
+        yRange: 1, 10
+        curve: 0, 1, 0.5, 0.862155388, 0.877192982, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 30
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0.002506266, 0, 1, 0, 0
       }
       pitchSmoothingsDraggingGraph {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.549248748, 1, 0, 0.792988314, 0.859296482, 0, 1, 0.010050251, 0
+        curve: 0, 1, 0, 0.58263773, 1, 0, 0.824707846, 0.788944724, 0, 1, 0.331658291, 0
+      }
+    }
+    biquadFilter {
+      subtype: High-pass
+      keyTrackingMode: Pitch
+      gain: 1
+      wet: 1
+      frequency: 200
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+      frequencyKeyTracking: 1
+      bandwidthKeyTracking: 0
+    }
+  }
+  voice {
+    volume: 0.15
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Zeros in range
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: -0.000017983
+      minHarmonicSmoothing: 100
+      maxHarmonicSmoothing: 400
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 2
+      partials {
+        pattern: Graphs
+        count: 20
+      }
+      factorDraggingGraph {
+        yRange: 1, 50
+        curve: 0, 0.887218045, 0, 0.052631579, 0.887218045, 0, 0.105263158, 0.887218045, 0, 0.157894737, 0.887218045, 0, 0.210526316, 0.887218045, 0, 0.263157895, 0.887218045, 0, 0.315789474, 0.884711779, 0, 0.368421053, 0.756892231, 0, 0.421052632, 0.749373434, 0, 0.473684211, 0.746867168, 0, 0.526315789, 0.746867168, 0, 0.578947368, 0.478696742, 0, 0.631578947, 0.466165414, 0, 0.684210526, 0.393483709, 0, 0.736842105, 0.395989975, 0, 0.789473684, 0.35839599, 0, 0.842105263, 0.320802005, 0, 0.894736842, 0.270676692, 0, 0.947368421, 0.177944862, 0, 1, 0, 0
+        roundDraggingFactors: 1
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 20
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
       }
     }
   }
   envelope {
     type: ahe
-    parameters: 0.000007, -2, -6, -0.05
+    parameters: 0.000007, -0.5, -6, -0.0006
     output: 0
   }
   envelope {
     type: ahe
-    parameters: 0, -7, -7, -0.05
+    parameters: 0, -1.7, -1.7, -0.0008
     output: 1
   }
   noteFilter {

@@ -26,8 +26,20 @@ instrument {
     dampingFrequency: 0.300000012
     bandwidthFrequency: 0.300000012
   }
+  biquadFilter {
+    subtype: High-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 11
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
   voice {
-    volume: 0.15
+    volume: 0.07
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -44,16 +56,16 @@ instrument {
       waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: First zero
-      waveTableSize: 20480
+      waveTableSize: 2048
       waveformParameters: 0.8, 0, 0
-      phaseOffsets: 0.749987792, 0.749987792
+      phaseOffsets: 0.030776746, 0.030776746
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 1
+      waveValueOffset: 0.193227258
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -64,10 +76,16 @@ instrument {
         frequencies: 1
         gains: 0.5
       }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.544240401, 1, 0, 0.808013356, 0.608040201, 0, 1, 0, 0
+      }
     }
   }
   voice {
-    volume: 0.25
+    volume: 0.13
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -90,7 +108,7 @@ instrument {
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
@@ -103,6 +121,12 @@ instrument {
         count: 5
         frequencies: 1, 2, 3, 4, 5
         gains: 0.5, 0.25, 0.125, 0.0625, 0.03125
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.589315526, 1, 0, 0.849752365, 0.658291457, 0, 1, 0, 0
       }
     }
   }

@@ -29,12 +29,12 @@ instrument {
   multiDelay {
     gain: 1
     wet: 0.4
-    samplerate: 96000
-    out: 30000, 0.8
-    out: 32000, 1
+    samplerate: 44100
+    out: 13781, 0.8
+    out: 14700, 1
   }
   voice {
-    volume: 0.2
+    volume: 0.23
     tuning: 1
     stereoPhaseOffset: 0.25
     pan: 0
@@ -59,7 +59,7 @@ instrument {
       pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0.000001
+      waveValueOffset: -0.225033583
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 100
       harmonicSmoothingSlope: 1
@@ -85,7 +85,7 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.532554257, 1, 0, 1, 0.748743719, 0
+        curve: 0, 1, 0, 0.504173623, 1, 0, 0.784641068, 0.854271357, 0, 1, 0, 0
       }
     }
   }

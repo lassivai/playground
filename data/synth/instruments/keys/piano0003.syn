@@ -1,0 +1,101 @@
+instrument {
+  name: Piano 3
+  volume: 1
+  noteFilterFrequencyModular: -1, 1, 700, 6000
+  reverb {
+    subtype: MVerb
+    gain: 1.3
+    mix: 0.300000012
+    earlyMix: 1
+    size: 0.100000001
+    density: 0.5
+    decay: 1
+    preDelay: 0
+    dampingFrequency: 0.079999998
+    bandwidthFrequency: 0.100000001
+  }
+  voice {
+    volume: 0.18
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 2, 4
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin bands
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: Zeros in range
+      waveTableSize: 1048576
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 600
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 2
+      partials {
+        pattern: Graphs
+        count: 30
+      }
+      factorDraggingGraph {
+        yRange: 1, 30
+        curve: 0, 1, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 30
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0.01754386, 0, 0.034482759, 0.052631579, 0, 0.068965517, 0.604010025, 0, 0.103448276, 0.145363409, 0, 0.13533208, 0.177944862, 0, 0.172413793, 0.120300752, 0, 0.206896552, 0.619047619, 0, 0.24137931, 0.220551378, 0, 0.275862069, 0.235588972, 0, 0.310344828, 0.26566416, 0, 0.344827586, 0.666666667, 0, 0.379310345, 0.573934837, 0, 0.413793103, 0.263157895, 0, 0.448275862, 0.586466165, 0, 0.482758621, 0.696741855, 0, 0.517241379, 0.714285714, 0, 0.551724138, 0.278195489, 0, 0.586206897, 0.691729323, 0, 0.620689655, 0.22556391, 0, 0.655172414, 0.248120301, 0, 0.689655172, 0.248120301, 0, 0.724137931, 0.709273183, 0, 0.75862069, 0.869674185, 0, 0.793103448, 0.869674185, 0, 0.827586207, 0.764411028, 0, 0.862068966, 0.388471178, 0, 0.896551724, 0.393483709, 0, 0.931034483, 0.395989975, 0, 0.965517241, 0.398496241, 0, 1, 0.939849624, 0
+      }
+    }
+    biquadFilter {
+      subtype: High-pass
+      keyTrackingMode: Pitch
+      gain: 1
+      wet: 1
+      frequency: 180
+      dbGain: 3
+      bandwidth: 3
+      qualityFactor: 1
+      frequencyKeyTracking: 1
+      bandwidthKeyTracking: 0
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -0.5, -10, -0.00009
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -3, -3, -0.05
+    output: 1
+  }
+  noteFilter {
+    subtype: Low-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 2000
+    dbGain: 3
+    bandwidth: 1
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+}

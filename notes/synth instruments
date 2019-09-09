@@ -1,0 +1,18 @@
+Probably can't achieve perfect piano for all the key range with this setup, because the harmonic content is so pitch dependent.
+
+One day I might make it possible to create pitch dependent waveform, but not any time soon. Unless I get asperger boost. I might have got it.
+
+I have created these instruments using sampling rate 96000 Hz, which makes that aliasing problem go away, but now I am making these instruments aliasing free with a more normal sampling rate 44100 Hz.
+
+Fixing instruments
+          Anti-aliasing   Volume
+keys      X               X
+leads     X               -
+accord.   X               -
+organs    X               -
+
+Can't tell if you had similar audio mixing as I did... Very silent those "loud" sounds over here.
+
+Currently "just playing" and experimenting possible future directions for the synth, and whatever already possible to synthesize with this synth.
+
+Found one missing thing, I think, a compressor, which would make it possible to have overall louder stuff. Because it would reduce the dynamic range. Now when I have a lot of notes playing the volume reaches the maximum number, but single notes are far from it. With compressor everything could be louder, because the multinote places would be compressed.

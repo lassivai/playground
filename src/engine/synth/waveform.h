@@ -1717,18 +1717,18 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
           phase.y = phaseStartLimits.getRandomDoubleFromTheRange();
         }
       }
-      else if(phaseMode == WaveForm::PhaseMode::ZerosWithinRange) {
+      else if(phaseMode == WaveForm::PhaseMode::ZerosWithinRange && phaseZeroPointsHB[k].size() > 0) {
         double p = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPointsHB[k].size()-1)];
         phase.set(p, p);
         if(!sameLeftAndRightPhase) {
           phase.y = phaseZeroPointsHB[k][Random::getInt(0, phaseZeroPointsHB[k].size()-1)];
         }
       }
-      else if(phaseMode == WaveForm::PhaseMode::FirstZero) {
+      else if(phaseMode == WaveForm::PhaseMode::FirstZero && phaseZeroPointsHB[k].size() > 0) {
         double p = phaseZeroPointsHB[k][0];
         phase.set(p, p);
       }
-      else if(phaseMode == WaveForm::PhaseMode::LeftAndRight) {
+      else /*if(phaseMode == WaveForm::PhaseMode::LeftAndRight)*/ {
         phase.set(phaseStartLimits.x, phaseStartLimits.y);
       }
     }
@@ -1740,18 +1740,18 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
           phase.y = phaseStartLimits.getRandomDoubleFromTheRange();
         }
       }
-      else if(phaseMode == WaveForm::PhaseMode::ZerosWithinRange) {
+      else if(phaseMode == WaveForm::PhaseMode::ZerosWithinRange && phaseZeroPoints.size() > 0) {
         double p = phaseZeroPoints[Random::getInt(0, phaseZeroPoints.size()-1)];
         phase.set(p, p);
         if(!sameLeftAndRightPhase) {
           phase.y = phaseZeroPoints[Random::getInt(0, phaseZeroPoints.size()-1)];
         }
       }
-      else if(phaseMode == WaveForm::PhaseMode::FirstZero) {
+      else if(phaseMode == WaveForm::PhaseMode::FirstZero && phaseZeroPoints.size() > 0) {
         double p = phaseZeroPoints[0];
         phase.set(p, p);
       }
-      else if(phaseMode == WaveForm::PhaseMode::LeftAndRight) {
+      else /*if(phaseMode == WaveForm::PhaseMode::LeftAndRight)*/ {
         phase.set(phaseStartLimits.x, phaseStartLimits.y);
       }
     }
