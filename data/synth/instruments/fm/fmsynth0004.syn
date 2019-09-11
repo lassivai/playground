@@ -5,6 +5,7 @@ instrument {
     volume: 0.2
     tuning: 1
     stereoPhaseOffset: 0
+    pan: 0
     unison: 1
     unisonDetuning: 1
     unisonDetuningRandomSeeds: 0, 0
@@ -15,13 +16,22 @@ instrument {
     waveform {
       type: Sin
       waveTableMode: Single faster
-      waveformParameters: 1
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
       phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
         pattern: None
         count: 1
@@ -33,6 +43,7 @@ instrument {
   modulator {
     frequency: 1
     stereoPhaseOffset: 0.5
+    pan: 0
     stereoPhaseDifference: 0
     relativeMode: 1
     inputAM: -1
@@ -46,13 +57,22 @@ instrument {
     waveform {
       type: Wave04
       waveTableMode: Single faster
-      waveformParameters: 4
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 4, 0, 0
       phaseOffsets: 0.29, 0.29
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
         pattern: Equation
         count: 4
@@ -63,12 +83,12 @@ instrument {
   }
   envelope {
     type: ahe
-    parameters: 0, 0, -3
+    parameters: 0, 0, -3, -0.05
     output: 1
   }
   envelope {
     type: fourPoint
-    parameters: 0.01, 0, 0, 1, 0, 1, 0, 1
+    parameters: 0.00006, 1, 1, 4, 0.4, 0.07, 0, 0.3
     output: 2
   }
 }

@@ -29,19 +29,32 @@ instrument {
       type: Sin
       waveTableMode: Single faster
       waveTableSeamMode: No seam
-      waveformParameters: 1
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
       phaseOffsets: 0, 1
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0.05
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
       waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
         pattern: None
         count: 11
         frequencies: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024
         gains: 1, 0.960732, 0.917315, 0.868488, 0.812252, 0.745091, 0.659754, 0.535887, 0.517282, 0.501187, 0.48706
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.559265442, 0.989949749, 0, 0.828046745, 0.582914573, 0, 1, 0, 0
       }
     }
   }
@@ -63,14 +76,21 @@ instrument {
       type: Sin
       waveTableMode: Single faster
       waveTableSeamMode: No seam
-      waveformParameters: 1
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
       phaseOffsets: 0, 9
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
       waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
         pattern: None
         count: 2
@@ -80,8 +100,8 @@ instrument {
     }
   }
   envelope {
-    type: ahe
-    parameters: 0.05, 0, -20, -0.05
+    type: adsr
+    parameters: 0.05, 0.1, 1, 0.01
     output: 1
   }
 }
