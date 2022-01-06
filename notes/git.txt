@@ -8,3 +8,8 @@ git pull origin [branch]
 git add .
 git commit -m "Add existing file"
 git push origin [branch]
+
+---- With token ----
+
+git pull https://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@github.com/lassivai/playground.git
+git push https://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@github.com/lassivai/playground.git
