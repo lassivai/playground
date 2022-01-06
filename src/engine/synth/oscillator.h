@@ -227,6 +227,11 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
   bool areModularConnections = false;
   
   bool biquadChanged = false;
+  
+  enum KeyMappingMode { Normal, FixedFrequency };
+  const std::vector<std::string> keyMappingModeNames { "Normal", "Fixed" };
+  KeyMappingMode keyMappingMode = KeyMappingMode::Normal;
+  double fixedFrequency = 440;
 
   const std::vector<std::string> audioSourceNames = { "Synthesis", "Line in" };
   enum AudioSource { Synthesis, LineIn };
@@ -332,6 +337,9 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     this->inputFrequencyEnvelope = o.inputFrequencyEnvelope;
     this->pan = o.pan;
     
+    this->keyMappingMode = o.keyMappingMode;
+    this->audioSource = o.audioSource;
+    // FIXME
     //this->biquadFilter->set(*o.biquadFilter);
     
     return *this;
@@ -375,7 +383,7 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     unisonDetuning = voicePreset.unisonDetuning;
     unisonDetuningRandomSeedLeft = voicePreset.detuningRandomLeft;
     unisonDetuningRandomSeedRight = voicePreset.detuningRandomRight;
-    //amplitudeEnvelope.setPreset(voicePreset.amplitudeEnvelopePreset);
+    //amplitudeEnvelope.setPreset(voicePreset.amplitudeEnvelopePreset); 
     //frequencyEnvelope.setPreset(voicePreset.frequencyEnvelopePreset);
     waveForm.setPartialPreset(voicePreset.partialPreset);
 
@@ -627,6 +635,9 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
   NumberBox *panGui = NULL;
   ListBox *fmAlgorithmGui = NULL;
 
+  ListBox *keyMappingModeGui = NULL;
+  NumberBox *fixedFrequencyGui = NULL;
+
   CheckBox *showBiquadFilterGui = NULL;
 
   Panel *addPanel(GuiElement *parentElement, const std::string &title = "") {
@@ -659,6 +670,12 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     unisonDetuningGui = new NumberBox("Unison detuning", unisonDetuning, NumberBox::FLOATING_POINT, 0.0, 1e12, layoutPlacer, 10);
     unisonDetuningRandomSeedLeftGui = new NumberBox("Detuning random left", unisonDetuningRandomSeedLeft, NumberBox::INTEGER, 0, 1<<30, layoutPlacer, 7);
     unisonDetuningRandomSeedRightGui = new NumberBox("Detuning random right", unisonDetuningRandomSeedRight, NumberBox::INTEGER, 0, 1<<30, layoutPlacer, 7);
+
+    panel->addChildElement(keyMappingModeGui = new ListBox("Key mapping", layoutPlacer, 10));
+    keyMappingModeGui->setItems(keyMappingModeNames);
+    keyMappingModeGui->setValue(keyMappingMode);
+
+    panel->addChildElement(fixedFrequencyGui = new NumberBox("Fixed frequency", fixedFrequency, NumberBox::FLOATING_POINT, 1.0, 1e12, layoutPlacer));
 
     showBiquadFilterGui = new CheckBox("Show filter", biquadFilter->isActive, layoutPlacer);
     
@@ -699,6 +716,11 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
       unisonDetuningGui->setValue(unisonDetuning);
       unisonDetuningRandomSeedLeftGui->setValue(unisonDetuningRandomSeedLeft);
       unisonDetuningRandomSeedRightGui->setValue(unisonDetuningRandomSeedRight);
+
+      waveSourceGui->setValue(audioSource);
+      keyMappingModeGui->setValue(keyMappingMode);
+      fixedFrequencyGui->setValue(fixedFrequency);
+
       showBiquadFilterGui->setValue(biquadFilter->isActive);
       waveForm.updatePanel();
     }
@@ -725,6 +747,10 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     stereoPhaseOffsetGui = NULL;
     panGui = NULL;
     stereoFrequencySeparationGui = NULL;
+
+    keyMappingModeGui = NULL;
+    fixedFrequencyGui = NULL;
+
     showBiquadFilterGui = NULL;
     //fmAlgorithmGui = NULL;
   }
@@ -755,6 +781,12 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
         guiElement->getValue((void*)&voice->audioSource);
         // TODO show/hide waveform/vocoder? panel
       }
+      if(guiElement == voice->keyMappingModeGui) {
+        guiElement->getValue((void*)&voice->keyMappingMode);
+      }
+      if(guiElement == voice->fixedFrequencyGui) {
+        guiElement->getValue((void*)&voice->fixedFrequency);
+      }
 
       if(guiElement == voice->volumeGui) {
         guiElement->getValue((void*)&voice->volume);
@@ -762,6 +794,10 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
       if(guiElement == voice->tuningGui) {
         guiElement->getValue((void*)&voice->tuning);
         voice->prepare();
+        voice->waveForm.oscillatorFrequencyFactor = voice->tuning;
+        if(voice->waveForm.type == WaveForm::Type::SinBands) {
+          voice->waveForm.prepareWaveTable();
+        }
       }
       if(guiElement == voice->stereoPhaseOffsetGui) {
         guiElement->getValue((void*)&voice->stereoPhaseOffset);
@@ -814,8 +850,10 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
   }
 
   virtual void decodeParameters() {
+    printf("DEBUGGING Oscillator::decodeParameters()...\n");
     getNumericParameter("volume", volume);
     getNumericParameter("tuning", tuning);
+    waveForm.oscillatorFrequencyFactor = tuning;
     getNumericParameter("stereoPhaseOffset", stereoPhaseOffset);
     getNumericParameter("pan", pan);
     getNumericParameter("unison", unison);
@@ -826,6 +864,12 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     getNumericParameter("frequencyModulator", inputFM);
     getNumericParameter("amplitudeEnvelope", inputAmplitudeEnvelope);
     getNumericParameter("frequencyEnvelope", inputFrequencyEnvelope);
+
+    int tmp = 0;
+    getNumericParameter("keyMappingMode", tmp);
+    keyMappingMode = (KeyMappingMode)tmp;
+    getNumericParameter("fixedFrequency", fixedFrequency);
+
     
     getNumericParameter("panModular", panModular.modulator, 0);
     getNumericParameter("panModular", panModular.envelope, 1);
@@ -871,7 +915,8 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     
     checkModularConnections();
     
-    prepare();
+    //prepare();
+    update();
   }
 
   virtual void encodeParameters() {
@@ -888,6 +933,13 @@ struct Voice : public PanelInterface, public HierarchicalTextFileParser {
     putNumericParameter("amplitudeEnvelope", (int)inputAmplitudeEnvelope);
     putNumericParameter("frequencyEnvelope", (int)inputFrequencyEnvelope);
     
+    if(keyMappingMode != KeyMappingMode::Normal) {
+      putNumericParameter("keyMappingMode", keyMappingMode);
+    }
+    if(keyMappingMode == KeyMappingMode::FixedFrequency) {
+      putNumericParameter("fixedFrequency", fixedFrequency);
+    }
+
     if(panModular.isConnected) {
       putNumericParameter("panModular", {(double)panModular.modulator, (double)panModular.envelope, panModular.range.x, panModular.range.y});
     }
@@ -1280,6 +1332,8 @@ struct GenericModulator : public PanelInterface, public HierarchicalTextFilePars
     getNumericParameter("stereoPhaseDifferenceModular", stereoPhaseDifferenceModular.range.x, 2);
     getNumericParameter("stereoPhaseDifferenceModular", stereoPhaseDifferenceModular.range.y, 3);
     stereoPhaseOffsetModular.checkConnected();*/
+    
+    update();
 
   }
 

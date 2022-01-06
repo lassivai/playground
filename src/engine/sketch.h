@@ -187,7 +187,7 @@ struct Sketch
   GlShader postEffectShader;
   Quadx quadScreen;
 
-  bool useGlobalOverlayTexture = true;
+  bool useGlobalOverlayTexture = false;
   
   const std::string fftwWisdomFilename = "data/tmp/fftw_wisdom";
 
@@ -247,6 +247,10 @@ struct Sketch
     }
 
     sdlInterface = new SDLInterface();
+    SDLInterface::sdlInterface = this->sdlInterface;
+    GuiElement::sdlInterface = this->sdlInterface;
+    Texture::sdlInterface = this->sdlInterface;
+    
 
     sdlInterface->setup(screenW, screenH, fullScreen, useOpenGL, frameless, 0, inputGrabbed, alwaysOnTop);
     GuiElement::screenW = screenW = sdlInterface->screenW;
@@ -341,7 +345,7 @@ struct Sketch
     clear(0, 0, 0, 1);
     updateScreen(sdlInterface);
 
-    geomRenderer.create();
+    geomRenderer.create(sdlInterface);
     geomRenderer.screenW = screenW;
     geomRenderer.screenH = screenH;
     //glViewport
@@ -441,6 +445,9 @@ struct Sketch
     if(fpsPanel->isVisible) {
       fpsPanel->update(dt);
     }
+    
+    //sdlInterface->update();
+    
 
     onUpdate();
     
@@ -456,6 +463,10 @@ struct Sketch
     guiRoot.update(time, dt);
     guiRoot.prepare(geomRenderer, textRenderer);
 
+    if(console.inputGrabbed) {
+      console.preRender(sdlInterface);
+    }
+
     if(useGlobalOverlayTexture) {
       if(renderTargetTextureForPostEffects.w != screenW || renderTargetTextureForPostEffects.h != screenH) {
         renderTargetTextureForPostEffects.createRenderTarget(screenW, screenH);
@@ -469,6 +480,11 @@ struct Sketch
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
     onDraw();
+    
+    if(console.inputGrabbed) {
+      console.render(sdlInterface);
+    }
+    
     //glLoadIdentity();
     
     
@@ -491,6 +507,7 @@ struct Sketch
       postEffectTexture.activate(postEffectShader, "texture2", 1);
 
       //renderTargetTextureForPostEffects.render();
+      quadScreen.shaderProgram = postEffectShader.program;
       quadScreen.render(screenW/2, screenH/2);
       
       postEffectShader.deActivate();

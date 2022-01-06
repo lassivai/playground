@@ -5,6 +5,7 @@
 //#include <GL/gl.h>
 #include "util.h"
 #include "geometry.h"
+#include "sdl_init.h"
 
 // TODO change c arrays to std::vectors
 
@@ -49,10 +50,14 @@ static void glSetup(SDLInterface *sdlInterface) {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL); 
   
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, sdlInterface->screenW, sdlInterface->screenH, 0, -100, 100);
-  glMatrixMode(GL_MODELVIEW);
+  sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::Projection);
+  sdlInterface->glmMatrixStack.loadIdentity();
+  sdlInterface->glmMatrixStack.ortho(0, sdlInterface->screenW, sdlInterface->screenH, 0, -100, 100);
+  sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::ModelView);
+  //glMatrixMode(GL_PROJECTION);
+  //glLoadIdentity();
+  //glOrtho(0, sdlInterface->screenW, sdlInterface->screenH, 0, -100, 100);
+  //glMatrixMode(GL_MODELVIEW);
 
 /*
   glViewport(0.f, 0.f, sdlInterface->screenW, sdlInterface->screenH);
@@ -136,6 +141,7 @@ struct GlShader
 
   void create(const char *vertexShaderSrc, const char *fragmentShaderSrc) {
     GLuint vertexShader = loadShader(vertexShaderSrc, GL_VERTEX_SHADER);
+    //SDLInterface::sdlInterface->glmMatrixStack.addShaderProgram(vertexShader);
     if(vertexShader == -1) {
       return;
     }
@@ -587,20 +593,33 @@ struct Quadx
     render(x, y, 0.0, rotation, scaleX, scaleY, 1.0);
   }
 
+  GLuint shaderProgram = 0;
+
   void render(const double &x, const double &y, const double &z, const double &rotation, const double &scaleX, const double &scaleY, const double &scaleZ) {
     glBindVertexArray(vao);
     checkGlError("Quadx.render()", "glBindVertexArray(vao)");
 
-    glPushMatrix();
-    glTranslated(x, y, z);
-    glRotatef(rotation*180.0/PI, 0, 0, 1);
-    glScalef(scaleX, scaleY, scaleZ);
-    glScalef(w, h, 1.0);
+    SDLInterface::sdlInterface->glmMatrixStack.pushMatrix();
+    SDLInterface::sdlInterface->glmMatrixStack.translate(x, y, z);
+    SDLInterface::sdlInterface->glmMatrixStack.rotate(rotation*180.0/PI, 0, 0, 1);
+    SDLInterface::sdlInterface->glmMatrixStack.scale(scaleX, scaleY, scaleZ);
+    SDLInterface::sdlInterface->glmMatrixStack.scale(w, h, 1.0);
+    if(shaderProgram != 0) {
+      //printf("shaderProgram = %u\n", shaderProgram);
+      SDLInterface::sdlInterface->glmMatrixStack.updateShader(shaderProgram);
+      shaderProgram = 0;
+    }
+    //glPushMatrix();
+    //glTranslated(x, y, z);
+    //glRotatef(rotation*180.0/PI, 0, 0, 1);
+    //glScalef(scaleX, scaleY, scaleZ);
+    //glScalef(w, h, 1.0);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     checkGlError("Quadx.render()", "glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)");
 
-    glPopMatrix();
+    SDLInterface::sdlInterface->glmMatrixStack.popMatrix();
+    //glPopMatrix();
 
     glBindVertexArray(0);
     checkGlError("Quadx.render()", "glBindVertexArray(0)");
@@ -767,16 +786,21 @@ struct Trianglex
     glBindVertexArray(vao);
     checkGlError("Trianglex.render()", "glBindVertexArray(vao)");
 
-    glPushMatrix();
-    glTranslated(x, y, z);
-    glRotatef(rotation*180.0/PI, 0, 0, 1);
-    glScalef(scaleX, scaleY, scaleZ);
+    SDLInterface::sdlInterface->glmMatrixStack.pushMatrix();
+    SDLInterface::sdlInterface->glmMatrixStack.translate(x, y, z);
+    SDLInterface::sdlInterface->glmMatrixStack.rotate(rotation*180.0/PI, 0, 0, 1);
+    SDLInterface::sdlInterface->glmMatrixStack.scale(scaleX, scaleY, scaleZ);
+    //glPushMatrix();
+    //glTranslated(x, y, z);
+    //glRotatef(rotation*180.0/PI, 0, 0, 1);
+    //glScalef(scaleX, scaleY, scaleZ);
     //glScalef(w, h, 1.0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     checkGlError("Trianglex.render()", "glDrawArrays(GL_TRIANGLE, 0, 3)");
 
-    glPopMatrix();
+    SDLInterface::sdlInterface->glmMatrixStack.popMatrix();
+    //glPopMatrix();
 
     glBindVertexArray(0);
     checkGlError("Trianglex.render()", "glBindVertexArray(0)");

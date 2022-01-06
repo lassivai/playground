@@ -69,10 +69,10 @@ struct PitchChanger : public PostProcessingEffect
   }
 
   virtual ~PitchChanger() {
-    if(pitchChangerPanel) {
+    /* if(pitchChangerPanel) {
       GuiElement *parent = pitchChangerPanel->parent;
       parent->deleteChildElement(pitchChangerPanel);
-    }
+    }*/
   }
 
 

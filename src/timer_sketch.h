@@ -263,7 +263,8 @@ struct TimerSketch : public Sketch
         synth->playNote(60+12+7, minSoundVolume, 0.5, 0);*/
       }
     }
-    glLoadIdentity();
+    sdlInterface->glmMatrixStack.loadIdentity();
+    //glLoadIdentity();
 
 
     bool inverseColors = mins % 2 == 0;

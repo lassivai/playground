@@ -204,7 +204,7 @@ struct ClockworkSketch : public Sketch
     //scaleBind->active = true;
     //positionBind->active = true;
 
-    camera.init(screenW, screenH, events);
+    camera.init(screenW, screenH, events, sdlInterface);
 
     printInputCmdTmpl.finishInitialization("printInput");
     commandQueue.addCommandTemplate(&printInputCmdTmpl);
@@ -1826,7 +1826,9 @@ struct ClockworkSketch : public Sketch
 
     clear(0.18, 0, 0.05, 1);
     //clear(0, 0, 0, 1);
-    glLoadIdentity();
+    
+    geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
+    //glLoadIdentity();
 
 
     camera.pushMatrix();
@@ -1930,13 +1932,17 @@ struct ClockworkSketch : public Sketch
       }
 
       if(tmpEditingGeomObject) {
-        glPushMatrix();
+        sdlInterface->glmMatrixStack.pushMatrix();
+        //glPushMatrix();
         Vec2d p = editingBody->getPosition();
         double a = editingBody->getAngle();
-        glTranslated(p.x, p.y, 0);
-        glRotatef(a*180.0/PI, 0, 0, 1);
+        sdlInterface->glmMatrixStack.translate(p.x, p.y, 0);
+        sdlInterface->glmMatrixStack.rotate(a*180.0/PI, 0, 0, 1);
+        //glTranslated(p.x, p.y, 0);
+        //glRotatef(a*180.0/PI, 0, 0, 1);
         geomRenderer.draw(tmpEditingGeomObject);
-        glPopMatrix();
+        sdlInterface->glmMatrixStack.popMatrix();
+        //glPopMatrix();
       }
       if(editingMode == editingModeNewPivotJointPos) {
         PivotJoint::render(geomRenderer, newConstraintPosA);
@@ -2018,14 +2024,19 @@ struct ClockworkSketch : public Sketch
       Vec2d g = simulation.getGravity();
       double a = atan2(g.y, g.x) + PI*0.5 + camera.rotation;
       double s = map(g.length(), 0, maxGravity, 1, 8);
-      glPushMatrix();
-      glTranslated(screenW - 30, 30, 0);
-      glRotated(a * 180.0 / PI, 0, 0, 1);
-      glScaled(s, s, 1);
+      sdlInterface->glmMatrixStack.pushMatrix();
+      sdlInterface->glmMatrixStack.translate(screenW - 30, 30, 0);
+      sdlInterface->glmMatrixStack.rotate(a * 180.0 / PI, 0, 0, 1);
+      sdlInterface->glmMatrixStack.scale(s, s, 1);
+      //glPushMatrix();
+      //glTranslated(screenW - 30, 30, 0);
+      //glRotated(a * 180.0 / PI, 0, 0, 1);
+      //glScaled(s, s, 1);
       geomRenderer.fillColor.set(0.7, 0.7, 0.7, 0.4);
       geomRenderer.strokeType = 0;
       geomRenderer.drawPolygon(gravityArrow);
-      glPopMatrix();
+      sdlInterface->glmMatrixStack.popMatrix();
+      //glPopMatrix();
     }
 
     /*texture3.unsetRenderTarget();

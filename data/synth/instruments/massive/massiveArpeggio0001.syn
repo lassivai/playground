@@ -1,0 +1,399 @@
+instrument {
+  name: Massive arpeggio 1
+  volume: 1
+  reverb {
+    subtype: Zita
+    gain: 0.7
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.89
+    rt60: 10
+    rt60factorLow: 1
+    rt60factorHigh: 1
+    dcCutFrequency: 1
+    lfo1: 0.8
+    lfo2: 0.7
+    lfoFactor: 0
+    spin: 0.7
+    spinFactor: 0.09
+    xOverLow: 1
+    xOverHigh: 8
+    apFeedback: 0
+    lowPass: 1000
+    highPass: 20
+  }
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave09
+      waveTableMode: Single faster
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0.004396678, 0.004396678
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 10
+      }
+      factorDraggingGraph {
+        yRange: 1, 20
+        curve: 0, 1, 0.5, 0.22556391, 0.884711779, 0.5, 0.501253133, 0.751879699, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 10
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.517529215, 1, 0, 0.65442404, 0.909547739, 0, 0.831385643, 0.768844221, 0, 1, 0.306532663, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.25
+    tuning: 0.5
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave09
+      waveTableMode: Single faster
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0.004396678, 0.004396678
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 10
+      }
+      factorDraggingGraph {
+        yRange: 1, 20
+        curve: 0, 1, 0.5, 0.22556391, 0.884711779, 0.5, 0.501253133, 0.751879699, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 10
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.585976628, 1, 0, 0.789649416, 0.889447236, 0, 0.948247078, 0.467336683, 0, 1, 0.085427136, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.55
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 1
+    frequencyModulator: 1
+    amplitudeEnvelope: 2
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave13
+      waveTableMode: Single
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 1, 3, 4
+      phaseOffsets: 0.119198828, 0.119198828
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 6
+      }
+      factorDraggingGraph {
+        yRange: 1, 8
+        curve: 0, 1, 0.5, 0.263157895, 0.824561404, 0.5, 0.719298246, 0.365914787, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 6
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.555926544, 1, 0, 0.657762938, 0.959798995, 0, 0.828046745, 0.788944724, 0, 1, 0, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.65
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave09
+      waveTableMode: Single faster
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0.001954079, 0.001954079
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 10
+      }
+      factorDraggingGraph {
+        yRange: 1, 40
+        curve: 0, 1, 0.5, 0.365914787, 0.413533835, 0.5, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 10
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.517529215, 1, 0, 0.65442404, 0.909547739, 0, 0.831385643, 0.768844221, 0, 1, 0.306532663, 0
+      }
+    }
+  }
+  modulator {
+    frequency: 0.05
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 0
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
+    outputFM: 1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 1
+    waveform {
+      type: Square
+      waveTableMode: Single faster
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 131072
+      waveformParameters: 0.5, 0, 0
+      phaseOffsets: 0, 1
+      lockedStereoPhase: 0
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: Graphs
+        count: 10
+      }
+      factorDraggingGraph {
+        yRange: 1, 30
+        curve: 0, 1, 0, 0.233082707, 0.370927318, 0, 0.330827068, 0.784461153, 0, 0.50877193, 0.295739348, 0, 0.664160401, 0.373433584, 0, 0.812030075, 0.478696742, 0, 0.989974937, 0.122807018, 0, 1, 0, 0
+        roundDraggingFactors: 0
+        roundToNearestDraggingFraction: 1
+        clampMinDraggingFactor: 1
+      }
+      gainDraggingGraph {
+        numDataPoints: 10
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0, 0
+      }
+    }
+  }
+  modulator {
+    frequency: 8
+    stereoPhaseOffset: 0.5
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 0
+    inputAM: -1
+    inputFM: -1
+    outputAM: 1
+    outputFM: -1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 0.001
+    waveform {
+      type: Power
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0.4, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: -0.5
+      }
+    }
+  }
+  modulator {
+    frequency: 2
+    stereoPhaseOffset: 0
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 0
+    inputAM: -1
+    inputFM: -1
+    outputAM: 2
+    outputFM: -1
+    amplitudeEnvelope: -1
+    frequencyEnvelope: -1
+    depthAM: 0.6
+    depthFM: 0.001
+    waveform {
+      type: Saw
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: -0.5
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.00009, 0, -3, -0.05
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -7, -7, -0.05
+    output: 1
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -0, -1, -0.05
+    output: 2
+  }
+}

@@ -60,6 +60,7 @@ struct TextGl
 
   Vec4d textColor;
 
+
   ~TextGl() {
     for(auto &uintFontDescPair : fontDescriptions) {
       delete uintFontDescPair.second;

@@ -37,6 +37,7 @@ struct SynthTitleBar : public TitleBar
 
   bool hideOnClose = false;
 
+
   virtual ~SynthTitleBar() {} 
   
   SynthTitleBar(const std::string &text, Panel *parentPanel, bool isActive, int layout, std::vector<Preset> *presets) : TitleBar(text, parentPanel->size.x, 31, 0, 0) {
@@ -44,7 +45,6 @@ struct SynthTitleBar : public TitleBar
     addPowerButton(isActive);
     addLayoutButton(layout);
     addPresetsKnob(presets);
-    
   }
   
   SynthTitleBar(const std::string &text, Panel *parentPanel, bool isActive, int layout) : TitleBar(text, parentPanel->size.x, 31, 0, 0) {

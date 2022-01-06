@@ -1,5 +1,5 @@
 instrument {
-  name: Synth 32
+  name: Lead 8
   volume: 1
   noteFilterFrequencyModular: -1, 1, 100, 1000
   reverb {
@@ -49,7 +49,7 @@ instrument {
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
-      pitchDependendGain: 0
+      pitchDependendGain: 1
       waveValueOffset: 0
       minHarmonicSmoothing: 30
       maxHarmonicSmoothing: 400
@@ -60,6 +60,12 @@ instrument {
         count: 39
         frequencyParameters: 1, 1, 0, 1, 1, 0
         gainParameters: 50, 0, 0, 0, 0, 0.2
+      }
+      pitchGainDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 0, 0, 1, 0.51758794, 0
       }
     }
   }

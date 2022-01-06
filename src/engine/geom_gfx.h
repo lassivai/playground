@@ -22,6 +22,8 @@ struct GeomRenderer
 
   Camera2D *camera = NULL;
 
+  SDLInterface *sdlInterface = NULL;
+
   struct RenderingSettings {
     Vec4d fillColor = { 1, 1, 1, 0.5 };
     Vec4d strokeColor = { 0, 0, 0, 1.0 };
@@ -76,11 +78,14 @@ private:
         fastStrokeShader.setUniform4f("strokeColor", strokeColor);
         fastStrokeColorPrev = strokeColor;
       }
+      quadGeom.shaderProgram = fastStrokeShader.program;
     }
     else {
       if(rendererActivated == None) {
         shaderGeom.activate();
       }
+      //Texture::sdlInterface->glmMatrixStack.updateShader(shaderGeom.program);
+      quadGeom.shaderProgram = shaderGeom.program;
 
       if(texture != NULL && (geomType == 1 || geomType == 2)) {
         texture->activate(shaderGeom, "tex", 0);
@@ -164,11 +169,14 @@ public:
 
     if(rendererType == Basic) {
       shaderGeom.activate();
+      //Texture::sdlInterface->glmMatrixStack.updateShader(shaderGeom.program);
+      quadGeom.shaderProgram = shaderGeom.program;
     }
     if(rendererType == FastStrokeRenderer) {
       fastStrokeShader.activate();
       /*fastStrokeShader.setUniform4f("strokeColor", strokeColor);
       strokeColorPrev = strokeColor;*/
+      quadGeom.shaderProgram = fastStrokeShader.program;
     }
   }
 
@@ -183,7 +191,8 @@ public:
   }
 
 
-  bool create() {
+  bool create(SDLInterface *sdlInterface) {
+    this->sdlInterface = sdlInterface;
     fillColorPrev.set(-1, -1, -1, -1);
     strokeColorPrev.set(-1, -1, -1, -1);
     fillColor.set(0, 0, 0, 0.5);
@@ -422,7 +431,7 @@ public:
     }
 
     initRenderer();
-    quadGeom.render(cl.pos.x+dx, cl.pos.y+dy, cl.rot+rot);
+    quadGeom.render(cl.pos.x+dx, cl.pos.y+dy, (cl.rot+rot)/180.0*PI);
     finalizeRenderer();
   }
 
@@ -447,7 +456,7 @@ public:
     quadGeom.setSize(w, h);
 
     initRenderer();
-    quadGeom.render(cl.pos.x+dx, cl.pos.y+dy, cl.rot+rot);
+    quadGeom.render(cl.pos.x+dx, cl.pos.y+dy, (cl.rot+rot)/180.0*PI);
     finalizeRenderer();
   }
 
@@ -475,7 +484,7 @@ public:
 
     shaderGeom.setUniform1f("strokeWidth", strokeWidth*0.5);
     strokeWidthPrev = strokeWidth*0.5;
-    quadGeom.render(cl.pos.x+dx, cl.pos.y+dy, cl.rot+rot);
+    quadGeom.render(cl.pos.x+dx, cl.pos.y+dy, (cl.rot+rot)/180.0*PI);
     finalizeRenderer();
   }
 
@@ -486,9 +495,13 @@ public:
     geomType = 4;
     initRenderer();
 
-    glPushMatrix();
-    glTranslated(x, y, 0);
-    glRotatef(rot*180.0/PI, 0, 0, 1);
+
+    sdlInterface->glmMatrixStack.pushMatrix();
+    sdlInterface->glmMatrixStack.translate(x, y, 0);
+    sdlInterface->glmMatrixStack.rotate(rot*180.0/PI, 0, 0, 1);
+    ///glPushMatrix();
+    //glTranslated(x, y, 0);
+    //glRotatef(rot*180.0/PI, 0, 0, 1);
     //glScalef(scaleX, scaleY, scaleZ);
     triangleGeom.render(0, 0, 0);
 
@@ -497,8 +510,9 @@ public:
       drawLine2(t.b, t.c);
       drawLine2(t.c, t.a);
     }
-
-    glPopMatrix();
+    
+    sdlInterface->glmMatrixStack.popMatrix();
+    //glPopMatrix();
 
     finalizeRenderer();
   }
@@ -524,9 +538,12 @@ public:
 
     geomType = 4;
 
-    glPushMatrix();
-    glTranslated(x, y, 0);
-    glRotatef(rot*180.0/PI, 0, 0, 1);
+    sdlInterface->glmMatrixStack.pushMatrix();
+    sdlInterface->glmMatrixStack.translate(x, y, 0);
+    sdlInterface->glmMatrixStack.rotate(rot*180.0/PI, 0, 0, 1);
+    //glPushMatrix();
+    //glTranslated(x, y, 0);
+    //glRotatef(rot*180.0/PI, 0, 0, 1);
 
     if(!debugTriangulation) initRenderer();
 
@@ -554,7 +571,8 @@ public:
       }
     }
 
-    glPopMatrix();
+    sdlInterface->glmMatrixStack.popMatrix();
+    //glPopMatrix();
 
     finalizeRenderer();
   }

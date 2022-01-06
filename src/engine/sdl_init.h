@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include "mathl.h"
+#include "util.h"
 
 struct SDLInterface
 {
@@ -12,6 +13,10 @@ struct SDLInterface
   double aspectRatio = 0;
 
   double pixelWidthMeters, pixelHeightMeters;
+
+  GlmMatrixStack glmMatrixStack;
+  
+  static SDLInterface *sdlInterface;
 
   ~SDLInterface() {
     if(window) SDL_DestroyWindow(window);
@@ -25,6 +30,11 @@ struct SDLInterface
   bool isVsync() {
     return SDL_GL_GetSwapInterval() != 0;
   }
+  
+  void update() {
+
+  }
+  
   void setup(int w, int h, int fullscreen, int opengl,
                          int noBorder, int resizable, int inputGrabbed, int alwaysOnTop)
   {

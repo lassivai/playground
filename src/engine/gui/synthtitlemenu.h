@@ -17,7 +17,7 @@ struct SynthTitleMenu : public Menu
   MenuButton *saveGui = NULL;
   MenuButton *loadGui = NULL;
 
-
+  
   virtual ~SynthTitleMenu() {} 
   
   

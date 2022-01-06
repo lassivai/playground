@@ -686,9 +686,12 @@ struct Body
       renderBoundingRect(geomRenderer);
     }
 
-    glPushMatrix();
-    glTranslated(pos.x, pos.y, 0);
-    glRotatef(rot*180.0/PI, 0, 0, 1);
+		geomRenderer.sdlInterface->glmMatrixStack.pushMatrix();
+		geomRenderer.sdlInterface->glmMatrixStack.translate(pos.x, pos.y, 0);
+		geomRenderer.sdlInterface->glmMatrixStack.rotate(rot*180.0/PI, 0, 0, 1);
+    //glPushMatrix();
+    //glTranslated(pos.x, pos.y, 0);
+    //glRotatef(rot*180.0/PI, 0, 0, 1);
 
     if(bodyParts.size() == 0) {
       geomRenderer.setSettings(renderingSettingsBoundingRect);
@@ -703,14 +706,17 @@ struct Body
       geomRenderer.strokeWidth = 1.2;
       geomRenderer.strokeColor.set(1, 1, 1, 0.25);
 
-      glPushMatrix();
-      glTranslated(centerOfMass.x, centerOfMass.y, 0);
+			geomRenderer.sdlInterface->glmMatrixStack.pushMatrix();
+			geomRenderer.sdlInterface->glmMatrixStack.translate(centerOfMass.x, centerOfMass.y, 0);
+      //glPushMatrix();
+      //glTranslated(centerOfMass.x, centerOfMass.y, 0);
       geomRenderer.drawLine(-10, -10, 10, 10);
       geomRenderer.drawLine(-10, 10, 10, -10);
-      glPopMatrix();
+			geomRenderer.sdlInterface->glmMatrixStack.popMatrix();
+      //glPopMatrix();
     }
-
-    glPopMatrix();
+		geomRenderer.sdlInterface->glmMatrixStack.popMatrix();
+    //glPopMatrix();
   }
 
   //cpBodySetVelocityUpdateFunc(body.chipBody, func);

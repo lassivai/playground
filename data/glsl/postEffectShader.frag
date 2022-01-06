@@ -91,7 +91,7 @@ void main(){
   vec4 color2 = texture(texture2, texCoord);
   
   int blendMode = 2;
-  double blend = 0.65;
+  double blend = 0.9;
 
   if(blendMode == 1) {
     colorOut.r = color2.r - color1.r;

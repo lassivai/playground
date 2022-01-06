@@ -39,7 +39,7 @@ struct Console {
     this->textRenderer = textRenderer;
   }
 
-  void render(SDLInterface *sdlInterface) {
+  void preRender(SDLInterface *sdlInterface) {
     if(minimalInterface) {
       minimalCanvasImg.setRenderTarget();
       clear(0, 0, 0, 0.5, sdlInterface);
@@ -58,7 +58,7 @@ struct Console {
 
 
       minimalCanvasImg.unsetRenderTarget();
-      minimalCanvasImg.renderFlipY(0, sdlInterface->screenH - 1 - minimalCanvasImg.h);
+      /*minimalCanvasImg.renderFlipY(0, sdlInterface->screenH - 1 - minimalCanvasImg.h);
 
       setColor(1, 1, 1, 0.75, sdlInterface);
       double y = sdlInterface->screenH - lineHeight*1.0 - 3;
@@ -68,7 +68,7 @@ struct Console {
         y -= dim.y;
         textRenderer->print(str, 10, y, textSizeMessages, sdlInterface);
         if(y + lineHeight < 0) break;
-      }
+      }*/
     }
     else {
       canvasImg.setRenderTarget();
@@ -100,6 +100,25 @@ struct Console {
       }
 
       canvasImg.unsetRenderTarget();
+      //canvasImg.render();
+    }
+  }
+  
+  void render(SDLInterface *sdlInterface) {
+    if(minimalInterface) {
+      minimalCanvasImg.renderFlipY(0, sdlInterface->screenH - 1 - minimalCanvasImg.h);
+
+      setColor(1, 1, 1, 0.75, sdlInterface);
+      double y = sdlInterface->screenH - lineHeight*1.0 - 3;
+      for(int i=0; i<messageQueue.tmpQueue.size(); i++) {
+        std::wstring &str = messageQueue.tmpQueue[messageQueue.tmpQueue.size()-1 - i]->str;
+        Vec2d dim = textRenderer->getDimensions(str, textSizeMessages, sdlInterface);
+        y -= dim.y;
+        textRenderer->print(str, 10, y, textSizeMessages, sdlInterface);
+        if(y + lineHeight < 0) break;
+      }
+    }
+    else {
       canvasImg.render();
     }
   }

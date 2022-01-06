@@ -137,6 +137,7 @@ struct CurrentlyPlayingNotePanel : public Panel {
         recordedNoteRects[i].set(width - padding*2, itemHeight-3, absolutePos.x+width/2, hx+absolutePos.y+itemHeight*i+(itemHeight-3)*0.5);
         if(synth->currentlyPlayingNotesPresampled[i].volume > 0) {
           double progress = clamp((time-synth->currentlyPlayingNotesPresampled[i].startTime) / synth->currentlyPlayingNotesPresampled[i].noteFullLengthSecs, 0, 1);
+                    
           if(time-synth->currentlyPlayingNotesPresampled[i].startTime < synth->currentlyPlayingNotesPresampled[i].lengthInSecs) {
             geomRenderer.fillColor.set(0, 0, 0, 0.7);
           }

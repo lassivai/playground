@@ -1,0 +1,57 @@
+line count 
+engine/synth/filter         7479
+engine/synth/gui            2162
+engine/synth/visualizations 168
+engine/synth                18034
+engine/canvasshaders        2284
+engine/games                147
+engine/gui                  5691
+engine/launchpad            852
+engine/phys                 4054
+engine/voxeltracer          2035
+engine                      14880
+clockwork                   2777
+fractal                     3525
+src                         8239
+
+16.9.2019 playground project contains 72327 lines by my own hand. If put into a book 50 lines per page, I would have written 1446.54 pages of code in 2018 and 2019.
+
+----
+
+In other words this is the biggest project of my entire life. During the years I have been aware of the Truman show (2016-), another huge success story was learning to play violin (so much work still to do, of course), but I concider this probably even bigger success in the absurd non-privacy situation as this has involved so huge amount of creativity and involvement.
+
+(it contains several novel fractal engines (some products you can see most of the time playing on my desktop), physics sandbox, synthesizer, midi sequencer, sound recorder, mp3 player...)
+
+----
+
+When I get my freedom, I am planning to continue my studies, which would most probably be biotechnology. Doing engineering is probably my truest calling.
+
+#FREEDOM_2020
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hard to believe I have built this thing (software synthesizer) from scratch. It took about a full year. Many days 8-10 hours of coding. Never played with a synth which fits my needs better.
+
+The days of my current year have been like running through the fog. As I have let you know several times my mind has been kind of "controlled by a woodoo zombie". Not nice!
+
+With the exception of the last month as I have just relaxed mostly, I have been just as hard working most of the year as most of my life before.

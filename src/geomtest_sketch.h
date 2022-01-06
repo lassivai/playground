@@ -74,7 +74,7 @@ struct GeomTestSketch : public Sketch
 
     trianglex.create(0, 0, 0, 0, 0, 0);
 
-    geomRenderer.create();
+    geomRenderer.create(sdlInterface);
 
     quadx.create(texture.w, texture.h, false);
 
@@ -135,7 +135,8 @@ struct GeomTestSketch : public Sketch
 
     clear(0.18, 0, 0.05, 1);
 
-    glLoadIdentity();
+    sdlInterface->glmMatrixStack.loadIdentity();
+    //glLoadIdentity();
 
     geomRenderer.strokeWidth = 5;
     geomRenderer.strokeType = 1;

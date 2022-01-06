@@ -167,6 +167,9 @@ struct DraggableGraph : public HierarchicalTextFileParser {
 
   virtual ~DraggableGraph() {}
   
+  DraggableGraphPanel *draggableGraphPanel = NULL;
+  GuiElement *parentGuiElement = NULL;
+
   Vec2d horizontalLimits, verticalLimits;
   
   int numDataPoints = 0;
@@ -181,9 +184,6 @@ struct DraggableGraph : public HierarchicalTextFileParser {
 
   double w = 500, h = 500;
   double borderWidth = 6;
-
-  DraggableGraphPanel *draggableGraphPanel = NULL;
-  GuiElement *parentGuiElement = NULL;
   
   int gridDensity = 0;
   
@@ -197,6 +197,38 @@ struct DraggableGraph : public HierarchicalTextFileParser {
   double infoHoverValue = 0;
   Vec2d infoHoverPos;
   
+  DraggableGraph &operator=(const DraggableGraph &g) {
+    horizontalLimits = g.horizontalLimits;
+    verticalLimits = g.verticalLimits;
+    
+    numDataPoints = g.numDataPoints;
+    //int numFreeCurvePoints = 0;
+    curve = g.curve;
+    drawableCurve = g.drawableCurve;
+    dataPointsOnCurve = g.dataPointsOnCurve;
+
+    draggingPointIndex = g.draggingPointIndex;
+    closestPointIndex = g.closestPointIndex;
+    maxDragDistance = g.maxDragDistance;
+
+    w = g.w;
+    h = g.h;
+    borderWidth = g.borderWidth;
+    
+    gridDensity = g.gridDensity;
+    
+    dataPointMarkSize = g.dataPointMarkSize;
+    drawDataPointLines = g.drawDataPointLines;
+    
+    title = g.title;
+    
+    isInfoHover = g.isInfoHover;
+    infoHoverDataPoint = g.infoHoverDataPoint;
+    infoHoverValue = g.infoHoverValue;
+    infoHoverPos = g.infoHoverPos;
+    
+    return *this;
+  }
   
   DraggableGraph() {
     verticalLimits.set(0, 1);

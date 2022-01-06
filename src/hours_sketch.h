@@ -106,7 +106,7 @@ struct PostSketch : public Sketch
 
     textRenderer.print("Testing 123", 10, 120, 20, 1);
 
-    glLoadIdentity();
+    sdlInterface->glmMatrixStack.loadIdentity();
 /*
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();

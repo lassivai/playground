@@ -61,7 +61,8 @@ static Texture *createBoxShadowTexture(GeomRenderer &geomRenderer, int w, int h,
   //boxShadowTexture.activate(boxShadowShader, "tex", 0);
   boxShadowTexture->setRenderTarget();
   //glViewport(0, 0, 1400, 1000);
-  glLoadIdentity();
+  geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
+  //glLoadIdentity();
   //clear(0, 0, 0, 1);
   quad.render(d.x+shadowTextureWidth*0.5, d.y+shadowTextureHeight*0.5);
   //if(rememberIterations && !previewActive) currentPass++;
@@ -107,8 +108,9 @@ static Texture *createSpriteShadowTexture(GeomRenderer &geomRenderer, Texture &s
   spriteShadowShader.setUniform4f("shadowColor", shadowColor);
 
   spriteShadowTexture->setRenderTarget();
-
-  glLoadIdentity();
+  
+  geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
+  //glLoadIdentity();
 
   quad.render(d.x+shadowTextureWidth*0.5, d.y+shadowTextureHeight*0.5);
 
@@ -132,7 +134,8 @@ static Texture *createLabelTexture(GeomRenderer &geomRenderer, TextGl &textRende
   
   labelTexture->setRenderTarget();
   clear(1, 1, 1, 0);
-  glLoadIdentity();
+  geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
+  //glLoadIdentity();
   textRenderer.print(text, d.x, d.y, textSize);
   labelTexture->unsetRenderTarget();
   
@@ -213,6 +216,7 @@ struct GuiElement
   
   int readyToReceiveEvents = false;
   
+  static SDLInterface *sdlInterface;
   
   bool captureMouseForChildren() {
     GuiElement *root = this;
@@ -649,10 +653,14 @@ public:
       double w = max(size.x, geomRenderer.screenW);
       double h = max(size.y, geomRenderer.screenH);
       glViewport(0, 0, w, h);
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-      glOrtho(0, w, h, 0, -100, 100);
-      glMatrixMode(GL_MODELVIEW);
+      geomRenderer.sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::Projection);
+      geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
+      geomRenderer.sdlInterface->glmMatrixStack.ortho(0, w, h, 0, -100, 100);
+      geomRenderer.sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::ModelView);
+      //glMatrixMode(GL_PROJECTION);
+      //glLoadIdentity();
+      //glOrtho(0, w, h, 0, -100, 100);
+      //glMatrixMode(GL_MODELVIEW);
       clear(1, 1, 1, 0);
       Vec2d d(0, max(size.y, geomRenderer.screenH) - prerenderedGuiElement.h);
       
@@ -676,10 +684,15 @@ public:
       
       // TODO put this stuff into Texture::unsetRenderTarget()
       glViewport(0, 0, geomRenderer.screenW, geomRenderer.screenH);
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-      glOrtho(0, geomRenderer.screenW, geomRenderer.screenH, 0, -100, 100);
-      glMatrixMode(GL_MODELVIEW);
+      geomRenderer.sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::Projection);
+      geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
+      geomRenderer.sdlInterface->glmMatrixStack.ortho(0, geomRenderer.screenW, geomRenderer.screenH, 0, -100, 100);
+      geomRenderer.sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::ModelView);
+      
+      //glMatrixMode(GL_PROJECTION);
+      //glLoadIdentity();
+      //glOrtho(0, geomRenderer.screenW, geomRenderer.screenH, 0, -100, 100);
+      //glMatrixMode(GL_MODELVIEW);
 
       prerenderingNeeded = false;
     }

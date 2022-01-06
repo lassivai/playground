@@ -326,7 +326,8 @@ struct Shader2Sketch : public Sketch
 
     clear(0.18, 0, 0.05, 1);
 
-    glLoadIdentity();
+    sdlInterface->glmMatrixStack.loadIdentity();
+    //glLoadIdentity();
 
 
 

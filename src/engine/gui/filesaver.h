@@ -29,6 +29,7 @@ struct FileSaver : public Panel {
   
   bool doesFileNameExists = false;
   
+  
   virtual ~FileSaver() {}
   
   FileSaver(HierarchicalTextFileParser *fileToBeSaved) : Panel("File saver") {

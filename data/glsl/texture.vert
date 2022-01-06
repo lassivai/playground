@@ -1,7 +1,10 @@
 #version 450 core
 
-uniform mat4 gl_ModelViewMatrix;
-uniform mat4 gl_ProjectionMatrix;
+//uniform mat4 gl_ModelViewMatrix;
+//uniform mat4 gl_ProjectionMatrix;
+
+uniform mat4 modelView;
+uniform mat4 projection;
 
 layout(location = 0) in vec3 vertexIn;
 layout(location = 1) in vec3 normalIn;
@@ -15,11 +18,12 @@ out vec4 color;
 
 void main()
 {
-  vertex = gl_ModelViewMatrix * vec4(vertexIn, 1.0);
+  //vertex = gl_ModelViewMatrix * vec4(vertexIn, 1.0);
+  vertex = modelView * vec4(vertexIn, 1.0);
   texCoord = texCoordIn;
   color = colorIn;
   normal = normalIn; // FIXME shouldn't this be multiplied by some normal matrix...
 
-
-  gl_Position = gl_ProjectionMatrix * vertex;
+  gl_Position = projection * vertex;
+  //gl_Position = gl_ProjectionMatrix * vertex;
 }

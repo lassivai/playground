@@ -16,10 +16,14 @@ struct Camera2D {
   Matrix3d matrix, rotationScaleMatrix;
   bool updated = false;
   bool pushed = false;
+  
+  SDLInterface *sdlInterface = NULL;
 
-  void init(double w, double h, Events &events) {
+  void init(double w, double h, Events &events, SDLInterface *sdlInterface) {
     this->w = w;
     this->h = h;
+    
+    this->sdlInterface = sdlInterface;
 
     events.cameraMatrix = &matrix;
     events.cameraMatrixRotScale = &rotationScaleMatrix;
@@ -42,6 +46,31 @@ struct Camera2D {
   }
 
   void pushMatrix() {
+    sdlInterface->glmMatrixStack.pushMatrix();
+    sdlInterface->glmMatrixStack.translate(w*0.5, h*0.5, 0.0);
+    sdlInterface->glmMatrixStack.scale(scale, scale, 1.0);
+    sdlInterface->glmMatrixStack.rotate(rotation * 180.0 / PI, 0.0, 0.0, 1.0);
+    sdlInterface->glmMatrixStack.translate(-w*0.5, -h*0.5, 0.0);
+    sdlInterface->glmMatrixStack.translate(position.x, position.y, 0.0);
+
+    //glPushMatrix();
+    //glTranslated(w*0.5, h*0.5, 0.0);
+    //glScaled(scale, scale, 1.0);
+    //glRotated(rotation * 180.0 / PI, 0.0, 0.0, 1.0);
+    //glTranslated(-w*0.5, -h*0.5, 0.0);
+    //glTranslated(position.x, position.y, 0.0);
+    updateMatrix();
+    pushed = true;
+  }
+
+  void popMatrix() {
+    sdlInterface->glmMatrixStack.popMatrix();
+    //glPopMatrix();
+    updated = false;
+    pushed = false;
+  }
+  
+  /*void pushMatrix() {
     glPushMatrix();
     glTranslated(w*0.5, h*0.5, 0.0);
     glScaled(scale, scale, 1.0);
@@ -56,7 +85,7 @@ struct Camera2D {
     glPopMatrix();
     updated = false;
     pushed = false;
-  }
+  }*/
 
   void updateMatrix() {
     Matrix3d t0, t1, t2, r, s;

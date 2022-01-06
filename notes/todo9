@@ -1,0 +1,21 @@
+TODO
+
+- lot of memory optimization to be done
+  - especially in instrument class
+    - especially in waveform class
+      - apparently sin bands associated tables are the main culprit
+      
+- maybe get rid of some of the wave shapes
+- compressor
+- copy/paste voice/modulator/envelope (in addition to swap)
+(DONE!)
+- precalculate filter parameters for note/voice filters
+  - perpaps 1000 samples etc.
+- fixed note frequency (DONE)
+
+Sin bands
+ - instead of convolving the whole array, add impulse responses to the points of partials
+ - different forms of impulse responses
+   - power slopes on either side (variable width on both sides)
+
+anti-aliasing problem solved!

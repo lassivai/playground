@@ -586,8 +586,11 @@ struct DeprecatedNote
 
 struct RecordedNote
 {
+  double playTime = 0;
+  
   double pitch = 0;
   //double volume = -1;
+  double lengthInSecs = 0;
   double fullLengthInSecs = 0;
 
   double sampleRate = 1;
@@ -609,6 +612,7 @@ struct RecordedNote
   void resetSamples() {
     pitch = 0;
     //volume = 0;
+    lengthInSecs = 0;
     fullLengthInSecs = 0;
     sampleRate = 1;
       
@@ -626,6 +630,8 @@ struct RecordedNote
 
 struct SynthesisNote
 {
+  RecordedNote *recordedNote = NULL;
+  
   double pitch = 0, frequency = 0, volume = -1;
   double startTime = 0;
   double lengthInSecs = 0;

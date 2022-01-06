@@ -138,6 +138,10 @@ struct InstrumentPreviewPanel : public Panel {
         textRenderer.setColor(1, 1, 1, 0.4);
         textRenderer.print("Updating...", absolutePos.x + x, absolutePos.y, 10);
       }
+      else if(instrument->isVocoder()) {
+        textRenderer.setColor(1, 1, 1, 0.4);
+        textRenderer.print("Line-in", absolutePos.x + x, absolutePos.y, 10);
+      }
       else {
         double minValue = 1e10, maxValue = -1e10;
         if(leftDb <= 0) {
@@ -412,7 +416,7 @@ struct InstrumentTrackPanel : public Panel {
     InstrumentNameListener(InstrumentTrackPanel *instrumentTrackPanel) : instrumentTrackPanel(instrumentTrackPanel) {}
     
     virtual void onMessage(GuiElement *guiElement,const std::string &message, void *userData) override {
-      printf("InstrumentNameListener.onMessage(), '%s'\n", message.c_str());
+      //printf("InstrumentNameListener.onMessage(), '%s'\n", message.c_str());
       if(message == "instrumentNameChanged") {
         for(int i=0; i<instrumentTrackPanel->activeInstrumentNameGuis.size(); i++) {
           if(i < instrumentTrackPanel->synth->numInstrumentTracks) {
@@ -462,8 +466,8 @@ struct InstrumentTrackPanel : public Panel {
         if(guiElement == instrumentTrackPanel->activeInstrumentNameGuis[i]) {
           guiElement->getValue((void*)&instrumentTrackPanel->synth->instrumentTracks[i].instrumentIndex);
           instrumentTrackPanel->synth->activeInstrumentTrackIndex = i;
-          instrumentTrackPanel->synth->updateActiveInstruments();
-          instrumentTrackPanel->synth->resetRecordedTrackNotes(i);
+          //instrumentTrackPanel->synth->updateActiveInstruments();
+          //instrumentTrackPanel->synth->resetRecordedTrackNotes(i);
         }
         if(guiElement == instrumentTrackPanel->activeInstrumentVolumeGuis[i]) {
           guiElement->getValue((void*)&instrumentTrackPanel->synth->instrumentTracks[i].volume);

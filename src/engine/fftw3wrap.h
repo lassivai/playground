@@ -36,6 +36,8 @@ private:
 
   bool initialized = false;
   
+  std::vector<double> hammingWindow, hanningWindow;
+  
 public:
   std::vector<double> input;
   std::vector<double> output;
@@ -43,6 +45,9 @@ public:
 
   std::vector<Vec2d> reverseInput;
   std::vector<double> reverseOutput;
+  
+  enum TimeWindow { NoWindow, Hamming, Hanning };
+  TimeWindow timeWindow = NoWindow;
 
   ~FFTW3Interface() {
     if(transformMode != Reverse) {
@@ -202,6 +207,30 @@ public:
     }
     //plan = fftw_plan_dft_r2c_1d(n, in, out, FFTW_MEASURE);
     memcpy(in, input.data(), n);
+    
+    if(timeWindow == TimeWindow::Hanning) {
+      if(hanningWindow.size() != n) {
+        hanningWindow.resize(n);
+        for(int i=0; i<n; i++) {
+          hanningWindow[i] = 0.5 - 0.5 * cos(2.0*PI * i/(n-1.0));
+        }
+      }
+      for(int i=0; i<n; i++) {
+        in[i] *= hanningWindow[i];
+      }
+    }
+    if(timeWindow == TimeWindow::Hamming) {
+      if(hammingWindow.size() != n) {
+        hammingWindow.resize(n);
+        for(int i=0; i<n; i++) {
+          hammingWindow[i] = 0.54 - 0.46 * cos(2.0*PI * i/(n-1.0));
+        }
+      }
+      for(int i=0; i<n; i++) {
+        in[i] *= hammingWindow[i];
+      }
+    }
+
     //std::copy(input.begin(), input.end, in);
     //fftw_print_plan(plan);
     fftw_execute(plan);

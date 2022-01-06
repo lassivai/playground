@@ -146,7 +146,7 @@ struct ModularParameter {
     if(!isConnected && originalValue) {
       value = *originalValue;
     }
-    printf("modular parameter '%s' connected = %d, value = %f\n", name.c_str(), isConnected, value);
+    //printf("modular parameter '%s' connected = %d, value = %f\n", name.c_str(), isConnected, value);
     return isConnected;
   }
 

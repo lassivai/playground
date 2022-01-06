@@ -185,7 +185,7 @@ struct RotaryKnob : public GuiElement
         printf("Error at RotaryKnob::loadTexture(), name '%s', failed to load file '%s'!\n", name.c_str(), "data/synth/textures/limited_knob.png");
         texture->clear(1, 0, 1, 1);
       }
-      if(!backgroundTexture->load("data/synth/textures/limited_knob_bg.png", false)) {
+      if(!backgroundTexture->load( "data/synth/textures/limited_knob_bg.png", false)) {
         printf("Error at RotaryKnob::loadTexture(), name '%s', failed to load file '%s'!\n", name.c_str(), "data/synth/textures/limited_knob_bg.png");
         texture->clear(1, 1, 0, 1);
       }

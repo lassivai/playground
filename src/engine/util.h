@@ -1,5 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include <GL/glew.h>
+#include <SDL2/SDL_opengl.h>
 #include <boost/filesystem.hpp>
 #include <cstdlib>
 #include <ctime>
@@ -14,6 +16,172 @@
 #include <climits>
 #include <vector>
 #include <initializer_list>
+
+#include "external/glm/glm.hpp"
+#include "external/glm/ext.hpp"
+
+static bool checkGlError2(const std::string &place, const std::string &glCall) {
+  bool allGood = true;
+  GLenum error;
+  while((error = glGetError()) != GL_NO_ERROR) {
+    printf("OpenGl error at %s, %s: %s\n", gluErrorString(error), place.c_str(), glCall.c_str());
+    allGood = false;
+  }
+  return allGood;
+}
+
+
+struct GlmMatrixStack {
+  std::vector<glm::mat4> modelViewStack, projectionStack;
+  enum MatrixMode {ModelView, Projection};
+  MatrixMode matrixMode = MatrixMode::ModelView;
+  
+  //std::vector<GLuint> shaderPrograms;
+  
+  GlmMatrixStack() {
+    modelViewStack.push_back(glm::mat4(1.0));
+    projectionStack.push_back(glm::mat4(1.0));
+  }
+  
+  /*void addShaderProgram(GLuint program) {
+    shaderPrograms.push_back(program);
+  }*/
+  
+  void updateShader(GLuint program) {
+
+    int modelViewLoc = glGetUniformLocation(program, "modelView");
+    checkGlError2("GlmMatrixStack.updateShader()", "glGetUniformLocation(shaderPrograms[i], \"modelView\")");
+    
+    glUniformMatrix4fv(modelViewLoc, 1, GL_FALSE, glm::value_ptr(modelViewStack.back()));
+    checkGlError2("GlmMatrixStack.updateShader()", "glUniformMatrix4fv(modelViewLoc, ...)");
+    //printf("modelViewLoc %i\n", modelViewLoc);
+    
+    int projectionLoc = glGetUniformLocation(program, "projection");
+    checkGlError2("GlmMatrixStack.updateShader()", "glGetUniformLocation(shaderPrograms[i], \"projection\")");
+    
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionStack.back()));
+    checkGlError2("GlmMatrixStack.updateShader()", "glUniformMatrix4fv(projectionLoc, ...)");
+    //printf("projectionLoc %i\n", projectionLoc);
+  }
+  
+  /*void updateShaders() {
+    for(int i=0; i<shaderPrograms.size(); i++) {
+      int modelViewLoc = glGetUniformLocation(shaderPrograms[i], "modelView");
+      checkGlError2("GlmMatrixStack.updateShaders()", "glGetUniformLocation(shaderPrograms[i], \"modelView\")");
+      
+      glUniformMatrix4fv(modelViewLoc, 1, GL_FALSE, glm::value_ptr(modelViewStack.back()));
+      checkGlError2("GlmMatrixStack.updateShaders()", "glUniformMatrix4fv(modelViewLoc, ...)");
+      
+      int projectionLoc = glGetUniformLocation(shaderPrograms[i], "projection");
+      checkGlError2("GlmMatrixStack.updateShaders()", "glGetUniformLocation(shaderPrograms[i], \"projection\")");
+      
+      glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionStack.back()));
+      checkGlError2("GlmMatrixStack.updateShaders()", "glUniformMatrix4fv(projectionLoc, ...)");
+    }
+  }*/
+  
+  void setMatrixMode(MatrixMode matrixMode) {
+    this->matrixMode = matrixMode;
+    if(matrixMode == ModelView) {
+      glMatrixMode(GL_MODELVIEW);
+    }
+    else {
+      glMatrixMode(GL_PROJECTION);
+    }
+  }
+  
+  void pushMatrix() {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack.push_back(modelViewStack.back());
+    }
+    else {
+      projectionStack.push_back(projectionStack.back());
+    }
+    glPushMatrix();
+  }
+  void popMatrix() {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack.pop_back();
+    }
+    else {
+      projectionStack.pop_back();
+    }
+    glPopMatrix();
+  }
+
+  
+  void ortho(double left, double right, double bottom, double top, double near, double far) {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack[modelViewStack.size()-1] = glm::ortho(left, right, bottom, top, near, far);
+    }
+    else {
+      projectionStack[projectionStack.size()-1] = glm::ortho(left, right, bottom, top, near, far);
+    }
+    glOrtho(left, right, bottom, top, near, far);
+  }
+  
+  void perspective(double fow, double aspectRatio, double nearClip, double farClip) {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack[modelViewStack.size()-1] = glm::perspective(glm::radians(fow), aspectRatio, nearClip, farClip);
+    }
+    else {
+      projectionStack[projectionStack.size()-1] = glm::perspective(glm::radians(fow), aspectRatio, nearClip, farClip);
+    }
+  }
+  
+  void lookAt(double px, double py, double pz, double tx, double ty, double tz, double dx, double dy, double dz) {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack[modelViewStack.size()-1] = glm::lookAt(glm::vec3(px, py, pz), glm::vec3(tx, ty, tz), glm::vec3(dx, dy, dz));
+    }
+    else {
+      projectionStack[projectionStack.size()-1] = glm::lookAt(glm::vec3(px, py, pz), glm::vec3(tx, ty, tz), glm::vec3(dx, dy, dz));
+    }
+  }
+  
+  void loadIdentity() {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack[modelViewStack.size()-1] = glm::mat4(1);
+    }
+    else {
+      projectionStack[projectionStack.size()-1] = glm::mat4(1);
+    }
+    glLoadIdentity();
+  }
+  
+  void translate(double x, double y, double z) {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack[modelViewStack.size()-1] = glm::translate(modelViewStack.back(), glm::vec3(x, y, z));
+    }
+    else {
+      projectionStack[projectionStack.size()-1] = glm::translate(projectionStack.back(), glm::vec3(x, y, z));
+    }
+    glTranslated(x, y, z);
+  }
+  void scale(double x, double y, double z) {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack[modelViewStack.size()-1] = glm::scale(modelViewStack.back(), glm::vec3(x, y, z));
+    }
+    else {
+      projectionStack[projectionStack.size()-1] = glm::scale(projectionStack.back(), glm::vec3(x, y, z));
+    }
+    glScalef(x, y, z);
+  }
+  void rotate(double angle, double x, double y, double z) {
+    if(matrixMode == MatrixMode::ModelView) {
+      modelViewStack[modelViewStack.size()-1] = glm::rotate(modelViewStack.back(), (float)angle, glm::vec3(x, y, z));
+    }
+    else {
+      projectionStack[projectionStack.size()-1] = glm::rotate(projectionStack.back(), (float)angle, glm::vec3(x, y, z));
+    }
+    glRotatef(angle, x, y, z);
+  }
+
+
+};
+
+
+
+
 
 /* TODO
  * - wrap everything within classes

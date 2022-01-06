@@ -212,7 +212,11 @@ struct Instrument : public HierarchicalTextFileParser {
         str += "\n";
         i++;
         RecordedNote &note = pair.second;
-        str += format("notes %d, %f,  %f", note.numSequencerNotes, note.pitch, note.fullLengthInSecs);
+        double maxVal = 0;
+        for(int i=0; i<note.samples.size(); i++) {
+          maxVal = max(maxVal, note.samples[i].x);
+        }
+        str += format("notes %d, p %f, fl %f, tt %f, m %f, s %lu", note.numSequencerNotes, note.pitch, note.fullLengthInSecs, note.playTime, maxVal, note.samples.size());
       }
       Vec2d dim = textRenderer.getDimensions(str, 10);
       Vec2d size = dim + Vec2d(10, 10);
@@ -347,6 +351,9 @@ struct Instrument : public HierarchicalTextFileParser {
     for(int i=0; i<voices.size(); i++) {
       voices[i].init(&delayLine);
       voices[i].waveForm.initSampleEditor(sampleRate, framesPerBuffer);
+    }
+    for(int i=0; i<modulators.size(); i++) {
+      modulators[i].waveForm.initSampleEditor(sampleRate, framesPerBuffer);
     }
     for(int i=0; i<envelopes.size(); i++) {
       envelopes[i].outputIndex = i;
@@ -524,6 +531,15 @@ public:
     return false;
   }
 
+  bool isVocoder() {
+    for(int i=0; i<numVoices; i++) {
+      if(voices[i].audioSource == Voice::AudioSource::LineIn) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void reset() {
     
     stopAllNotesRequested = true;
@@ -541,10 +557,7 @@ public:
 
   // TODO maybe preinitialization of notes. Not nesessary to init max amount of mods/voices
   void initializeNote(SynthesisNote &note) {
-    //printf("... "); note.print();
-    /*if(note.pitch < 0) {
-      note.print();
-    }*/
+    
     note.frequency = noteToFreq(note.pitch);
     
     note.instrumentName = name;
@@ -559,66 +572,18 @@ public:
     note.phasesGM.resize(maxNumModulators);
     for(int i=0; i<maxNumModulators; i++) {
       modulators[i].waveForm.initPhase(note.phasesGM[i], note.pitch);
-      /*if(modulators[i].waveForm.phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
-        double p = modulators[i].waveForm.phaseStartLimits.getRandomDoubleFromTheRange();
-        note.phasesGM[i].set(p, p);
-        if(!modulators[i].waveForm.sameLeftAndRightPhase) {
-          note.phasesGM[i].y = modulators[i].waveForm.phaseStartLimits.getRandomDoubleFromTheRange();
-        }
-      }
-      else if(modulators[i].waveForm.phaseMode == WaveForm::PhaseMode::ZerosWithinRange) {
-        double p = modulators[i].waveForm.phaseZeroPoints[Random::getInt(0, modulators[i].waveForm.phaseZeroPoints.size()-1)];
-        note.phasesGM[i].set(p, p);
-        if(!modulators[i].waveForm.sameLeftAndRightPhase) {
-          note.phasesGM[i].y = modulators[i].waveForm.phaseZeroPoints[Random::getInt(0, modulators[i].waveForm.phaseZeroPoints.size()-1)];
-        }
-      }
-      else if(modulators[i].waveForm.phaseMode == WaveForm::PhaseMode::FirstZero) {
-        double p = modulators[i].waveForm.phaseZeroPoints[0];
-        note.phasesGM[i].set(p, p);
-      }
-      else if(modulators[i].waveForm.phaseMode == WaveForm::PhaseMode::LeftAndRight) {
-        note.phasesGM[i].set(modulators[i].waveForm.phaseStartLimits.x, modulators[i].waveForm.phaseStartLimits.y);
-      }*/
     }
 
     note.biquadFilter.init(biquadFilter, note.frequency, note.volume);
-    //note.biquadFilter.print();
-    //printf("note biquad %f %f - %f %f %f %f %f %f\n", note.biquadFilter.frequency, note.biquadFilter.bandwidth, note.biquadFilter.a0, note.biquadFilter.a1, note.biquadFilter.a2, note.biquadFilter.b0, note.biquadFilter.b1, note.biquadFilter.b2);
-    //note.voiceBiquadFilters[0].print();
-    //printf("%f %f %f %f %f %f %f %f\n", note.voiceBiquadFilters[0].frequency, note.voiceBiquadFilters[0].bandwidth, note.voiceBiquadFilters[0].a0, note.voiceBiquadFilters[0].a1, note.voiceBiquadFilters[0].a2, note.voiceBiquadFilters[0].b0, note.voiceBiquadFilters[0].b1, note.voiceBiquadFilters[0].b2);
-    
+
     note.phasesVoiceNew.resize(maxNumVoices);
     note.voiceBiquadFilters.resize(maxNumVoices);
     
-    // FIXME maybe
     for(int j=0; j<maxNumVoices; j++) {
       note.phasesVoiceNew[j].resize(maxUnison);
       note.voiceBiquadFilters[j].init(voices[j].biquadFilter, note.frequency, note.volume);
       for(int k=0; k<maxUnison; k++) {
         voices[j].waveForm.initPhase(note.phasesVoiceNew[j][k], note.pitch);
-        /*if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::AnyWithinRange) {
-          double p = voices[j].waveForm.phaseStartLimits.getRandomDoubleFromTheRange();
-          note.phasesVoiceNew[j][k].set(p, p);
-          if(!voices[j].waveForm.sameLeftAndRightPhase) {
-            note.phasesVoiceNew[j][k].y = voices[j].waveForm.phaseStartLimits.getRandomDoubleFromTheRange();
-          }
-        }
-        else if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::ZerosWithinRange) {
-          double p = voices[j].waveForm.phaseZeroPoints[Random::getInt(0, voices[j].waveForm.phaseZeroPoints.size()-1)];
-          note.phasesVoiceNew[j][k].set(p, p);
-          if(!voices[j].waveForm.sameLeftAndRightPhase) {
-            note.phasesVoiceNew[j][k].y = voices[j].waveForm.phaseZeroPoints[Random::getInt(0, voices[j].waveForm.phaseZeroPoints.size()-1)];
-          }
-        }
-        else if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::FirstZero) {
-          double p = voices[j].waveForm.phaseZeroPoints[0];
-          note.phasesVoiceNew[j][k].set(p, p);
-        }
-        else if(voices[j].waveForm.phaseMode == WaveForm::PhaseMode::LeftAndRight) {
-          note.phasesVoiceNew[j][k].set(voices[j].waveForm.phaseStartLimits.x, voices[j].waveForm.phaseStartLimits.y);
-        }
-        */
       }
     }
     
@@ -628,7 +593,7 @@ public:
     
     note.isInitialized = true;
     
-    unsigned char pitch = (unsigned char)clamp(note.pitch, 0.0, 127.0);
+    //unsigned char pitch = (unsigned char)clamp(note.pitch, 0.0, 127.0);
   }
 
   virtual void update() {
@@ -742,25 +707,17 @@ public:
       midiLatencyTestActivated = false;
     }*/
     
-    bool isRecordedNoteAvailable = recordedNotes.count({note.pitch, note.lengthInSecs});
-    if(isRecordedNoteAvailable) {
-      /*
-      RecordedNote 
-      if(note.isRecorded && note.isReadyToPlayRecorded) {
-        if(t * note.sampledNoteSampleRate < note.samples.size()) {
-          sampleOut += note.samples[(int)(t *  note.sampledNoteSampleRate)] * volume * note.volume;
-          return;
-        }
-        //if(t >= note.noteFullLengthSecs) {
-        else {
-          note.volume = -1.5;
-          return;
-        }
+    //bool isRecordedNoteAvailable = recordedNotes.count({note.pitch, note.lengthInSecs});
+    
+    if(note.recordedNote && note.recordedNote->isReadyToPlayRecorded) {
+      if(t * note.recordedNote->sampleRate < note.recordedNote->samples.size()) {
+        sampleOut += note.recordedNote->samples[(int)(t *  note.recordedNote->sampleRate)] * volume * note.volume;
+        note.recordedNote->playTime += dt;
       }
-      else if(note.noteActualLength >= 0 && t > note.noteActualLength) {
-        note.volume = -2;
-        return;
-      }*/
+      else {
+        note.volume = -1.5;
+      }
+      return;
     }
     
     if(note.noteFullLengthSecs >= 0 && t > note.noteFullLengthSecs) {
@@ -795,7 +752,13 @@ public:
         note.amplitudeModulatorOutputs, note.frequencyModulatorOutputs, note.envelopeOutputs);
     }
     for(int k=0; k<numVoices; k++) {
-      Vec2d modulatedFrequency(note.frequency, note.frequency);
+      double frequency = note.frequency;
+      
+      if(voices[k].keyMappingMode == Voice::KeyMappingMode::FixedFrequency) {
+        frequency = voices[k].fixedFrequency;
+      }
+      
+      Vec2d modulatedFrequency(frequency, frequency);
       if(voices[k].inputFM >= 0) {
         modulatedFrequency += note.frequencyModulatorOutputs[voices[k].inputFM] * note.frequency;
       }
@@ -808,14 +771,19 @@ public:
       
       // FIXME should happen probably in waveform class
       if(voices[k].audioSource == Voice::AudioSource::LineIn) { // I think this functionality go by the name Vocoder usually
+        if(!note.pitchChanger) {
+          printf("Warning at Instrument.getSample(), !note.pitchChanger, pitch %d\n", pitch);
+          note.pitchChanger = new PitchChanger();
+        }
         if(note.pitchChanger->delayLine.buffer.size() == 0) {
           printf("Warning at Instrument.getSample(), note.pitchChanger.delayLine.buffer.size() == 0, pitch %d\n", pitch);
+          note.pitchChanger->init(delayLine.sampleRate, 0.1, 0.1);
         }
         else {
           note.pitchChanger->transpositionAmount = modulatedFrequency.x / C4_FREQUENCY;
           Vec2d in = sampleIn;
           note.pitchChanger->apply(in);
-          out += in;
+          out += in * voices[k].volume;
         }
       }
       /*else if(voices[k].waveSource == Voice::WaveSource::Sample) {
@@ -922,48 +890,64 @@ public:
       VoicesPanelListener(VoicesPanel *voicesPanel) {
         this->voicesPanel = voicesPanel;
       }
-
-      bool draggingVoiceOrderSwap = false;
+      enum DraggingVoiceMode { NotDragging, SwapDragging, CopyDragging };
+      DraggingVoiceMode draggingVoice = DraggingVoiceMode::NotDragging;
       int voiceOrderSwapIndexA = 0;
       int voiceOrderSwapIndexB = 0;
       
       void onMousePressed(GuiElement *guiElement, Events &events) override {
         for(int i=0; i<voicesPanel->instrument->numVoices; i++) {
           if(voicesPanel->voicePreviewPanels[i]->isPointWithin(events.m)) {
-            draggingVoiceOrderSwap = true;
-            voiceOrderSwapIndexA = i;
-            voiceOrderSwapIndexB = i;
+            if(events.mouseButton == 1) {
+              draggingVoice = DraggingVoiceMode::SwapDragging;
+              voiceOrderSwapIndexA = i;
+              voiceOrderSwapIndexB = i;
+            }
+            if(events.mouseButton == 2) {
+              draggingVoice = DraggingVoiceMode::CopyDragging;
+              voiceOrderSwapIndexA = i;
+              voiceOrderSwapIndexB = i;
+            }
           }
         }
       }
       void onMouseReleased(GuiElement *guiElement, Events &events) override {
-        if(draggingVoiceOrderSwap) {
-          for(int i=0; i<voicesPanel->instrument->numVoices; i++) {
+        if(draggingVoice == DraggingVoiceMode::SwapDragging) {
+          voicesPanel->instrument->stopAllNotesRequested = true;
+          /*for(int i=0; i<voicesPanel->instrument->numVoices; i++) {
             if(voicesPanel->voicePreviewPanels[i]->isPointWithin(events.m)) {
               voiceOrderSwapIndexB = i;
             }
-          }
+          }*/
           if(voiceOrderSwapIndexA != voiceOrderSwapIndexB) {
-            Voice tmpVoice;
-            tmpVoice = voicesPanel->instrument->voices[voiceOrderSwapIndexA];
-            voicesPanel->instrument->voices[voiceOrderSwapIndexA] = voicesPanel->instrument->voices[voiceOrderSwapIndexB];
-            voicesPanel->instrument->voices[voiceOrderSwapIndexB] = tmpVoice;
-            voicesPanel->update();
-            //voicesPanel->instrument->voices[voiceOrderSwapIndexA].updatePanel();
-            //voicesPanel->instrument->voices[voiceOrderSwapIndexB].updatePanel();
             if(voicesPanel->instrument->voices[voiceOrderSwapIndexA].getPanel()) {
               voicesPanel->instrument->voices[voiceOrderSwapIndexA].removePanel(voicesPanel);
             }
             if(voicesPanel->instrument->voices[voiceOrderSwapIndexB].getPanel()) {
               voicesPanel->instrument->voices[voiceOrderSwapIndexB].removePanel(voicesPanel);
             }
-
+            Voice tmpVoice;
+            tmpVoice = voicesPanel->instrument->voices[voiceOrderSwapIndexA];
+            voicesPanel->instrument->voices[voiceOrderSwapIndexA] = voicesPanel->instrument->voices[voiceOrderSwapIndexB];
+            voicesPanel->instrument->voices[voiceOrderSwapIndexB] = tmpVoice;
+            voicesPanel->update();
           }
-          draggingVoiceOrderSwap = false;
         }
+        if(draggingVoice == DraggingVoiceMode::CopyDragging) {
+          voicesPanel->instrument->stopAllNotesRequested = true;
+          
+          if(voiceOrderSwapIndexA != voiceOrderSwapIndexB) {
+            if(voicesPanel->instrument->voices[voiceOrderSwapIndexB].getPanel()) {
+              voicesPanel->instrument->voices[voiceOrderSwapIndexB].removePanel(voicesPanel);
+            }
+            voicesPanel->instrument->voices[voiceOrderSwapIndexB] = voicesPanel->instrument->voices[voiceOrderSwapIndexA];
+            voicesPanel->update();
+          }
+        }
+        draggingVoice = DraggingVoiceMode::NotDragging;
       }
       void onMouseMotion(GuiElement *guiElement, Events &events) override {
-        if(draggingVoiceOrderSwap) {
+        if(draggingVoice != DraggingVoiceMode::NotDragging) {
           for(int i=0; i<voicesPanel->instrument->numVoices; i++) {
             if(voicesPanel->voicePreviewPanels[i]->isPointWithin(events.m)) {
               voiceOrderSwapIndexB = i;
@@ -1065,8 +1049,7 @@ public:
         }
         
         double minValue = 0, maxValue = 0;
-        double k = voice.waveForm.cyclesPerWaveTable > 1 ? ((currentWaveCycle++) % long(voice.waveForm.cyclesPerWaveTable)) : 0
-        ;
+        double k = voice.waveForm.cyclesPerWaveTable > 1 ? ((currentWaveCycle++) % long(voice.waveForm.cyclesPerWaveTable)) : 0;
         for(int x=0; x<size.x; x++) {
           //int i = ((double)(x/(size.x-1)) * voice.waveForm.waveTableSizeM1);
           double t = k + (double)x/(size.x-1.0);
@@ -1171,17 +1154,30 @@ public:
     }
 
     void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
-      if(voicesPanelListener->draggingVoiceOrderSwap && voicesPanelListener->voiceOrderSwapIndexA != voicesPanelListener->voiceOrderSwapIndexB) {
+      if(voicesPanelListener->draggingVoice != VoicesPanelListener::DraggingVoiceMode::NotDragging && voicesPanelListener->voiceOrderSwapIndexA != voicesPanelListener->voiceOrderSwapIndexB) {
         geomRenderer.strokeColor.set(1, 1, 1, 0.75);
         geomRenderer.fillColor.set(1, 1, 1, 0.75);
         geomRenderer.strokeType = 1;
         geomRenderer.strokeWidth = 1;
-        double x = absolutePos.x + voicePreviewPanels[0]->pos.x -2;
+        double x = absolutePos.x + voicePreviewPanels[0]->pos.x - 2 - 5;
         double y1 = absolutePos.y + voicePreviewPanels[voicesPanelListener->voiceOrderSwapIndexA]->pos.y + voicePreviewPanels[0]->size.y * 0.33;
         double y2 = absolutePos.y + voicePreviewPanels[voicesPanelListener->voiceOrderSwapIndexB]->pos.y + voicePreviewPanels[0]->size.y * 0.33;
+        
         geomRenderer.drawLine(x, y1, x, y2);
-        geomRenderer.drawRect(7, 7, x, y1);
-        geomRenderer.drawRect(7, 7, x, y2);
+        double t = y2 < y1 ? 1 : -1;
+
+        if(voicesPanelListener->draggingVoice == VoicesPanelListener::DraggingVoiceMode::SwapDragging) {
+          geomRenderer.drawLine(x+5, y2+t*5, x, y2);
+          geomRenderer.drawLine(x-5, y2+t*5, x, y2);
+          
+          geomRenderer.drawLine(x+5, y1-t*5, x, y1);
+          geomRenderer.drawLine(x-5, y1-t*5, x, y1);
+        }
+        if(voicesPanelListener->draggingVoice == VoicesPanelListener::DraggingVoiceMode::CopyDragging) {
+          geomRenderer.drawLine(x+5, y2+t*5, x, y2);
+          geomRenderer.drawLine(x-5, y2+t*5, x, y2);
+        }
+
       }
     }
 
@@ -1218,46 +1214,61 @@ public:
       ModulatorsPanelListener(ModulatorsPanel *modulatorsPanel) {
         this->modulatorsPanel = modulatorsPanel;
       }
-      bool draggingModulatorOrderSwap = false;
+      enum DraggingModulatorMode { NotDragging, SwapDragging, CopyDragging };
+      DraggingModulatorMode draggingModulator = DraggingModulatorMode::NotDragging;
       int modulatorOrderSwapIndexA = 0;
       int modulatorOrderSwapIndexB = 0;
       
       void onMousePressed(GuiElement *guiElement, Events &events) override {
         for(int i=0; i<modulatorsPanel->instrument->numModulators; i++) {
           if(modulatorsPanel->modulatorPreviewPanels[i]->isPointWithin(events.m)) {
-            draggingModulatorOrderSwap = true;
-            modulatorOrderSwapIndexA = i;
-            modulatorOrderSwapIndexB = i;
+            if(events.mouseButton == 1) {
+              draggingModulator = DraggingModulatorMode::SwapDragging;
+              modulatorOrderSwapIndexA = i;
+              modulatorOrderSwapIndexB = i;
+            }
+            if(events.mouseButton == 2) {
+              draggingModulator = DraggingModulatorMode::CopyDragging;
+              modulatorOrderSwapIndexA = i;
+              modulatorOrderSwapIndexB = i;
+            }
           }
         }
       }
       void onMouseReleased(GuiElement *guiElement, Events &events) override {
-        if(draggingModulatorOrderSwap) {
-          for(int i=0; i<modulatorsPanel->instrument->numModulators; i++) {
-            if(modulatorsPanel->modulatorPreviewPanels[i]->isPointWithin(events.m)) {
-              modulatorOrderSwapIndexB = i;
-            }
-          }
+        if(draggingModulator == DraggingModulatorMode::SwapDragging) {
+          modulatorsPanel->instrument->stopAllNotesRequested = true;
+          
           if(modulatorOrderSwapIndexA != modulatorOrderSwapIndexB) {
-            GenericModulator tmpModulator;
-            tmpModulator = modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA];
-            modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA] = modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB];
-            modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB] = tmpModulator;
-            modulatorsPanel->update();
-            //modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].updatePanel();
-            //modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB].updatePanel();
             if(modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].getPanel()) {
               modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].removePanel(modulatorsPanel);
             }
             if(modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB].getPanel()) {
               modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB].removePanel(modulatorsPanel);
             }
+            GenericModulator tmpModulator;
+            tmpModulator = modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA];
+            modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA] = modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB];
+            modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB] = tmpModulator;
+            modulatorsPanel->update();            
           }
-          draggingModulatorOrderSwap = false;
         }
+        if(draggingModulator == DraggingModulatorMode::CopyDragging) {
+          modulatorsPanel->instrument->stopAllNotesRequested = true;
+          
+          if(modulatorOrderSwapIndexA != modulatorOrderSwapIndexB) {
+            if(modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].getPanel()) {
+              modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA].removePanel(modulatorsPanel);
+            }
+            GenericModulator tmpModulator;
+            modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexB] = modulatorsPanel->instrument->modulators[modulatorOrderSwapIndexA];
+            modulatorsPanel->update();            
+          }
+        }
+        draggingModulator = DraggingModulatorMode::NotDragging;
       }
       void onMouseMotion(GuiElement *guiElement, Events &events) override {
-        if(draggingModulatorOrderSwap) {
+        if(draggingModulator != DraggingModulatorMode::NotDragging) {
           for(int i=0; i<modulatorsPanel->instrument->numModulators; i++) {
             if(modulatorsPanel->modulatorPreviewPanels[i]->isPointWithin(events.m)) {
               modulatorOrderSwapIndexB = i;
@@ -1486,17 +1497,29 @@ public:
     }
     
     void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
-      if(modulatorsPanelListener->draggingModulatorOrderSwap && modulatorsPanelListener->modulatorOrderSwapIndexA != modulatorsPanelListener->modulatorOrderSwapIndexB) {
+      if(modulatorsPanelListener->draggingModulator != ModulatorsPanelListener::DraggingModulatorMode::NotDragging && modulatorsPanelListener->modulatorOrderSwapIndexA != modulatorsPanelListener->modulatorOrderSwapIndexB) {
         geomRenderer.strokeColor.set(1, 1, 1, 0.75);
         geomRenderer.fillColor.set(1, 1, 1, 0.75);
         geomRenderer.strokeType = 1;
         geomRenderer.strokeWidth = 1;
-        double x = absolutePos.x + modulatorPreviewPanels[0]->pos.x - 2;
+        double x = absolutePos.x + modulatorPreviewPanels[0]->pos.x - 2 - 5;
         double y1 = absolutePos.y + modulatorPreviewPanels[modulatorsPanelListener->modulatorOrderSwapIndexA]->pos.y + modulatorPreviewPanels[0]->size.y * 0.33;
         double y2 = absolutePos.y + modulatorPreviewPanels[modulatorsPanelListener->modulatorOrderSwapIndexB]->pos.y + modulatorPreviewPanels[0]->size.y * 0.33;
+        
         geomRenderer.drawLine(x, y1, x, y2);
-        geomRenderer.drawRect(7, 7, x, y1);
-        geomRenderer.drawRect(7, 7, x, y2);
+        double t = y2 < y1 ? 1 : -1;
+
+        if(modulatorsPanelListener->draggingModulator == ModulatorsPanelListener::DraggingModulatorMode::SwapDragging) {
+          geomRenderer.drawLine(x+5, y2+t*5, x, y2);
+          geomRenderer.drawLine(x-5, y2+t*5, x, y2);
+          
+          geomRenderer.drawLine(x+5, y1-t*5, x, y1);
+          geomRenderer.drawLine(x-5, y1-t*5, x, y1);
+        }
+        if(modulatorsPanelListener->draggingModulator == ModulatorsPanelListener::DraggingModulatorMode::CopyDragging) {
+          geomRenderer.drawLine(x+5, y2+t*5, x, y2);
+          geomRenderer.drawLine(x-5, y2+t*5, x, y2);
+        }
       }
     }
 
@@ -1538,47 +1561,64 @@ public:
         this->envelopesPanel = envelopesPanel;
       }
       
-      bool draggingEnvelopeOrderSwap = false;
+      enum DraggingEnvelopeMode { NotDragging, SwapDragging, CopyDragging };
+      DraggingEnvelopeMode draggingEnvelope = DraggingEnvelopeMode::NotDragging;
+      
       int envelopeOrderSwapIndexA = 0;
       int envelopeOrderSwapIndexB = 0;
       
       void onMousePressed(GuiElement *guiElement, Events &events) override {
         for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
           if(envelopesPanel->envelopePreviewPanels[i]->isPointWithin(events.m)) {
-            draggingEnvelopeOrderSwap = true;
-            envelopeOrderSwapIndexA = i;
-            envelopeOrderSwapIndexB = i;
+            if(events.mouseButton == 1) {
+              draggingEnvelope = DraggingEnvelopeMode::SwapDragging;
+              envelopeOrderSwapIndexA = i;
+              envelopeOrderSwapIndexB = i;
+            }
+            if(events.mouseButton == 2) {
+              draggingEnvelope = DraggingEnvelopeMode::CopyDragging;
+              envelopeOrderSwapIndexA = i;
+              envelopeOrderSwapIndexB = i;
+            }
           }
         }
       }
       void onMouseReleased(GuiElement *guiElement, Events &events) override {
-        if(draggingEnvelopeOrderSwap) {
-          for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
-            if(envelopesPanel->envelopePreviewPanels[i]->isPointWithin(events.m)) {
-              envelopeOrderSwapIndexB = i;
-            }
-          }
+        if(draggingEnvelope == DraggingEnvelopeMode::SwapDragging) {
+          envelopesPanel->instrument->stopAllNotesRequested = true;
+          
           if(envelopeOrderSwapIndexA != envelopeOrderSwapIndexB) {
-            GenericEnvelope tmpEnvelope;
-            tmpEnvelope = envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA];
-            envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA] = envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB];
-            envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB] = tmpEnvelope;
-            envelopesPanel->update();
-            //envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA].updatePanel();
-            //envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].updatePanel();
             if(envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA].getPanel()) {
               envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA].removePanel(envelopesPanel);
             }
             if(envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].getPanel()) {
               envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].removePanel(envelopesPanel);
             }
-
+            
+            GenericEnvelope tmpEnvelope;
+            tmpEnvelope = envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA];
+            envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA] = envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB];
+            envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB] = tmpEnvelope;
+            envelopesPanel->update();
           }
-          draggingEnvelopeOrderSwap = false;
         }
+        if(draggingEnvelope == DraggingEnvelopeMode::CopyDragging) {
+          envelopesPanel->instrument->stopAllNotesRequested = true;
+          
+          if(envelopeOrderSwapIndexA != envelopeOrderSwapIndexB) {
+            if(envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].getPanel()) {
+              envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB].removePanel(envelopesPanel);
+            }
+            
+            GenericEnvelope tmpEnvelope;
+            envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexB] = envelopesPanel->instrument->envelopes[envelopeOrderSwapIndexA];
+            envelopesPanel->update();
+          }
+        }
+        draggingEnvelope = DraggingEnvelopeMode::NotDragging;
       }
       void onMouseMotion(GuiElement *guiElement, Events &events) override {
-        if(draggingEnvelopeOrderSwap) {
+        if(draggingEnvelope != DraggingEnvelopeMode::NotDragging) {
           for(int i=0; i<envelopesPanel->instrument->numEnvelopes; i++) {
             if(envelopesPanel->envelopePreviewPanels[i]->isPointWithin(events.m)) {
               envelopeOrderSwapIndexB = i;
@@ -1753,17 +1793,28 @@ public:
     }
 
     void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) override {
-      if(envelopesPanelListener->draggingEnvelopeOrderSwap && envelopesPanelListener->envelopeOrderSwapIndexA != envelopesPanelListener->envelopeOrderSwapIndexB) {
+      if(envelopesPanelListener->draggingEnvelope != EnvelopesPanelListener::DraggingEnvelopeMode::NotDragging && envelopesPanelListener->envelopeOrderSwapIndexA != envelopesPanelListener->envelopeOrderSwapIndexB) {
         geomRenderer.strokeColor.set(1, 1, 1, 0.75);
         geomRenderer.fillColor.set(1, 1, 1, 0.75);
         geomRenderer.strokeType = 1;
         geomRenderer.strokeWidth = 1;
-        double x = absolutePos.x + envelopePreviewPanels[0]->pos.x - 2;
+        double x = absolutePos.x + envelopePreviewPanels[0]->pos.x - 2 - 5;
         double y1 = absolutePos.y + envelopePreviewPanels[envelopesPanelListener->envelopeOrderSwapIndexA]->pos.y + envelopePreviewPanels[0]->size.y * 0.33;
         double y2 = absolutePos.y + envelopePreviewPanels[envelopesPanelListener->envelopeOrderSwapIndexB]->pos.y + envelopePreviewPanels[0]->size.y * 0.33;
         geomRenderer.drawLine(x, y1, x, y2);
-        geomRenderer.drawRect(7, 7, x, y1);
-        geomRenderer.drawRect(7, 7, x, y2);
+        double t = y2 < y1 ? 1 : -1;
+
+        if(envelopesPanelListener->draggingEnvelope == EnvelopesPanelListener::DraggingEnvelopeMode::SwapDragging) {
+          geomRenderer.drawLine(x+5, y2+t*5, x, y2);
+          geomRenderer.drawLine(x-5, y2+t*5, x, y2);
+          
+          geomRenderer.drawLine(x+5, y1-t*5, x, y1);
+          geomRenderer.drawLine(x-5, y1-t*5, x, y1);
+        }
+        if(envelopesPanelListener->draggingEnvelope == EnvelopesPanelListener::DraggingEnvelopeMode::CopyDragging) {
+          geomRenderer.drawLine(x+5, y2+t*5, x, y2);
+          geomRenderer.drawLine(x-5, y2+t*5, x, y2);
+        }
       }
     }
 
@@ -2609,6 +2660,37 @@ public:
 };
 
 
+static bool recordNoteSamples2(Instrument *instrument, RecordedNote &recordedNote, double maxLengthSecs) {
+  
+  double newLength = instrument->getNoteActualLength(recordedNote.lengthInSecs, false);
+  if(recordedNote.fullLengthInSecs != newLength) {
+    recordedNote.fullLengthInSecs = newLength;
+    recordedNote.isReadyToPlayRecorded = false;
+    recordedNote.fullLengthInSecs = min(recordedNote.fullLengthInSecs, maxLengthSecs);
+    recordedNote.lengthInSamples = int(recordedNote.fullLengthInSecs*recordedNote.sampleRate);
+    recordedNote.samples.assign(recordedNote.lengthInSamples, Vec2d::Zero);
+  }
+
+  SynthesisNote synthesisNote(recordedNote.sampleRate, recordedNote.pitch, 0, 1, -1);
+  synthesisNote.lengthInSecs = recordedNote.lengthInSecs;
+  instrument->initializeNote(synthesisNote);
+  
+  double dt = 1.0 / recordedNote.sampleRate;
+  double t = 0;
+  Vec2d tmp;
+  for(int i=0; i<recordedNote.samples.size(); i++) {
+    recordedNote.samples[i].set(0, 0);
+    instrument->getSample(recordedNote.samples[i], tmp, dt, t, synthesisNote, false);
+    t += dt;
+  }
+
+  recordedNote.isReadyToPlayRecorded = true;
+  //printf("Note recorded.\n");
+
+  return true;
+}
+
+
 //static bool recordNoteSamples(Instrument *instrument, SequencerNote *sequencerNote, int sampleRate, double maxLengthSecs) {
 static bool recordNoteSamples(Instrument *instrument, double pitch, double lengthInSecs, int sampleRate, double maxLengthSecs) {
 
@@ -2621,20 +2703,38 @@ static bool recordNoteSamples(Instrument *instrument, double pitch, double lengt
   if(alreadyExists) {
     return true;
   }
-  
-  SynthesisNote synthesisNote(sampleRate, pitch, 0, 1, -1);
-  synthesisNote.lengthInSecs = lengthInSecs;
-  instrument->initializeNote(synthesisNote);
+  recordedNote.isReadyToPlayRecorded = false;
   //note->isRecorded = false;
   recordedNote.sampleRate = sampleRate;
-  recordedNote.fullLengthInSecs = instrument->getNoteActualLength(lengthInSecs, false);
+  recordedNote.lengthInSecs = lengthInSecs;
   recordedNote.pitch = pitch;
+  recordedNote.fullLengthInSecs = instrument->getNoteActualLength(lengthInSecs, false);
   
-  //printf("Recording started %s, %d, %f\n", instrument->name.c_str(), note->sampledNoteSampleRate, note->noteFullLengthSecs);
   recordedNote.fullLengthInSecs = min(recordedNote.fullLengthInSecs, maxLengthSecs);
   
   recordedNote.lengthInSamples = int(recordedNote.fullLengthInSecs*sampleRate);
   recordedNote.samples.assign(recordedNote.lengthInSamples, Vec2d::Zero);
+
+  //recordNoteSamples2(instrument, recordedNote, maxLengthSecs);
+  
+  SynthesisNote synthesisNote(recordedNote.sampleRate, recordedNote.pitch, 0, 1, -1);
+  synthesisNote.lengthInSecs = recordedNote.lengthInSecs;
+  instrument->initializeNote(synthesisNote);
+  
+  double dt = 1.0 / recordedNote.sampleRate;
+  double t = 0;
+  Vec2d tmp;
+  for(int i=0; i<recordedNote.samples.size(); i++) {
+    instrument->getSample(recordedNote.samples[i], tmp, dt, t, synthesisNote, false);
+    t += dt;
+  }
+
+  recordedNote.isReadyToPlayRecorded = true;
+
+  //printf("Recording started %s, %d, %f\n", instrument->name.c_str(), note->sampledNoteSampleRate, note->noteFullLengthSecs);
+  /*SynthesisNote synthesisNote(sampleRate, pitch, 0, 1, -1);
+  synthesisNote.lengthInSecs = lengthInSecs;
+  instrument->initializeNote(synthesisNote);
   
   double dt = 1.0 / sampleRate;
   double t = 0;
@@ -2644,11 +2744,14 @@ static bool recordNoteSamples(Instrument *instrument, double pitch, double lengt
     t += dt;
   }
 
-  recordedNote.isReadyToPlayRecorded = true;
+  recordedNote.isReadyToPlayRecorded = true;*/
   //printf("Note recorded.\n");
 
   return true;
 }
+
+
+
 
 /*static bool recordNoteSamples(Instrument *instrument, Note *note, int sampleRate, double maxLengthSecs) {
   Note noteTmp = *note;

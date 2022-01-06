@@ -503,6 +503,8 @@ struct SynthSketch : public Sketch
   }
 
   void onInit() {
+    
+
     warpVisualizer.init();
     mandelbrotVisualizer.init(events, screenW, screenH);
     flameVisualizer.init(events, screenW, screenH, &guiRoot);
@@ -574,6 +576,11 @@ struct SynthSketch : public Sketch
     sendSysExMessageCmdTmpl.finishInitialization("sendSysExMessage");
     commandQueue.addCommandTemplate(&sendSysExMessageCmdTmpl);
 
+    if(!cliArgs.hasKey("-nobgeffect")) {
+      useGlobalOverlayTexture = true;
+    }
+
+    
     if(cliArgs.hasKey("-debug")) {
       isDebugMode = true;
     }
@@ -786,7 +793,7 @@ struct SynthSketch : public Sketch
   }
   void onUpdate() {
     //synth->onUpdateGetMidiMessages(midiInterface);
-
+    
     for(int i=0; i<commandQueue.commands.size(); i++) {
       Command *cmd = NULL;
 
@@ -1671,9 +1678,9 @@ struct SynthSketch : public Sketch
 
 
 
-    if(console.inputGrabbed) {
+    /*if(console.inputGrabbed) {
       console.render(sdlInterface);
-    }
+    }*/
 
 
 

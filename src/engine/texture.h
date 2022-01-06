@@ -45,6 +45,7 @@ struct Texture
 
   std::string name;
 
+  static SDLInterface *sdlInterface;
 
   virtual ~Texture() {
     if(textureID != 0) {
@@ -222,6 +223,7 @@ struct Texture
     }
     if(!defaultTextureShader) {
       defaultTextureShader = new GlShader("data/glsl/texture.vert", "data/glsl/textureColor.frag");
+      //Texture::sdlInterface->glmMatrixStack.addShaderProgram(defaultTextureShader->program);
     }
 
     overlayColor.set(1, 1, 1, 1);
@@ -454,9 +456,12 @@ struct Texture
     defaultTextureShader->setUniform4f("colorify", overlayColor);
     defaultTextureShader->setUniform1i("usePixelCoordinates", 0);
     defaultTextureShader->setUniform1i("flipY", 1);
+    //Texture::sdlInterface->glmMatrixStack.updateShader(defaultTextureShader->program);
+    
     this->activate(*defaultTextureShader, "tex", 0);
     Quadx *quad = useBottomRightUV ? defaultTextureQuadBottomRightUV : defaultTextureQuad;
     quad->setSize(w, h);
+    quad->shaderProgram = defaultTextureShader->program;
     quad->render(x, y, rotation, scaleX, scaleY);
     defaultTextureShader->deActivate();
     this->inactivate(0);
@@ -471,6 +476,7 @@ struct Texture
 
     defaultTextureShader->activate();
     defaultTextureShader->setUniform4f("colorify", 1, 1, 1, 1);
+    Texture::sdlInterface->glmMatrixStack.updateShader(defaultTextureShader->program);
     this->activate(*defaultTextureShader, "tex", 2);
     Quadx *quad = useBottomRightUV ? defaultTextureQuadBottomRightUV : defaultTextureQuad;
     if(!useClipArea) {

@@ -130,7 +130,9 @@ struct PostSketch : public Sketch
 
     clear(0, 0, 0, 1);
     textRenderer.setColor(1, 1, 1, 1);
-    glLoadIdentity();
+    
+    sdlInterface->glmMatrixStack.loadIdentity();
+    //glLoadIdentity();
 
     
     //geomRenderer.setZLayer(1);

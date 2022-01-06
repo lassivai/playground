@@ -16,3 +16,7 @@ int Instrument::instrumentCounter = 0;
 
 int GuiElement::screenW = 1;
 int GuiElement::screenH = 1;
+
+SDLInterface *SDLInterface::sdlInterface = NULL;
+SDLInterface *GuiElement::sdlInterface = NULL;
+SDLInterface *Texture::sdlInterface = NULL;

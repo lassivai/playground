@@ -97,23 +97,22 @@ struct PartialSet : public HierarchicalTextFileParser {
   static const int maxNumPartials = 100;
   static const int numPartialFactorPatternArgs = 6;
   static const int numPartialGainPatternArgs = 6;
+
+  enum Pattern { None, Equation1, DraggingGraphs };
+  const std::vector<std::string> patternNames = { "None", "Equation", "Graphs" };
   
   int numPartials = 1;
   std::vector<double> factors, gains;
   std::vector<double> factorParameters, gainParameters;
-  //std::vector<Vec2d> factorCurvePoints, gainCurvePoints;
   
   std::vector<std::vector<double>> pitchPartialAttenuations;
   
   double totalGain = 0;
   std::vector<double> pitchTotalGains;
 
-  enum Pattern { None, Equation1, DraggingGraphs };
-  const std::vector<std::string> patternNames = { "None", "Equation", "Graphs" };
   
   Pattern pattern = None;
   
-
 
   virtual ~PartialSet() {}
   
@@ -142,14 +141,23 @@ struct PartialSet : public HierarchicalTextFileParser {
     numPartials = 1;
   }
 
-  // FIXME
-  void operator=(const PartialSet &partialSet) {
+  PartialSet &operator=(const PartialSet &partialSet) {
     numPartials = partialSet.numPartials;
-    factors = std::vector<double>(partialSet.factors);
-    gains = std::vector<double>(partialSet.gains);
+    factors = partialSet.factors;
+    gains = partialSet.gains;
 
     totalGain = partialSet.totalGain;
+
+    factorParameters = partialSet.factorParameters;
+    gainParameters = partialSet.gainParameters;
     
+    pitchPartialAttenuations = partialSet.pitchPartialAttenuations;
+    
+    pitchTotalGains = partialSet.pitchTotalGains;
+
+    pattern = partialSet.pattern;
+    
+    return *this;
   }
 
   void applyPartialFactorPattern() {
@@ -424,10 +432,21 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     bool roundDraggingFactors = false;
     int roundToNearestDraggingFraction = 1;
     double clampMinDraggingFactor = 1.0;
+    bool isCurveSet = false;
 
     FactorDraggingGraphParameterPanel *parameterPanel = NULL;
     
-    bool isCurveSet = false;
+    
+    FactorDraggingGraph &operator=(const FactorDraggingGraph &p) {
+      DraggableGraph::operator=(p);
+      
+      roundDraggingFactors = p.roundDraggingFactors;
+      roundToNearestDraggingFraction = p.roundToNearestDraggingFraction;
+      clampMinDraggingFactor = p.clampMinDraggingFactor;
+      isCurveSet = p.isCurveSet;
+      
+      return *this;
+    }
 
     FactorDraggingGraph() : DraggableGraph() {
       w = 400; h = 400;
@@ -548,6 +567,11 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     
     GainDraggingGraphParameterPanel *parameterPanel = NULL;
 
+    GainDraggingGraph &operator=(const GainDraggingGraph &p) {
+      DraggableGraph::operator=(p);
+      return *this;
+    }
+
     GainDraggingGraph() : DraggableGraph() {
       w = 400; h = 400;
       title = "Partial gains";
@@ -572,7 +596,6 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
 
     virtual void onUpdate() {
       if(waveForm) {
-        printf("gain drag graph update\n");
         for(int i=0; i<min(numDataPoints, waveForm->partialSet.numPartials); i++) {
           waveForm->partialSet.gains[i] = getDataPointValue(i);
         }
@@ -619,9 +642,15 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       
     virtual void onUpdate() {
       //printf("(debugging) at PitchSmoothingnDraggingGraph::onUpdate() 1...\n");
+      //printf("on PitchSmoothingnDraggingGraph::onUpdate() %d - usePitchDependendGaussianSmoothing %d - %d\n", waveForm != NULL, waveForm != NULL && waveForm->usePitchDependendGaussianSmoothing, numDataPoints);
       if(waveForm && waveForm->usePitchDependendGaussianSmoothing) {
-        printf("pitch smoothing graph update\n");
-        for(int i=0; i<min(numDataPoints, 128); i++) {
+        //printf("pitch smoothing graph update\n");
+        /*if(waveForm->pitchSmoothings.size() != 128) {
+          printf("Warning at PitchSmoothingnDraggingGraph::onUpdate(), waveForm->pitchSmoothings.size() == %lu != 128\n", waveForm->pitchSmoothings.size());
+          waveForm->pitchSmoothings.resize(128); // Crashed several times at this point!!!(???)
+        }*/
+
+        for(int i=0; i<min(numDataPoints, waveForm->pitchSmoothings.size()); i++) {
           waveForm->pitchSmoothings[i] = getDataPointValue(i);
           //printf("|| %d  %f\n", i, waveForm->pitchSmoothings[i]);
         }
@@ -641,7 +670,6 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   };
   
   
-  std::vector<std::vector<double>> partialAttenuationValues;
   
   
   struct PartialAttenuationDraggingGraph : public DraggableGraph {
@@ -731,8 +759,19 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     bool instantUpdate = true;
     bool updateNeeded = false;
     
-    
     WaveForm *waveForm = NULL;
+    
+    PartialAttenuationDraggingGraph &operator=(const PartialAttenuationDraggingGraph &p) {
+      DraggableGraph::operator=(p);
+      
+      exponentialAttenuationFactor1 = p.exponentialAttenuationFactor1;
+      exponentialAttenuationFactor2 = p.exponentialAttenuationFactor2;
+      linearAttenuationFactor = p.linearAttenuationFactor;
+      
+      instantUpdate = p.instantUpdate;
+      updateNeeded = p.updateNeeded;
+      return *this;
+    }
     
     PartialAttenuationDraggingGraphParameterPanel *parameterPanel = NULL;
     
@@ -845,7 +884,11 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     virtual void onUpdate() {
 
       if(waveForm && waveForm->usePitchDependendGain) {
-        for(int i=0; i<min(numDataPoints, 128); i++) {
+        if(waveForm->pitchDependendGains.size() != 128) {
+          waveForm->pitchDependendGains.resize(128);
+          printf("Warning at PitchGainDraggingGraph::onUpdate(), waveForm->pitchDependendGains.size() != 128\n");
+        }
+        for(int i=0; i<min(numDataPoints, waveForm->pitchDependendGains.size()); i++) {
           waveForm->pitchDependendGains[i] = pow(getDataPointValue(i), 2.0);
           //printf("%d -> %f\n", i, waveForm->pitchDependendGains[i]);
         }
@@ -890,16 +933,6 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     }
   };*/
 
-
-
-  
-  FactorDraggingGraph factorDraggingGraph;
-  GainDraggingGraph gainDraggingGraph;
-  PitchSmoothingnDraggingGraph pitchSmoothingnDraggingGraph;
-  PartialAttenuationDraggingGraph partialAttenuationDraggingGraph;
-  PitchGainDraggingGraph pitchGainDraggingGraph;
-  //HarmonicBandwidthDraggingGraph harmonicBandwidthDraggingGraph;
-  
   
   void setNumPartials(int numPartials) {
     partialSet.setNumPartials(numPartials);
@@ -1016,8 +1049,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
 
   const std::vector<std::string> phaseModeNames = { "Random in range", "Zeros in range", "First zero", "Left and right"};
   enum PhaseMode { AnyWithinRange, ZerosWithinRange, FirstZero, LeftAndRight };
-  PhaseMode phaseMode = FirstZero;
-  std::vector<double> phaseZeroPoints;
+  
   
 
   struct FastNoiseWaveform : public FastNoise {
@@ -1031,6 +1063,11 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   const int maxPitchWaveTableSize = 1<<17;
 
   static const int maxNumArgs = 20;
+
+  const std::vector<int> antiAliasingPitches = {0, 60, 72, 84, 96, 108, 128};
+  const int antiAliasingCount = 6;
+
+
   
   Type type = Type::Sin;
 
@@ -1061,6 +1098,11 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   
   std::vector<double> waveTableGraphLeft, waveTableGraphRight;
 
+  PhaseMode phaseMode = FirstZero;
+  std::vector<double> phaseZeroPoints;
+  std::vector<std::vector<double>> phaseZeroPointsHB = std::vector<std::vector<double>>(antiAliasingCount);
+
+  
   Vec2d phaseStartLimits;
   bool sameLeftAndRightPhase = true;
 
@@ -1079,6 +1121,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   std::vector<double> pitchSmoothings = std::vector<double>(128, 0);
   bool usePitchDependendGaussianSmoothing = false;
   bool usePitchDependendPartialAttenuation = false;
+  
+  std::vector<std::vector<double>> partialAttenuationValues;
+  
   
   std::vector<double> pitchDependendGains = std::vector<double>(128, 1.0);
   bool usePitchDependendGain = false;
@@ -1101,6 +1146,11 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   
   bool readyToPrepareWaveTable = true;
 
+  
+  enum WaveTableSeamMode { NoSeam, LinearSeam /* etc. */};
+  const std::vector<std::string> waveTableSeamModeNames = { "No seam", "Linear seam"};
+  WaveTableSeamMode waveTableSeamMode = NoSeam;
+
   double cyclesPerWaveTable = 1;
   
   
@@ -1118,12 +1168,29 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   bool useHarmonicBandAntiAliasing = true;
   std::vector<std::vector<double>> harmonicBandWaveTables = std::vector<std::vector<double>>(6);
   //std::vector<int> antiAliasingPitches = {108, 96, 84, 72, 60, 0};
-  std::vector<int> antiAliasingPitches = {0, 60, 72, 84, 96, 108, 128};
-  int antiAliasingCount = 6;
   
   std::vector<double> harmonicBandPhases;
   
   
+  
+  
+  // TODO stereo sample wavetables
+  double sampleBufferLenghtInSeconds = 0;
+  std::vector<double> sampleBuffer = std::vector<double>(1, 0);
+  SampleEditor *sampleEditor = NULL;
+  int sampleRate = 0, framesPerBuffer = 0;
+  
+
+  FactorDraggingGraph factorDraggingGraph;
+  GainDraggingGraph gainDraggingGraph;
+  PitchSmoothingnDraggingGraph pitchSmoothingnDraggingGraph;
+  PartialAttenuationDraggingGraph partialAttenuationDraggingGraph;
+  PitchGainDraggingGraph pitchGainDraggingGraph;
+  //HarmonicBandwidthDraggingGraph harmonicBandwidthDraggingGraph;
+  
+
+  double oscillatorFrequencyFactor = 1.0;
+
 
   void prepareHarmonicBandConvolution() {
     if(harmonicBandConvolutionChanged) {
@@ -1225,9 +1292,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       
       int p = waveForm->antiAliasingCount - k - 1;
       
-      long maxInd = (frequencyLimit/noteToFreq(waveForm->antiAliasingPitches[p+1])) * waveForm->harmonicBandCyclesPerWaveTable;
+      long maxInd = (frequencyLimit/(noteToFreq(waveForm->antiAliasingPitches[p+1]) * waveForm->oscillatorFrequencyFactor)) * waveForm->harmonicBandCyclesPerWaveTable;
       
-      
+      // TODO instead of convolving the whole array, add impulse responses to the points of partials
       waveForm->harmonicBandConvolution->apply(waveForm->tempTableIn, waveForm->tempTableOut, prevMaxInd, maxInd);
       printf("%d: maxPitch %d, prevMaxInd %lu, maxInd %lu, maxIndex %lu\n", k, waveForm->antiAliasingPitches[p+1], prevMaxInd, maxInd, maxIndex);
       
@@ -1256,6 +1323,14 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       Vec2d limits = waveForm->normalizeWaveTable(waveForm->harmonicBandWaveTables[k]);
       printf("waveform min %f, max %f\n", limits.x, limits.y);
       
+      if(waveForm->numSteps > 1) {
+        long q = waveForm->numSteps * waveForm->harmonicBandCyclesPerWaveTable;
+        long r = waveForm->waveTableSize / q;
+        for(long i=waveForm->waveTableSize-1; i>0; i--) {
+          long j = long((double)i/waveForm->waveTableSize * q);
+          waveForm->harmonicBandWaveTables[k][i] = waveForm->harmonicBandWaveTables[k][j*r];
+        }
+      }
       /*if(waveForm->waveTable.size() != waveForm->harmonicBandWaveTableSize) {
         waveForm->setWaveTableSize(waveForm->harmonicBandWaveTableSize);
       }
@@ -1270,95 +1345,15 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       waveForm->normalizeWaveTable(waveForm->waveTable);*/
     }
     
+
+    
+    
     waveForm->updatePhase();
     
     printf("sin band wavetable prepared!\n");
     waveForm->preparationFinished();
   }
 
-  /*static void prepareHarmonicBandWaveTable(WaveForm *waveForm) {
-    //waveForm->stopAllNotesRequested = true;
-    //long sampleRate = 96000;
-    printf("starting to prepare sin band wavetable 1...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    
-    waveForm->prepareHarmonicBandConvolution();
-    
-    printf("starting to prepare sin band wavetable 2...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    //if(harmonicBandWaveTable.size() != harmonicBandWaveTableSize) {
-    //  harmonicBandWaveTable.resize(harmonicBandWaveTableSize);
-    //}
-    //if(!waveForm->harmonicBandFReverseFFTW.isInitialized() || waveForm->harmonicBandFReverseFFTW.getSize() != waveForm->harmonicBandWaveTableSize) {
-      //waveForm->harmonicBandFReverseFFTW.initialize(waveForm->harmonicBandWaveTableSize, false, FFTW3Interface::Reverse);
-      //waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
-      //waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
-    //}
-    if(waveForm->tempTableIn.size() != waveForm->harmonicBandWaveTableSize) {
-      waveForm->tempTableIn.resize(waveForm->harmonicBandWaveTableSize);
-      waveForm->tempTableOut.resize(waveForm->harmonicBandWaveTableSize);
-    }
-    
-    printf("starting to prepare sin band wavetable 3...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    
-    long maxIndex = 0;
-    
-    memset(waveForm->tempTableIn.data(), 0, sizeof(waveForm->tempTableIn[0]) * waveForm->tempTableIn.size());
-    memset(waveForm->tempTableOut.data(), 0, sizeof(waveForm->tempTableOut[0]) * waveForm->tempTableOut.size());
-    
-    printf("cycles %f\n", waveForm->harmonicBandCyclesPerWaveTable);
-    
-    for(int i=0; i<waveForm->partialSet.numPartials; i++) {
-      long freq = waveForm->harmonicBandCyclesPerWaveTable * waveForm->partialSet.factors[i];
-      if(freq >= 0 && freq < waveForm->waveTableSize*0.5) {
-        waveForm->tempTableIn[freq] = waveForm->partialSet.gains[i];
-        maxIndex = max(maxIndex, freq + waveForm->harmonicBandConvolution->getFilterMaxSize());
-      }
-    }
-    printf("starting to prepare sin band wavetable 4...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    
-    // TODO apply only in the areas of partials
-    waveForm->harmonicBandConvolution->apply(waveForm->tempTableIn, waveForm->tempTableOut, maxIndex);
-    
-    printf("starting to prepare sin band wavetable 5...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    
-    for(int i=0; i<waveForm->waveTableSize; i++) {
-      waveForm->harmonicBandFReverseFFTW.setReverseInput(i, waveForm->tempTableOut[i], Random::getDouble(0, 2*PI));
-    }
-    printf("starting to prepare sin band wavetable 6...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    
-    waveForm->harmonicBandFReverseFFTW.transformReverse();
-    
-    printf("starting to prepare sin band wavetable 7...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    
-    if(waveForm->waveTable.size() != waveForm->harmonicBandWaveTableSize) {
-      waveForm->setWaveTableSize(waveForm->harmonicBandWaveTableSize);
-    }
-    
-    printf("starting to prepare sin band wavetable 8...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    
-    for(long i=0; i<waveForm->waveTableSize; i++) {
-      waveForm->waveTable[i] = waveForm->harmonicBandFReverseFFTW.reverseOutput[i];
-    }
-    
-    printf("starting to prepare sin band wavetable 9...\n");
-    if(waveForm->waveTablePreparationStopRequested) return;
-    waveForm->waveTable[waveForm->waveTableSizeM1] = waveForm->waveTable[0];
-    
-    waveForm->normalizeWaveTable(waveForm->waveTable);
-    
-    waveForm->updatePhase();
-    
-    printf("sin band wavetable prepared!\n");
-    waveForm->preparationFinished();
-  }*/
-  
   
   void setWaveTableSize(int size) {
     stopAllNotesRequested = true;
@@ -1378,11 +1373,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   }
   
   
-  // TODO stereo sample wavetables
-  double sampleBufferLenghtInSeconds = 0;
-  std::vector<double> sampleBuffer = std::vector<double>(1, 0);
-  SampleEditor *sampleEditor = NULL;
-  int sampleRate = 0, framesPerBuffer = 0;
+
   void initSampleEditor(int sampleRate, int framesPerBuffer) {
     this->sampleRate = sampleRate;
     this->framesPerBuffer = framesPerBuffer;
@@ -1417,10 +1408,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     updateG
   }*/
   
-  
-  enum WaveTableSeamMode { NoSeam, LinearSeam /* etc. */};
-  const std::vector<std::string> waveTableSeamModeNames = { "No seam", "Linear seam"};
-  WaveTableSeamMode waveTableSeamMode = NoSeam;
+
   
   // it might be simple as that
   void seamWaveTableEnds(std::vector<double> &table) {
@@ -1571,7 +1559,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     waveTableFrequency = w.waveTableFrequency;
     waveTableSize = w.waveTableSize;
     waveTableSizeM1 = w.waveTableSizeM1;
-    waveTableMode = Single;
+    waveTableMode = w.waveTableMode;
     waveTable = w.waveTable;
     pitchWaveTables = w.pitchWaveTables;
     waveTableNew = w.waveTableNew;
@@ -1582,6 +1570,9 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     numWaveFormArgs =w.numWaveFormArgs;
     waveTableGraphLeft = w.waveTableGraphLeft;
     waveTableGraphRight = w.waveTableGraphRight;
+    phaseMode = w.phaseMode;
+    phaseZeroPoints = w.phaseZeroPoints;
+    phaseZeroPointsHB = w.phaseZeroPointsHB;
     phaseStartLimits = w.phaseStartLimits;
     sameLeftAndRightPhase = w.sameLeftAndRightPhase;
     partialSet = w.partialSet;
@@ -1593,6 +1584,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     pitchSmoothings = w.pitchSmoothings;
     usePitchDependendGaussianSmoothing = w.usePitchDependendGaussianSmoothing;
     usePitchDependendPartialAttenuation = w.usePitchDependendPartialAttenuation;
+    partialAttenuationValues = w.partialAttenuationValues;
     pitchDependendGains = w.pitchDependendGains;
     usePitchDependendGain = w.usePitchDependendGain;
     stopAllNotesRequested = w.stopAllNotesRequested;
@@ -1607,10 +1599,23 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     cyclesPerWaveTable = w.cyclesPerWaveTable;
     
     waveTableSeamMode = w.waveTableSeamMode;
+    
     minHarmonicSmoothing = w.minHarmonicSmoothing;
     maxHarmonicSmoothing = w.maxHarmonicSmoothing;
     harmonicSmoothingSlope = w.harmonicSmoothingSlope;
     harmonicSmoothingPower = w.harmonicSmoothingPower;
+    harmonicBandCyclesPerWaveTable = w.harmonicBandCyclesPerWaveTable;
+    harmonicBandPhases = w.harmonicBandPhases;
+    harmonicBandWaveTableSize = w.harmonicBandWaveTableSize;
+    harmonicBandConvolutionChanged = true;
+    harmonicBandWaveTables = w.harmonicBandWaveTables;
+    
+    
+    factorDraggingGraph = w.factorDraggingGraph;
+    gainDraggingGraph = w.gainDraggingGraph;
+    pitchSmoothingnDraggingGraph = w.pitchSmoothingnDraggingGraph;
+    partialAttenuationDraggingGraph = w.partialAttenuationDraggingGraph;
+    pitchGainDraggingGraph = w.pitchGainDraggingGraph;
     
     return *this;
   }
@@ -1662,17 +1667,21 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       }
     }
   }
-  //std::vector<Vec2d> phaseStartLimitsHB = std::vector<Vec2d>(antiAliasingCount);
-  std::vector<std::vector<double>> phaseZeroPointsHB = std::vector<std::vector<double>>(antiAliasingCount);
   
   void updateHarmonicBandPhases() {
     for(int k=0; k<antiAliasingCount; k++) {
       phaseZeroPointsHB[k].clear();
-      double previousValue = harmonicBandWaveTables[k][waveTableSizeM1-1];
       
-      for(int i=0; i<waveTableSizeM1; i++) {
+      // FIXME This might cause unexpected behavior
+      //int n = waveTableSizeM1;
+      int n = harmonicBandWaveTables[k].size()-1;
+      if(n < 1) return;      
+       
+      double previousValue = harmonicBandWaveTables[k][n-1];
+      
+      for(int i=0; i<n; i++) {
         if(harmonicBandWaveTables[k][i] == 0 || sign(previousValue) != sign(harmonicBandWaveTables[k][i])) {
-          double x = (double)i/waveTableSizeM1*cyclesPerWaveTable;
+          double x = (double)i/n*cyclesPerWaveTable;
           if(phaseMode != PhaseMode::ZerosWithinRange || (x >= phaseStartLimits.x*cyclesPerWaveTable && x <= phaseStartLimits.y*cyclesPerWaveTable)) {
             phaseZeroPointsHB[k].push_back(x);
           }
@@ -1971,6 +1980,8 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   //bool showUpdateTime = true;
   //std::mutex *mutex1 = NULL;
   
+  
+  
   void prepareWaveTable() {
     if(!readyToPrepareWaveTable) return;
 
@@ -2028,7 +2039,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       pitchWaveTables.resize(128);
     }
     if(pitchWaveTables[0].size() != waveTableSize && pitchTables && type != Type::SinBands) {
-      for(int i=0; i<128; i++) {
+      for(int i=0; i<pitchWaveTables.size(); i++) {
         pitchWaveTables[i].resize(waveTableSize);
       }
     }
@@ -2331,9 +2342,12 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   double getSample(double x, unsigned char pitch = 0) {
     //double gain = usePitchDependendGain ? pitchDependendGains[pitch] : 1.0;
     double gain = 1;
+        
     x /= cyclesPerWaveTable;
     
     if(type == Type::SinBands) {
+      //printf("debugging at Waveform::getSample, sinbands, x %f, numSteps * cyclesPerWaveTable == %f\n", x, numSteps * cyclesPerWaveTable);
+      
       if(pitch < antiAliasingPitches[1]) {
         return gain * harmonicBandWaveTables[5][int(x * waveTableSizeM1) % waveTableSizeM1];
       }
@@ -2353,7 +2367,8 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         return gain * harmonicBandWaveTables[0][int(x * waveTableSizeM1) % waveTableSizeM1];
       }
     }
-    
+
+
     if(usePitchDependendGaussianSmoothing && usePitchDependendPartialAttenuation) {
       if(waveTableMode == WaveTableMode::Single) {
         double f = x * waveTableSizeM1;
@@ -2531,7 +2546,12 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   static inline double getWaveFormStatic(double t, double frequency, WaveForm *waveForm) {
 
     if(waveForm->numSteps > 1) {
-      t = floor(t * waveForm->numSteps) / waveForm->numSteps;
+      if(waveForm->type == WaveForm::Type::GradientNoise) {
+        t = floor(t * waveForm->numSteps * waveForm->cyclesPerWaveTable) / (waveForm->numSteps * waveForm->cyclesPerWaveTable);
+      }
+      else {
+        t = floor(t * waveForm->numSteps) / waveForm->numSteps;
+      }
     }
     
     const std::vector<double> &args = waveForm->waveFormArgs[waveForm->type];
@@ -2852,7 +2872,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     waveTableSizeGui->incrementMode = NumberBox::IncrementMode::Power;
     waveTableSizeGui->keyboardInputEnabled = false;
 
-    numStepsGui = new NumberBox("Step count", numSteps, NumberBox::INTEGER, 1, 100, layoutPlacer, 12);
+    numStepsGui = new NumberBox("Step count", numSteps, NumberBox::INTEGER, 1, 1<<30, layoutPlacer, 12);
     numStepsGui->incrementMode = NumberBox::IncrementMode::Linear;
 
     numPartialsGui = new NumberBox("Partials", partialSet.numPartials, NumberBox::INTEGER, 1, PartialSet::maxNumPartials, layoutPlacer, 12);
@@ -3147,6 +3167,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
         guiElement->getValue((void*)&waveForm->usePitchDependendPartialAttenuation);
         waveForm->stopAllNotesRequested = true;
         waveForm->prepareWaveTable();
+      }
+
+      if(guiElement == waveForm->pitchDependendGainGui) {
+        guiElement->getValue((void*)&waveForm->usePitchDependendGain);
       }
 
       if(guiElement == waveForm->phaseModeGui) {
@@ -3758,6 +3782,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
   }
 
   virtual void decodeParameters() {
+    printf("DEBUGGING WaveForm::decodeParameters()...\n");
     //printToTerminal();
     readyToPrepareWaveTable = false;
     
@@ -3801,6 +3826,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     
     getNumericParameter("waveformParameters", waveFormArgs[type], false);
     getVectorParameter("phaseOffsets", phaseStartLimits);
+    waveTableSize = 2048;
     getNumericParameter("waveTableSize", waveTableSize);
     waveTableSize = clamp(waveTableSize, minWaveTableSize, maxWaveTableSize);
     getNumericParameter("lockedStereoPhase", sameLeftAndRightPhase);
@@ -3816,6 +3842,13 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     getNumericParameter("harmonicSmoothingSlope", harmonicSmoothingSlope);
     getNumericParameter("harmonicSmoothingPower", harmonicSmoothingPower);
     
+    // FIXME
+    factorDraggingGraph.waveForm = this;
+    gainDraggingGraph.waveForm = this;
+    partialAttenuationDraggingGraph.waveForm = this;
+    pitchSmoothingnDraggingGraph.waveForm = this;
+    pitchGainDraggingGraph.waveForm = this;
+    
     harmonicBandConvolutionChanged = true;
     
     // FIXME
@@ -3827,7 +3860,10 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       partialAttenuationDraggingGraph.update();
     }
     if(usePitchDependendGaussianSmoothing) {
+      printf("on WaveForm::decodeParameters() 1...\n");
+      printf("usePitchDependendGaussianSmoothing == %d\n", usePitchDependendGaussianSmoothing);
       pitchSmoothingnDraggingGraph.update();
+      printf("on WaveForm::decodeParameters() 2...\n");
     }
     if(usePitchDependendGain) {
       pitchGainDraggingGraph.update();
@@ -3839,7 +3875,7 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
     
     
     readyToPrepareWaveTable = true;
-    prepareWaveTable();
+    //prepareWaveTable();
   }
 
   virtual void encodeParameters() {
@@ -3922,12 +3958,15 @@ struct WaveForm : public PanelInterface, public HierarchicalTextFileParser
       return gainDraggingGraph.parse(content, blockStartInd, blockLevel);
     }
     if(blockName == PitchSmoothingnDraggingGraph::getClassName()) {
+      pitchSmoothingnDraggingGraph.waveForm = NULL;
       return pitchSmoothingnDraggingGraph.parse(content, blockStartInd, blockLevel);
     }
     if(blockName == PartialAttenuationDraggingGraph::getClassName()) {
+      partialAttenuationDraggingGraph.waveForm = NULL;
       return partialAttenuationDraggingGraph.parse(content, blockStartInd, blockLevel);
     }
     if(blockName == PitchGainDraggingGraph::getClassName()) {
+      pitchGainDraggingGraph.waveForm = NULL; // FIXME these NULLs prevent dragging graph decodeParameters->update->onUpdate, which causes unexplaineble crash
       return pitchGainDraggingGraph.parse(content, blockStartInd, blockLevel);
     }
     return 0;
