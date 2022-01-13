@@ -26,7 +26,7 @@ instrument {
     bandwidthKeyTracking: 0
   }
   voice {
-    volume: 0.2
+    volume: 0.07
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -42,9 +42,9 @@ instrument {
       waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: First zero
-      waveTableSize: 65536
+      waveTableSize: 2048
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.000442512, 0.000442512
+      phaseOffsets: 0.00048852, 0.00048852
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
@@ -76,7 +76,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.2
+    volume: 0.07
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -121,7 +121,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.2
+    volume: 0.07
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0

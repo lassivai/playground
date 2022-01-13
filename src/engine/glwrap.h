@@ -26,7 +26,7 @@ static void glSetup() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL); 
+  glDepthFunc(GL_LEQUAL);
   //glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
   //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 
@@ -48,8 +48,8 @@ static void glSetup(SDLInterface *sdlInterface) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL); 
-  
+  glDepthFunc(GL_LEQUAL);
+
   sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::Projection);
   sdlInterface->glmMatrixStack.loadIdentity();
   sdlInterface->glmMatrixStack.ortho(0, sdlInterface->screenW, sdlInterface->screenH, 0, -100, 100);

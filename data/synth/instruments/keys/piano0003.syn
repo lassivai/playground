@@ -15,7 +15,7 @@ instrument {
     bandwidthFrequency: 0.100000001
   }
   voice {
-    volume: 0.18
+    volume: 0.25
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0

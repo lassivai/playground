@@ -19,12 +19,12 @@ struct TextBox : public GuiElement
   bool drawInputBackground = true, drawInputBorder = true;
   Vec4d inputBackgroundColor;
   Vec4d inputBorderColor;
-  
+
   Vec4d inputBackgroundColorSelected;
   Vec4d inputBorderColorSelected;
 
   Vec4d invalidTextColor;
-  
+
   double inputBorderWidth = 1;
   bool isInputBorder = false;
   Vec2d inputPadding;
@@ -48,14 +48,14 @@ struct TextBox : public GuiElement
 
   double fadeDuration = 0.2;
   double hoverTimer = 0, pressedTimer = 0;
-  
+
   bool isValidValue = true;
-  
-  
+
+
   virtual void onUpdate(double time, double dt) {
     hoverTimer += isMouseHover ? dt : -dt;
     hoverTimer = clamp(hoverTimer, 0, fadeDuration);
-    
+
     if(hoverTimer > 0 && !isMouseHover) {
       hoverTimer -= dt;
       hoverTimer = clamp(hoverTimer, 0, fadeDuration);
@@ -66,7 +66,7 @@ struct TextBox : public GuiElement
       hoverTimer = clamp(hoverTimer, 0, fadeDuration);
       prerenderingNeeded = true;
     }
-    
+
     if(pressedTimer > 0 && !isInputGrabbed) {
       pressedTimer -= dt;
       pressedTimer = clamp(pressedTimer, 0, fadeDuration);
@@ -81,7 +81,7 @@ struct TextBox : public GuiElement
     //pressedTimer = clamp(pressedTimer, 0, fadeDuration);
 
   }
-  
+
 
   virtual ~TextBox() {
     if(shadowTexture) delete shadowTexture;
@@ -107,15 +107,42 @@ struct TextBox : public GuiElement
     inputBackgroundColorSelected.set(0.04, 0.04, 0.04, 0.92);
     inputBorderColorSelected.set(0.75, 0.75, 0.75, 0.8);
     invalidTextColor.set(0.9, 0.9, 0.9, 0.3);
-    
+
     drawInputBorder = false;
     drawShadow = true;
-    
+
     blockParentInputOnMouseHover = true;
   }
-  
+
+  TextBox(const std::string &labelText, const std::string &inputText, int labelTextSize, int inputTextSize, double x, double y, int inputTextWidth = 15, double paddingX = 0, double paddingY = 0, double inputPaddingX = 5, double inputPaddingY = 0) : GuiElement(labelText) {
+    this->labelText = labelText;
+    this->inputText = inputText;
+    this->pos.set(x, y);
+    this->padding.set(paddingX, paddingY);
+    this->inputPadding.set(inputPaddingX, inputPaddingY);
+    this->inputTextWidth = inputTextWidth;
+    gap = labelTextSize;
+    labelColor.set(0.8, 0.8, 0.8, 0.8);
+    inputColor.set(0.9, 0.9, 0.9, 0.9);
+    inputColorSelected.set(1, 1, 1, 1);
+    inputBackgroundColor.set(0.12, 0.12, 0.12, 0.85);
+    inputBorderColor.set(0.5, 0.5, 0.5, 0.8);
+    inputBackgroundColorSelected.set(0.04, 0.04, 0.04, 0.92);
+    inputBorderColorSelected.set(0.75, 0.75, 0.75, 0.8);
+    invalidTextColor.set(0.9, 0.9, 0.9, 0.3);
+
+    drawInputBorder = false;
+    drawShadow = true;
+
+    this->labelTextSize = labelTextSize;
+    this->inputTextSize = inputTextSize;
+
+
+    blockParentInputOnMouseHover = true;
+  }
+
   bool absoluteInputTextWidth = false;
-  
+
   TextBox(const std::string &labelText, const std::string &inputText, LayoutPlacer &layoutPlacer, int inputTextWidth = 15, double paddingX = 0, double paddingY = 0, double inputPaddingX = 5, double inputPaddingY = 0) : GuiElement(labelText) {
     this->labelText = labelText;
     this->inputText = inputText;
@@ -132,18 +159,18 @@ struct TextBox : public GuiElement
     inputBackgroundColorSelected.set(0.04, 0.04, 0.04, 0.92);
     inputBorderColorSelected.set(0.75, 0.75, 0.75, 0.8);
     invalidTextColor.set(0.9, 0.9, 0.9, 0.3);
-    
+
     drawInputBorder = false;
     drawShadow = true;
-    
+
     blockParentInputOnMouseHover = true;
-    
+
     this->size.y = 23;
-    
+
     absoluteInputTextWidth = true;
     layoutPlacer.setPosition(this);
   }
-  
+
   void setTextSize(int textSize) {
     labelTextSize = textSize;
     inputTextSize = textSize;
@@ -197,11 +224,11 @@ struct TextBox : public GuiElement
 
   void onPrepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
     //GuiElement::onPrepare(geomRenderer, textRenderer);
-    
+
     Vec2d labelSize = labelText.size() == 0 ? Vec2d(0, 0) : textRenderer.getDimensions(labelText, labelTextSize);
-    
+
     double gap = labelText.size() > 0 ? this->gap : 0;
-    
+
     if(absoluteInputTextWidth) {
       inputSize.x = max(0, size.x - labelSize.x - gap);
       inputSize.y = labelSize.y* 0.71;
@@ -239,7 +266,7 @@ struct TextBox : public GuiElement
       geomRenderer.strokeColor.set(1, 1, 1, 0.5);
       geomRenderer.strokeType = 1;
       geomRenderer.strokeWidth = 1;
-      
+
       if(absoluteInputTextWidth) {
         Vec2d d = textRenderer.getDimensions(inputText, inputTextSize);
         geomRenderer.drawLine(absolutePos.x + size.x - 6 - d.x + cursorX, absolutePos.y + 2, absolutePos.x + size.x - 6 - d.x + cursorX, absolutePos.y + inputSize.y - 4);
@@ -249,12 +276,12 @@ struct TextBox : public GuiElement
         geomRenderer.drawLine(ip.x + cursorX + textAlignmentX, ip.y + 2, ip.x + cursorX + textAlignmentX, ip.y + inputSize.y - 4);
       }
     }
-    
+
     /*Vec4d col = mix(Vec4d(1, 1, 1, 0), Vec4d(1, 1, 1, 1), hoverTimer/fadeDuration);
     if(col.w > 0) {
       glowTexture->render(absolutePos+glowPosition, col);
     }*/
-    
+
     /*Vec4d col2;
 
     if(value && !isInputGrabbed) {
@@ -265,10 +292,10 @@ struct TextBox : public GuiElement
     }
 
     texture->render(rect.pos+absolutePos, col2);*/
-    
-    
+
+
   }
-  
+
   virtual void onPrepareShadowTexture(GeomRenderer &geomRenderer) {
     if(drawShadow) {
       if(!shadowTexture) {
@@ -280,7 +307,7 @@ struct TextBox : public GuiElement
       }
       shadowPosition.set(inputPos + padding);
     }
-    
+
     /*if(drawGlow) {
       if(!glowTexture) {
         glowTexture = createBoxShadowTexture(geomRenderer, inputSize.x, inputSize.y, glowWidth);
@@ -294,7 +321,7 @@ struct TextBox : public GuiElement
   }
 
   void onPrerender(GeomRenderer &geomRenderer, TextGl &textRenderer, const Vec2d &displacement) {
-    
+
     if(drawInputBackground || drawInputBorder) {
       geomRenderer.texture = NULL;
       //geomRenderer.fillColor = drawInputBackground ? (isInputGrabbed ? inputBackgroundColorSelected : inputBackgroundColor) : Vec4d::Zero;
@@ -313,13 +340,13 @@ struct TextBox : public GuiElement
 
       geomRenderer.drawRect(round(inputSize), round(displacement + inputPos + padding + inputSize*0.5));
     }
-
+    //textRenderer.setColor(1, 0, 0, 1);
     textRenderer.setColor(labelColor);
     textRenderer.print(labelText, displacement + padding, labelTextSize);
     //Vec2d ip = inputPos + padding + Vec2d(-inputPadding.x, inputPadding.y);
     Vec2d ip = inputPos + padding + inputPadding;
     textRenderer.setColor(isInputGrabbed ? inputColorSelected : (isValidValue ? inputColor : invalidTextColor));
-    
+
     if(absoluteInputTextWidth) {
       Vec2d d = textRenderer.getDimensions(inputText, inputTextSize);
       textRenderer.print(inputText, displacement + Vec2d(size.x - 6 - d.x, 0), inputTextSize);

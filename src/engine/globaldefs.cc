@@ -20,3 +20,7 @@ int GuiElement::screenH = 1;
 SDLInterface *SDLInterface::sdlInterface = NULL;
 SDLInterface *GuiElement::sdlInterface = NULL;
 SDLInterface *Texture::sdlInterface = NULL;
+
+int  GuiElement::defaultFontSize = 10, GuiElement::actualFontSize = 10;
+double GuiElement::fontSizeRatio = 1, GuiElement::fontHeightRatio = 1;
+GuiElement *GuiElement::root = NULL;

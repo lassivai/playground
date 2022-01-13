@@ -89,7 +89,7 @@ void main(){
 
   vec4 color1 = texture(texture1, texCoord);
   vec4 color2 = texture(texture2, texCoord);
-  
+
   int blendMode = 2;
   double blend = 0.9;
 
@@ -105,19 +105,19 @@ void main(){
     colorOut.b = color1.b / (1-color2.b);
     colorOut.a = 1;
   }
-  
+
   colorOut = vec4(mix(color1, colorOut, blend));
-  
+
   //float k = random(gl_FragCoord.xy*144.5432*(1.535+sin(time))) * 0.2-0.1;
   //float k = random(vec2(cos(gl_FragCoord.y*5432)+3+sin(gl_FragCoord.x*12364*fract(time*0.000001)), gl_FragCoord.x*.54) + gl_FragCoord.xy*.05432*(.535+fract(time*0.00001)));
-  
-  float k = hash(gl_FragCoord.xy*(126+time*0.06));
-  
+
+  //float k = hash(gl_FragCoord.xy*(126+time*0.06));
+
   //float k = random2(gl_FragCoord.x+gl_FragCoord.y*screenSize.x);
-  k = k*0.2 - 0.1;
+  /*k = k*0.2 - 0.1;
   colorOut.r += k;
   colorOut.g += k;
-  colorOut.b += k;
+  colorOut.b += k;*/
   /*colorOut.r = k;
   colorOut.g = k;
   colorOut.b = k;*/

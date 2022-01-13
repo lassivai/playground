@@ -24,7 +24,7 @@ instrument {
     highPass: 20
   }
   voice {
-    volume: 0.25
+    volume: 0.35
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -42,7 +42,7 @@ instrument {
       phaseMode: First zero
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.165939489, 0.165939489
+      phaseOffsets: 0.410080347, 0.410080347
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
@@ -74,7 +74,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.25
+    volume: 0.35
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -92,7 +92,7 @@ instrument {
       phaseMode: First zero
       waveTableSize: 1048576
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.098228548, 0.098228548
+      phaseOffsets: 0.118255728, 0.118255728
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0

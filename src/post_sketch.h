@@ -41,7 +41,7 @@ struct PostSketch : public Sketch
     texture.load("data/losing_my_religion2.png");
     //texture.load("data/my_new_religion.png");
     //texture2.load("data/my_new_religion2.png");
-    texture2.load("data/textures/0001.png");
+    texture2.load("data/losing_my_religion.png");
 
     /*texture.create(screenW, screenH);
     for(int i=0; i<texture.w; i++) {
@@ -130,20 +130,21 @@ struct PostSketch : public Sketch
 
     clear(0, 0, 0, 1);
     textRenderer.setColor(1, 1, 1, 1);
-    
+
     sdlInterface->glmMatrixStack.loadIdentity();
     //glLoadIdentity();
 
-    
+
     //geomRenderer.setZLayer(1);
     textRenderer.print("Testing 1234", 10, 120, 20, 1);
     //geomRenderer.resetZLayer();
-    
+
 
     shader.activate();
     shader.setUniform2f("screenSize", texture2.w, texture2.h);
     texture.activate(shader, "tex1", 0);
     texture2.activate(shader, "tex2", 1);
+    quadx.shaderProgram = shader.program;
     quadx.render((double)events.mouseX, (double)events.mouseY, rotation, scale);
     shader.deActivate();
     texture.inactivate(0);
@@ -157,6 +158,7 @@ struct PostSketch : public Sketch
     shaderPost.setUniform2f("screenSize", screenW, screenH);
     shaderPost.setUniform1f("time", time);
     texture3.activate(shaderPost, "tex", 0);
+    quadScreen.shaderProgram = shaderPost.program;
     quadScreen.render(screenW/2, screenH/2);
     //texture3.render(0, 0);
     shaderPost.deActivate();
@@ -165,10 +167,10 @@ struct PostSketch : public Sketch
     if(events.textInput.inputGrabbed) {
       console.render(sdlInterface);
     }
-
+    
     //drawLine(200, 450, 500, 20, sdlInterface);
     //geomRenderer.setZLayer(-1);
-    
+
     textRenderer.print("Testing 123", 10, 20, 20, 1);
     //geomRenderer.resetZLayer();
     /*double y = 10;

@@ -70,19 +70,19 @@ struct Texture
   void saveToFile() {
     saveToFile("XXX");
   }
-  
+
   /*void disableFiltering() {
     glBindTexture(GL_TEXTURE_2D, textureID);
     checkGlError("Texture.saveToFile()", "glBindTexture()");
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    checkGlError("Texture.createTexture()", "glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);");  
+    checkGlError("Texture.createTexture()", "glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);");
   }*/
 
   void enableFiltering(bool value) {
     glBindTexture(GL_TEXTURE_2D, textureID);
     checkGlError("Texture.saveToFile()", "glBindTexture()");
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, value ? GL_LINEAR : GL_NEAREST);
-    checkGlError("Texture.createTexture()", "glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);");  
+    checkGlError("Texture.createTexture()", "glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);");
   }
 
   /* FIXME
@@ -119,7 +119,7 @@ struct Texture
     unsigned int w = 0, h = 0;
     std::vector<unsigned char> src;
     lodepng::load_file(pngData, filename.c_str());
-    
+
     this->useBottomRightUV = useBottomRightUV;
 
     unsigned int error = lodepng::decode(src, w, h, pngData);
@@ -339,9 +339,9 @@ struct Texture
     checkGlError("Texture.createTexture()", "glTexParameteri()");
     glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     checkGlError("Texture.createTexture()", "glTexParameteri()");
-    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     checkGlError("Texture.createTexture()", "glTexParameteri()");
-    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     checkGlError("Texture.createTexture()", "glTexParameteri()");
 
     glTexParameteri(target, GL_TEXTURE_MIN_LOD, -1000);
@@ -385,7 +385,7 @@ struct Texture
 
 
   // FIXME consistency, please
-  
+
   void renderCenter(double x, double y, const Vec4d &overlayColor) {
     render(x, y, 0.0, w, h, 1.0, 1.0, overlayColor);
   }
@@ -395,7 +395,7 @@ struct Texture
   void renderCenter(double x, double y, double rotation) {
     render(x, y, rotation, w, h, 1.0, 1.0, overlayColor);
   }
-  
+
   void render() {
     render(w*0.5, h*0.5, 0.0, w, h, 1.0, 1.0, overlayColor);
   }
@@ -457,7 +457,7 @@ struct Texture
     defaultTextureShader->setUniform1i("usePixelCoordinates", 0);
     defaultTextureShader->setUniform1i("flipY", 1);
     //Texture::sdlInterface->glmMatrixStack.updateShader(defaultTextureShader->program);
-    
+
     this->activate(*defaultTextureShader, "tex", 0);
     Quadx *quad = useBottomRightUV ? defaultTextureQuadBottomRightUV : defaultTextureQuad;
     quad->setSize(w, h);
@@ -1010,7 +1010,13 @@ struct Texture
 
     /*GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-    checkGlError("Texture.setRenderTarget()", "glDrawBuffers(1, DrawBuffers)");*/
+    checkGlError("Texture.setRenderTarget()", "glDrawBuffers(1, DrawBuffers)");
+
+    GLuint fb;
+    glGenRenderbuffers(1, &fb);
+    glBindRenderbuffer(GL_RENDERBUFFER, fb);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, w, h);
+    glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fb);*/
 
 
     GLenum fboStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);

@@ -1,6 +1,6 @@
 #pragma once
 #include "engine/sketch.h"
-
+//#include "engine/synth/gui/effecttrackpanel.h"
 /* TODO
  * Synth Launchpad
  * - zoom into frequency range by pressing two keys
@@ -46,7 +46,7 @@ struct SynthSketch : public Sketch
     NumberBox *visibleSpectrumSizeGui = NULL;
 
     CheckBox *isKeyboardPianoActiveGui = NULL;
-    
+
     CheckBox *screenKeysActiveGui = NULL;
     NumberBox *screenKeyboardMinNoteGui = NULL;
     NumberBox *screenKeyboardMaxNoteGui = NULL;
@@ -71,7 +71,7 @@ struct SynthSketch : public Sketch
     NumberBox *waveformScalingGui = NULL;
     NumberBox *waveFormLowestFrequencyGui = NULL;
     NumberBox *waveformFeedbackGui = NULL;
-    
+
     CheckBox *showEnvelopeGui = NULL;
     NumberBox *envelopeScalingGui = NULL;
     NumberBox *stereoOscilloscopeScalingGui = NULL;
@@ -82,112 +82,156 @@ struct SynthSketch : public Sketch
     Synth *synth = NULL;
     GuiElement *parentGuiElement = NULL;
     SynthSketch *synthSketch = NULL;
-    
+
     CheckBox *rotatingRectsGui = NULL;
-    
+
     NumberBox *numWaveTablePreparingThreadsGui = NULL;
 
     GuiControlPanel(SynthSketch *synthSketch, Synth *synth, GuiElement *parentGuiElement) : Panel("Gui control panel") {
       init(synthSketch, synth, parentGuiElement);
     }
 
+    void onFontSizeChanged() {
+      printf("1...\n");
+      this->deleteChildElements();
+
+      printf("2...\n");
+      init(synthSketch, synth, parentGuiElement);
+      printf("3...\n");
+    }
+
     void init(SynthSketch *synthSketch, Synth *synth, GuiElement *parentGuiElement) {
       this->synthSketch = synthSketch;
       this->synth = synth;
       this->parentGuiElement = parentGuiElement;
-      
+
 
       this->addGuiEventListener(new GuiControlPanelListener(this));
+      printf("2.1...\n");
       parentGuiElement->addChildElement(this);
+      printf("2.2...\n");
+      double line = 10*GuiElement::fontHeightRatio, lineHeight = 23*GuiElement::fontHeightRatio;
+      double column = 10*GuiElement::fontHeightRatio;
 
-      double line = 10, lineHeight = 23;
-
-      spectrumResolutionGui = new NumberBox("Spectrum transform size", synth->delayLineFFTW.getSize(), NumberBox::INTEGER, 128, 1<<24, 10, line, 8);
+      spectrumResolutionGui = new NumberBox("Spectrum transform size", synth->delayLineFFTW.getSize(), NumberBox::INTEGER, 128, 1<<24, column, line, 8);
       spectrumResolutionGui->incrementMode = NumberBox::IncrementMode::Power;
-      spectrumFrequencyMinGui = new NumberBox("Spectrum freq. limits", synthSketch->spectrumFrequencyLimits.x, NumberBox::FLOATING_POINT, 0, synth->sampleRate/2, 10, line+=lineHeight, 8);
-      spectrumFrequencyMaxGui = new NumberBox("", synthSketch->spectrumFrequencyLimits.y, NumberBox::FLOATING_POINT, 1, synth->sampleRate/2, 10+180+95, line, 8);
+      spectrumResolutionGui->setTextSize(GuiElement::actualFontSize);
+      spectrumFrequencyMinGui = new NumberBox("Spectrum freq. limits", synthSketch->spectrumFrequencyLimits.x, NumberBox::FLOATING_POINT, 0, synth->sampleRate/2, column, line+=lineHeight, 8);
+      spectrumFrequencyMaxGui = new NumberBox("", synthSketch->spectrumFrequencyLimits.y, NumberBox::FLOATING_POINT, 1, synth->sampleRate/2, column+(180+95)*GuiElement::fontHeightRatio, line, 8);
+      spectrumFrequencyMinGui->setTextSize(GuiElement::actualFontSize);
+      spectrumFrequencyMaxGui->setTextSize(GuiElement::actualFontSize);
 
-      volumeUnitGui = new ListBox("Volume unit", 10, line+=lineHeight, 8);
+      volumeUnitGui = new ListBox("Volume unit", column, line+=lineHeight, 8);
       volumeUnitGui->setItems(synthSketch->volumeUnitNames);
       volumeUnitGui->setValue(synthSketch->volumeUnit);
+      volumeUnitGui->setTextSize(GuiElement::actualFontSize);
       this->addChildElement(volumeUnitGui);
 
-      spectrumGraphFeedbackGui = new NumberBox("Spectrum feedback", synthSketch->spectrumGraphFeedback, NumberBox::FLOATING_POINT, 0, 1, 10, line += lineHeight, 8);
+      spectrumGraphFeedbackGui = new NumberBox("Spectrum feedback", synthSketch->spectrumGraphFeedback, NumberBox::FLOATING_POINT, 0, 1, column, line += lineHeight, 8);
+      spectrumGraphFeedbackGui->setTextSize(GuiElement::actualFontSize);
 
-      spectrumAsNotesGui = new CheckBox("Spectrum as notes", synthSketch->spectrumAsNotes, 10, line += lineHeight);
+      spectrumAsNotesGui = new CheckBox("Spectrum as notes", synthSketch->spectrumAsNotes, column, line += lineHeight);
+      spectrumAsNotesGui->setTextSize(GuiElement::actualFontSize);
 
-      spectrumNoteInfoModeGui = new ListBox("Spectrum notes", 10, line+=lineHeight, 16);
+      spectrumNoteInfoModeGui = new ListBox("Spectrum notes", column, line+=lineHeight, 16);
       spectrumNoteInfoModeGui->setItems(synthSketch->spectrumNoteInfoNames);
       spectrumNoteInfoModeGui->setValue(synthSketch->spectrumNoteInfoMode);
+      spectrumNoteInfoModeGui->setTextSize(GuiElement::actualFontSize);
       this->addChildElement(spectrumNoteInfoModeGui);
 
-      roundSpectrumNoteLocationGui = new CheckBox("Round spectrum note postion", synthSketch->roundSpectrumNoteLocation, 10, line += lineHeight);
+      roundSpectrumNoteLocationGui = new CheckBox("Round spectrum note postion", synthSketch->roundSpectrumNoteLocation, column, line += lineHeight);
+      roundSpectrumNoteLocationGui->setTextSize(GuiElement::actualFontSize);
       this->addChildElement(roundSpectrumNoteLocationGui);
 
-      showSpectrumNoteThresholdGui = new NumberBox("Spectrum note threshold", synthSketch->showSpectrumNoteThreshold, NumberBox::FLOATING_POINT, -1e10, 1e10, 10, line += lineHeight, 8);
+      showSpectrumNoteThresholdGui = new NumberBox("Spectrum note threshold", synthSketch->showSpectrumNoteThreshold, NumberBox::FLOATING_POINT, -1e10, 1e10, column, line += lineHeight, 8);
+      showSpectrumNoteThresholdGui->setTextSize(GuiElement::actualFontSize);
 
-      spectrumModeGui = new ListBox("Spectrum graph style", 10, line+=lineHeight, 12);
+      spectrumModeGui = new ListBox("Spectrum graph style", column, line+=lineHeight, 12);
       spectrumModeGui->setItems(synthSketch->spectrumModeNames);
       spectrumModeGui->setValue(synthSketch->spectrumMode);
+      spectrumModeGui->setTextSize(GuiElement::actualFontSize);
       this->addChildElement(spectrumModeGui);
 
-      visibleSpectrumSizeGui = new NumberBox("Spectrum graph points", synthSketch->visibleSpectrumSize, NumberBox::INTEGER, 1, synthSketch->screenW, 10, line += lineHeight, 8);
-      spectrumGraphScalingGui = new NumberBox("Spectrum graph scaling", synthSketch->spectrumGraphScaling, NumberBox::FLOATING_POINT, -1e10, 1e10, 10, line += lineHeight, 8);
+      visibleSpectrumSizeGui = new NumberBox("Spectrum graph points", synthSketch->visibleSpectrumSize, NumberBox::INTEGER, 1, synthSketch->screenW, column, line += lineHeight, 8);
+      visibleSpectrumSizeGui->setTextSize(GuiElement::actualFontSize);
+      spectrumGraphScalingGui = new NumberBox("Spectrum graph scaling", synthSketch->spectrumGraphScaling, NumberBox::FLOATING_POINT, -1e10, 1e10, column, line += lineHeight, 8);
+      spectrumGraphScalingGui->setTextSize(GuiElement::actualFontSize);
 
-      backgroundVisualizationGui = new ListBox("Background", 10, line+=lineHeight, 12);
+      backgroundVisualizationGui = new ListBox("Background", column, line+=lineHeight, 12);
       backgroundVisualizationGui->setItems(synthSketch->backgroundVisualizationNames);
       backgroundVisualizationGui->setValue(synthSketch->backgroundVisualization);
+      backgroundVisualizationGui->setTextSize(GuiElement::actualFontSize);
       this->addChildElement(backgroundVisualizationGui);
 
-      volumeLevelModeGui = new ListBox("Volume level bars", 10, line+=lineHeight, 8);
+      volumeLevelModeGui = new ListBox("Volume level bars", column, line+=lineHeight, 8);
+      volumeLevelModeGui->setTextSize(GuiElement::actualFontSize);
       volumeLevelModeGui->setItems(synthSketch->volumeLevelModeNames);
       volumeLevelModeGui->setValue(synthSketch->volumeLevelMode);
 
       //showWaveformGui = new CheckBox("Waveform", synthSketch->showWaveform, 10, line += lineHeight);
-      waveformModeGui = new ListBox("Waveform", 10, line+=lineHeight, 8);
+      waveformModeGui = new ListBox("Waveform", column, line+=lineHeight, 8);
       waveformModeGui->setItems(synthSketch->waveformModeNames);
       waveformModeGui->setValue(synthSketch->waveformMode);
-      
-      waveformScalingGui = new NumberBox("Scale", synthSketch->waveformScaling, NumberBox::FLOATING_POINT, -1e10, 1e10, 10+200, line, 8);
-      waveFormLowestFrequencyGui = new NumberBox("Waveform frequency limit", synthSketch->waveFormLowestFrequency, NumberBox::FLOATING_POINT, 1, 1e10, 10, line+=lineHeight, 8);
-      waveformFeedbackGui = new NumberBox("Waveform feedback", synthSketch->waveFormFeedback, NumberBox::FLOATING_POINT, 0, 1, 10, line+=lineHeight, 8);
+      waveformModeGui->setTextSize(GuiElement::actualFontSize);
 
-      showEnvelopeGui = new CheckBox("Envelope", synthSketch->showEnvelope, 10, line += lineHeight);
-      envelopeScalingGui = new NumberBox("Scale", synthSketch->envelopeScaling, NumberBox::FLOATING_POINT, -1e10, 1e10, 10+110, line, 8);
+      waveformScalingGui = new NumberBox("Scale", synthSketch->waveformScaling, NumberBox::FLOATING_POINT, -1e10, 1e10, column+200*GuiElement::fontHeightRatio, line, 8);
+      waveformScalingGui->setTextSize(GuiElement::actualFontSize);
+      waveFormLowestFrequencyGui = new NumberBox("Waveform frequency limit", synthSketch->waveFormLowestFrequency, NumberBox::FLOATING_POINT, 1, 1e10, column, line+=lineHeight, 8);
+      waveFormLowestFrequencyGui->setTextSize(GuiElement::actualFontSize);
+      waveformFeedbackGui = new NumberBox("Waveform feedback", synthSketch->waveFormFeedback, NumberBox::FLOATING_POINT, 0, 1, column, line+=lineHeight, 8);
+      waveformFeedbackGui->setTextSize(GuiElement::actualFontSize);
 
-      showStereoOscilloscopeGui = new CheckBox("Stereo oscilloscope", synthSketch->showStereoOscilloscope, 10, line += lineHeight);
-      stereoOscilloscopeScalingGui = new NumberBox("Scale", synth->stereoOscilloscope.scaling, NumberBox::FLOATING_POINT, -1e10, 1e10, 10+180, line, 8);
-      normalizeStereoOscilloscopeGui = new CheckBox("Normalized", synth->stereoOscilloscope.normalizeSize, 10, line += lineHeight);
-      stereoOscilloscopeLengthGui = new NumberBox("Length", synth->stereoOscilloscope.trailLength, NumberBox::INTEGER, 0, synth->stereoOscilloscope.maxTrailLength, 10+180, line, 8);
+      showEnvelopeGui = new CheckBox("Envelope", synthSketch->showEnvelope, column, line += lineHeight);
+      showEnvelopeGui->setTextSize(GuiElement::actualFontSize);
+      envelopeScalingGui = new NumberBox("Scale", synthSketch->envelopeScaling, NumberBox::FLOATING_POINT, -1e10, 1e10, column+110*GuiElement::fontHeightRatio, line, 8);
+      envelopeScalingGui->setTextSize(GuiElement::actualFontSize);
+
+      showStereoOscilloscopeGui = new CheckBox("Stereo oscilloscope", synthSketch->showStereoOscilloscope, column, line += lineHeight);
+      showStereoOscilloscopeGui->setTextSize(GuiElement::actualFontSize);
+      stereoOscilloscopeScalingGui = new NumberBox("Scale", synth->stereoOscilloscope.scaling, NumberBox::FLOATING_POINT, -1e10, 1e10, column+180*GuiElement::fontHeightRatio, line, 8);
+      stereoOscilloscopeScalingGui->setTextSize(GuiElement::actualFontSize);
+      normalizeStereoOscilloscopeGui = new CheckBox("Normalized", synth->stereoOscilloscope.normalizeSize, column, line += lineHeight);
+      normalizeStereoOscilloscopeGui->setTextSize(GuiElement::actualFontSize);
+      stereoOscilloscopeLengthGui = new NumberBox("Length", synth->stereoOscilloscope.trailLength, NumberBox::INTEGER, 0, synth->stereoOscilloscope.maxTrailLength, column+180*GuiElement::fontHeightRatio, line, 8);
+      stereoOscilloscopeLengthGui->setTextSize(GuiElement::actualFontSize);
       //stereoOscilloscopeLengthGui->incrementMode = NumberBox::IncrementMode::Power;
 
       //showMandelbrotVisualizerGui = new CheckBox("Mandelbrot", showMandelbrotVisualizer, 10, line += lineHeight);
-      
-      addChildElement(spectrumGraphColorGui = new ColorBox("Spectrum color", synthSketch->spectrumGraphColor, 10, line+=lineHeight));
 
-      graphColorGui = new ListBox("Graph color", 10, line+=lineHeight, 8);
+      addChildElement(spectrumGraphColorGui = new ColorBox("Spectrum color", synthSketch->spectrumGraphColor, column, line+=lineHeight));
+      spectrumGraphColorGui->setTextSize(GuiElement::actualFontSize);
+
+      graphColorGui = new ListBox("Graph color", column, line+=lineHeight, 8);
       graphColorGui->setItems(synthSketch->graphColorNames);
       graphColorGui->setValue(synthSketch->graphColorIndex);
+      graphColorGui->setTextSize(GuiElement::actualFontSize);
 
-      addChildElement(rotatingRectsGui = new CheckBox("Rect visualization", synthSketch->rotatingRectVisualization.isVisible, 10, line += lineHeight));
-      
-      isKeyboardPianoActiveGui = new CheckBox("Keyboard piano", synth->isKeyboardPianoActive, 10, line += lineHeight);
+      addChildElement(rotatingRectsGui = new CheckBox("Rect visualization", synthSketch->rotatingRectVisualization.isVisible, column, line += lineHeight));
+      rotatingRectsGui->setTextSize(GuiElement::actualFontSize);
 
-      screenKeysActiveGui = new CheckBox("Screen keys", synth->screenKeysActive, 10, line += lineHeight);
+      isKeyboardPianoActiveGui = new CheckBox("Keyboard piano", synth->isKeyboardPianoActive, column, line += lineHeight);
+      isKeyboardPianoActiveGui->setTextSize(GuiElement::actualFontSize);
 
-      screenKeyboardMinNoteGui = new NumberBox("", synth->screenKeyboardMinNote, NumberBox::INTEGER, 0, 126, 135, line, 4);
+      screenKeysActiveGui = new CheckBox("Screen keys", synth->screenKeysActive, column, line += lineHeight);
+      screenKeysActiveGui->setTextSize(GuiElement::actualFontSize);
+
+      screenKeyboardMinNoteGui = new NumberBox("", synth->screenKeyboardMinNote, NumberBox::INTEGER, 0, 126, 135*GuiElement::fontHeightRatio, line, 4);
       screenKeyboardMinNoteGui->incrementMode = NumberBox::IncrementMode::Linear;
-      screenKeyboardMaxNoteGui = new NumberBox("", synth->screenKeyboardMaxNote, NumberBox::INTEGER, 0, 126, 135 + 70, line, 4);
+      screenKeyboardMinNoteGui->setTextSize(GuiElement::actualFontSize);
+      screenKeyboardMaxNoteGui = new NumberBox("", synth->screenKeyboardMaxNote, NumberBox::INTEGER, 0, 126, (135 + 70)*GuiElement::fontHeightRatio, line, 4);
       screenKeyboardMaxNoteGui->incrementMode = NumberBox::IncrementMode::Linear;
+      screenKeyboardMaxNoteGui->setTextSize(GuiElement::actualFontSize);
       this->addChildElement(screenKeyboardMinNoteGui);
       this->addChildElement(screenKeyboardMaxNoteGui);
 
-      keyBaseNoteGui = new ListBox("Key base", 135 + 70 + 70, line, 2);
+      keyBaseNoteGui = new ListBox("Key base", (135 + 70 + 70)*GuiElement::fontHeightRatio, line, 2);
       keyBaseNoteGui->addItems("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B");
       keyBaseNoteGui->setValue(synth->keyBaseNote);
+      keyBaseNoteGui->setTextSize(GuiElement::actualFontSize);
       this->addChildElement(keyBaseNoteGui);
-      
-      addChildElement(numWaveTablePreparingThreadsGui = new NumberBox("Wavetable update threads", numWaveTablePreparingThreads, NumberBox::INTEGER, 1, 100, 10, line+=lineHeight, 4));
+
+      addChildElement(numWaveTablePreparingThreadsGui = new NumberBox("Wavetable update threads", numWaveTablePreparingThreads, NumberBox::INTEGER, 1, 100, column, line+=lineHeight, 4));
+      numWaveTablePreparingThreadsGui->setTextSize(GuiElement::actualFontSize);
 
       this->addChildElement(spectrumResolutionGui);
       this->addChildElement(spectrumFrequencyMinGui);
@@ -214,7 +258,7 @@ struct SynthSketch : public Sketch
       this->addChildElement(normalizeStereoOscilloscopeGui);
       this->addChildElement(graphColorGui);
 
-      this->setSize(410, line + lineHeight + 10);
+      this->setSize(410*GuiElement::fontHeightRatio, line + lineHeight + 10*GuiElement::fontHeightRatio);
     }
 
 
@@ -390,13 +434,14 @@ struct SynthSketch : public Sketch
 
     };
   };
-  
-  
+
+
   Synth *synth = NULL;
 
   int infoMode = 0;
 
-  Quad quad;
+  //Quad quad;
+  Quadx quad;
   GlShader synthShader;
 
   EarTrainer earTrainer;
@@ -418,9 +463,9 @@ struct SynthSketch : public Sketch
   CommandTemplate resetFlameVisualizerSettingsCmdTmpl;
 
   CommandTemplate saveReverbPresetCmdTmpl;
-  
+
   CommandTemplate printPadControlsCmdTmpl;
-  
+
   CommandTemplate sendSysExMessageCmdTmpl;
 
   bool addInstrumentRequested = false, removeInstrumentRequested = false, removeAllInstrumentsRequested = false;
@@ -449,12 +494,12 @@ struct SynthSketch : public Sketch
 
   int volumeLevelMode = 2;
   int graphColorIndex = 0;
-  
+
   Vec4d spectrumGraphColor = Vec4d(1, 1, 1, 0.33);
-  
-  
+
+
   std::vector<double> spectrumGraph, spectrumGraphPrevious, spectrumGraphOriginal;
-  
+
   bool spectrumAsNotes = false;
 
   Vec2d spectrumFrequencyLimits = Vec2d(1, 10000);
@@ -475,10 +520,10 @@ struct SynthSketch : public Sketch
   double waveFormLowestFrequency = 40;
   double waveFormFeedback = 0.8;
   std::vector<Vec2d> waveForm;
-  
+
   bool showEnvelope = false;
   double envelopeScaling = 1.0;
-  
+
 
   SynthLaunchPad *synthLaunchPad = NULL;
 
@@ -489,21 +534,26 @@ struct SynthSketch : public Sketch
   GuiControlPanel *guiControlPanel;
   SynthGui synthGui;
 
-  
+
   RotatingRectVisualization rotatingRectVisualization;
 
   AudioPlayer *audioPlayer = NULL;
 
+  int fontSize = 12, minFontSize = 10, maxFontSize = 30;
+
+
+
   void onReloadShaders() {
     //synthShader.create("data/glsl/basic.vert", "data/glsl/simplesynth.frag");
-    synthShader.create("data/glsl/basic.vert", "data/glsl/synthsequencer.frag");
+    //synthShader.create("data/glsl/basic.vert", "data/glsl/synthsequencer.frag");
+    synthShader.create("data/glsl/texture.vert", "data/glsl/synthsequencer.frag");
     mandelbrotVisualizer.loadShader();
     warpVisualizer.loadShader();
     flameVisualizer.loadShader();
   }
 
   void onInit() {
-    
+
 
     warpVisualizer.init();
     mandelbrotVisualizer.init(events, screenW, screenH);
@@ -531,7 +581,7 @@ struct SynthSketch : public Sketch
 
     addInstrumentCmdTmpl.finishInitialization("addInstrument");
     commandQueue.addCommandTemplate(&addInstrumentCmdTmpl);
-    
+
     addDrumPadCmdTmpl.finishInitialization("addDrumPad");
     commandQueue.addCommandTemplate(&addDrumPadCmdTmpl);
 
@@ -560,7 +610,7 @@ struct SynthSketch : public Sketch
 
     printPadControlsCmdTmpl.finishInitialization("printPadControls");
     commandQueue.addCommandTemplate(&printPadControlsCmdTmpl);
-    
+
     sendSysExMessageCmdTmpl.addArgument("channel", STR_INT);
     sendSysExMessageCmdTmpl.addArgument("type", STR_INT);
     sendSysExMessageCmdTmpl.addArgument("arg0", STR_STRING, " ");
@@ -580,7 +630,7 @@ struct SynthSketch : public Sketch
       useGlobalOverlayTexture = true;
     }
 
-    
+
     if(cliArgs.hasKey("-debug")) {
       isDebugMode = true;
     }
@@ -602,7 +652,7 @@ struct SynthSketch : public Sketch
     if(cliArgs.numValues("-device") > 0) {
       suggestedAudioDevice = atoi(cliArgs.getValues("-device")[0].c_str());
     }
-    
+
     synth = new Synth(sampleRate, framesPerBuffer, suggestedOutputLatency, screenW, screenH, suggestedAudioDevice);
     paInterface = synth;
 
@@ -613,15 +663,15 @@ struct SynthSketch : public Sketch
 
     synthLaunchPad = new SynthLaunchPad();
     synthLaunchPad->init(&guiRoot, &midiInterface, &spectrumGraph, synth);
-    
+
     synthGui.init(synth, &midiInterface, &guiRoot, screenW, screenH);
-    
+
     guiControlPanel = new GuiControlPanel(this, synth, &guiRoot);
     guiControlPanel->setPosition(10, screenH-10-guiControlPanel->size.y);
     guiControlPanel->setVisible(false);
-    
+
     rotatingRectVisualization.init(guiControlPanel);
-    
+
     guiRoot.addChildElement(audioPlayer = new AudioPlayer((int)synth->sampleRate, synth->framesPerBuffer));
     audioPlayer->setVisible(false);
 
@@ -629,6 +679,9 @@ struct SynthSketch : public Sketch
     midiInterface.addMidiMessageListener(synthGui.getMidiMessageListener());
     midiInterface.addMidiMessageListener(synthLaunchPad->getMidiMessageListener());
     midiInterface.addMidiMessageListener(earTrainer.getMidiMessageListener());
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
 
 
@@ -657,7 +710,7 @@ struct SynthSketch : public Sketch
     synth->onKeyDownLooperControls(events);
 
     synth->onKeyDownKeyboardPiano(events);
-    
+
     if(backgroundVisualization == 1) {
       spectrumMap.onKeyDown(events);
     }
@@ -666,6 +719,21 @@ struct SynthSketch : public Sketch
     }
 
     synthGui.onKeyDown(events);
+
+    if(events.sdlKeyCode == SDLK_p && !events.lShiftDown) {
+      fontSize++;
+      if(fontSize > maxFontSize) {
+        fontSize = maxFontSize;
+      }
+      GuiElement::setFontSize(fontSize, textRenderer);
+    }
+    if(events.sdlKeyCode == SDLK_p && events.lShiftDown) {
+      fontSize--;
+      if(fontSize < minFontSize) {
+        fontSize = minFontSize;
+      }
+      GuiElement::setFontSize(fontSize, textRenderer);
+    }
 
     if(events.sdlKeyCode == SDLK_F11) {
       if(earTrainer.panel) {
@@ -729,7 +797,7 @@ struct SynthSketch : public Sketch
         guiControlPanel->toggleVisibility();
       }
     }
-    
+
     if(events.sdlKeyCode == SDLK_F12 && events.numModifiersDown == 0) {
       synth->reset();
       waveForm.assign(waveForm.size(), Vec2d::Zero);
@@ -793,7 +861,7 @@ struct SynthSketch : public Sketch
   }
   void onUpdate() {
     //synth->onUpdateGetMidiMessages(midiInterface);
-    
+
     for(int i=0; i<commandQueue.commands.size(); i++) {
       Command *cmd = NULL;
 
@@ -854,13 +922,13 @@ struct SynthSketch : public Sketch
         synth->synthThreadDisableRequested = true;
         delete cmd;
       }
-      
+
       if(cmd = commandQueue.popCommand(&addDrumPadCmdTmpl)) {
         addDrumPadRequested = true;
         synth->synthThreadDisableRequested = true;
         delete cmd;
       }
-            
+
       if(cmd = commandQueue.popCommand(&duplicateInstrumentCmdTmpl)) {
         duplicateInstrumentCmdTmpl.fillValues(cmd, &duplicateInstrumentName);
         duplicateInstrumentRequested = true;
@@ -888,7 +956,7 @@ struct SynthSketch : public Sketch
         }
         delete cmd;
       }
-      
+
       if(cmd = commandQueue.popCommand(&saveReverbPresetCmdTmpl)) {
         std::string filename = "";
         saveReverbPresetCmdTmpl.fillValues(cmd, &filename);
@@ -988,16 +1056,16 @@ struct SynthSketch : public Sketch
      *
      */
     /*for(int i=0; i<midiInterface.midiMessages.size(); i++) {
-      
+
       //midiInterface.midiMessages[i].print();
-      
+
       if(midiInterface.midiPorts[midiInterface.midiMessages[i].midiPortIndex].type == MidiInterface::MidiPort::Type::LaunchPad) {
         if(synthGui.midiEventPanel) {
           synthGui.midiEventPanel->update(midiInterface.midiMessages[i]);
         }
         continue;
       }
-      
+
       HuiMessage huiMessage;
       int size = huiMessage.decode(midiInterface.midiMessages, i);
       if(huiMessage.type != HuiMessage::Type::Unrecognised) {
@@ -1088,7 +1156,7 @@ struct SynthSketch : public Sketch
       }
       synthGui.onMidiMessage(midiInterface.midiMessages[i]);
     }*/
-    // FIXME 
+    // FIXME
     if(synthLaunchPad) {
       synthLaunchPad->midiPortIndex = -1;
       for(int i=0; i<synth->numInstrumentTracks; i++) {
@@ -1108,7 +1176,7 @@ struct SynthSketch : public Sketch
     }
 
     synthGui.onUpdate(time, dt);
-    
+
   }
 
 
@@ -1131,7 +1199,7 @@ struct SynthSketch : public Sketch
     if(b >= srcArr.size()) return srcArr[srcArr.size()-1];
     return (1.0 - f) * srcArr[a] + f * srcArr[b];
   }
-  
+
 
   void onDraw() {
     clear(0, 0, 0, 1);
@@ -1251,6 +1319,7 @@ struct SynthSketch : public Sketch
       synthShader.setUniform2f("mousePos", (float)events.mouseX, (float) events.mouseY);
       synthShader.setUniform1d("time", synth->getPaTime());
       synth->setShaderUniforms(synthShader);
+      quad.shaderProgram = synthShader.program;
       quad.render();
       synthShader.deActivate();
     }
@@ -1349,9 +1418,9 @@ struct SynthSketch : public Sketch
       double leftVol = clamp(amplitudeToVol(delayLineRms.x), 0, 1);
       double rightVol = clamp(amplitudeToVol(delayLineRms.y), 0, 1);
       double maxVol = clamp(amplitudeToVol(volumeMeterTooLoudThreshold), 0, 1);
-      
+
       Vec2d levels(min(maxVol, leftVol), min(maxVol, rightVol));
-      
+
       volumeMeterMaxLevel.x = min(1.0, max(volumeMeterMaxLevel.x, leftVol));
       volumeMeterMaxLevel.y = min(1.0, max(volumeMeterMaxLevel.y, rightVol));
 
@@ -1448,8 +1517,8 @@ struct SynthSketch : public Sketch
       geomRenderer.fillColor.set(0, 0, 0, 0.33);
     }
     else {
-      geomRenderer.strokeColor = spectrumGraphColor;  
-      geomRenderer.fillColor = spectrumGraphColor;  
+      geomRenderer.strokeColor = spectrumGraphColor;
+      geomRenderer.fillColor = spectrumGraphColor;
     }
 
 
@@ -1519,15 +1588,15 @@ struct SynthSketch : public Sketch
       }
 
       synth->delayLine.getWaveForm(waveForm, waveFormLowestFrequency, waveFormFeedback, 1.0/50.0, screenH*0.2 * waveformScaling);
-      
+
       double absMaxVal = 0;
       for(int i=0; i<waveForm.size(); i++) {
         absMaxVal = max(abs(waveForm[i].x), absMaxVal);
       }
-      
+
       double scale = pow(absMaxVal / (screenH*0.2 * waveformScaling), 1.0/5.0) * (screenH*0.2 * waveformScaling) / absMaxVal;
       // tavoitteena siis saada aaltomuoto näkyviin hiljaisillakin äänillä. Noin.
-      
+
       for(int i=0; i<screenW; i++) {
         if(i > 0) {
           if(waveformMode == RightWaveform || waveformMode == BothWaveforms) {
@@ -1568,12 +1637,14 @@ struct SynthSketch : public Sketch
         }
       }
     }
-    
+
     geomRenderer.endRendering();
 
-    
+    //EffectTrackPanelX *etp = new EffectTrackPanelX(synth->postProcessingEffects, synth->delayLine, this);
+
+
     rotatingRectVisualization.update(geomRenderer, spectrumGraph, screenW, screenH);
-    
+
 
     if(synthLaunchPad) {
       synthLaunchPad->render(geomRenderer, screenW, screenH, time);
@@ -1643,7 +1714,7 @@ struct SynthSketch : public Sketch
       double x = screenW - w - 20;
       double y = screenH - h - 20;
       geomRenderer.drawRectCorner(w, h, x, y);
-      
+
       if(isDarkGraphColors) {
         geomRenderer.fillColor.set(0, 0, 0, 0.85);
         geomRenderer.strokeColor.set(0, 0, 0, 1);

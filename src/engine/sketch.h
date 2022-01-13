@@ -64,6 +64,9 @@
 #include "synth/visualizations/rotatingrects.h"
 #include "synth/audioplayer.h"
 //#include "sndfileio.h"
+
+//#include "synth/gui/effecttrackpanel.h"
+
 #include "games/minesweeper.h"
 
 #include "launchpad/launchpad.h"
@@ -154,7 +157,7 @@ struct Sketch
                                   "Experiments with math, physics, visuals, audio and magic";
 
   int breakTimeMillis = 0;
-  
+
   //Fontxx fontxx;
   TextGl textRenderer;
   GeomRenderer geomRenderer;
@@ -188,7 +191,7 @@ struct Sketch
   Quadx quadScreen;
 
   bool useGlobalOverlayTexture = false;
-  
+
   const std::string fftwWisdomFilename = "data/tmp/fftw_wisdom";
 
   virtual ~Sketch() {
@@ -229,6 +232,8 @@ struct Sketch
         }
       }
     }
+
+
     if(cliArgs.hasKey("-frameless")) {
       frameless = true;
     }
@@ -250,7 +255,7 @@ struct Sketch
     SDLInterface::sdlInterface = this->sdlInterface;
     GuiElement::sdlInterface = this->sdlInterface;
     Texture::sdlInterface = this->sdlInterface;
-    
+
 
     sdlInterface->setup(screenW, screenH, fullScreen, useOpenGL, frameless, 0, inputGrabbed, alwaysOnTop);
     GuiElement::screenW = screenW = sdlInterface->screenW;
@@ -261,6 +266,8 @@ struct Sketch
     glSetup(sdlInterface);
 
     scene = new Scene(screenW, screenH, screenS, aspectRatio);
+
+    GuiElement::root = &guiRoot;
 
     events.init(scene);
 
@@ -302,6 +309,14 @@ struct Sketch
 
 
     textRenderer.load("data/fonts/asana/asana_math_regular_12.fnt", "data/fonts/asana/asana_math_regular_12.PNG");
+
+    int fontSize = 10;
+    if(cliArgs.numValues("-fontSize") > 0) {
+      fontSize = atoi(cliArgs.getValues("-fontSize")[0].c_str());
+    }
+    GuiElement::setFontSize(fontSize, textRenderer);
+    printf("GuiElement::setFontSize %d\n", fontSize);
+
 
     console.init(&textRenderer, sdlInterface);
 
@@ -360,7 +375,7 @@ struct Sketch
     fpsPanel->setVisible(false);
     guiRoot.addChildElement(fpsPanel);
 
-    
+
     initOscillatorGlobals();
 
     onInit();
@@ -428,7 +443,7 @@ struct Sketch
         reloadShaders();
         delete cmd;
       }
-      
+
       if(cmd = commandQueue.popCommand(&printGuiTreeCmdTmpl)) {
         guiRoot.print();
         delete cmd;
@@ -445,12 +460,12 @@ struct Sketch
     if(fpsPanel->isVisible) {
       fpsPanel->update(dt);
     }
-    
+
     //sdlInterface->update();
-    
+
 
     onUpdate();
-    
+
     if(guiRoot.checkInputGrab() || console.inputGrabbed) {
       if(!events.textInput.inputGrabbed) {
         events.startTextInput();
@@ -477,17 +492,17 @@ struct Sketch
       }
       renderTargetTextureForPostEffects.setRenderTarget();
     }
-    
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     onDraw();
-    
+
     if(console.inputGrabbed) {
       console.render(sdlInterface);
     }
-    
+
     //glLoadIdentity();
-    
-    
+
+
     double currentZLayer = 0, nextZLayer = 0;
     while(true) {
       currentZLayer = nextZLayer;
@@ -496,10 +511,10 @@ struct Sketch
         break;
       }
     }
-    
+
     if(useGlobalOverlayTexture) {
       renderTargetTextureForPostEffects.unsetRenderTarget();
-      
+
       postEffectShader.activate();
       postEffectShader.setUniform1f("time", time);
       postEffectShader.setUniform2f("screenSize", screenW, screenH);
@@ -509,7 +524,7 @@ struct Sketch
       //renderTargetTextureForPostEffects.render();
       quadScreen.shaderProgram = postEffectShader.program;
       quadScreen.render(screenW/2, screenH/2);
-      
+
       postEffectShader.deActivate();
       renderTargetTextureForPostEffects.inactivate(0);
       postEffectTexture.inactivate(1);
@@ -518,7 +533,7 @@ struct Sketch
 
     updateScreen(sdlInterface);
     messageQueue.update();
-    
+
     std::this_thread::sleep_for(std::chrono::milliseconds(breakTimeMillis));
   }
 
@@ -532,7 +547,7 @@ struct Sketch
       }
       printf("Hibernation ended\n");
   }
-  
+
   void quit(){
     if(fftw_export_wisdom_to_filename(fftwWisdomFilename.c_str())) {
       printf("Exported FFTW wisdom to file '%s'.\n", fftwWisdomFilename.c_str());
@@ -560,7 +575,7 @@ struct Sketch
     initSpriteShadowShader(true);
     onReloadShaders();
   }
-  
+
   virtual void onInit() {}
   virtual void onQuit() {}
   virtual void onUpdate() {}
@@ -829,7 +844,7 @@ struct Sketch
         if(console.inputGrabbed) {
           console.onTextInput(events);
         }
-        
+
         if(events.sdlKeyCode == SDLK_h && events.lControlDown && events.lShiftDown) {
             hibernate();
         }
@@ -838,8 +853,8 @@ struct Sketch
             if(breakTimeMillis > 30) breakTimeMillis = 0;
             printf("Break time millis %d\n", breakTimeMillis);
         }
-    
-    
+
+
         if(events.sdlKeyCode == SDLK_f && (events.rControlDown && events.lControlDown)) {
           fpsPanel->toggleVisibility();
         }

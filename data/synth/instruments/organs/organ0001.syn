@@ -14,7 +14,7 @@ instrument {
     bandwidthKeyTracking: 0
   }
   voice {
-    volume: 0.7
+    volume: 0.33
     tuning: 1
     stereoPhaseOffset: 0.6
     pan: 0

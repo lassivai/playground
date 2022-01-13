@@ -14,7 +14,7 @@ instrument {
     bandwidthFrequency: 0.400000006
   }
   voice {
-    volume: 0.05
+    volume: 0.1
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -59,7 +59,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.12
+    volume: 0.2
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -82,7 +82,7 @@ instrument {
       numSteps: 1
       gaussianSmoothing: 0
       pitchDependendGaussianSmoothing: 1
-      pitchDependendPartialAttenuation: 1
+      pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
       minHarmonicSmoothing: 1
@@ -100,12 +100,6 @@ instrument {
         xRange: 0, 0
         yRange: 0, 1
         curve: 0, 1, 0, 0.529215359, 1, 0, 0.747913189, 0.824120603, 0, 1, 0, 0
-      }
-      pitchPartialAttenuationDraggingGraph {
-        numDataPoints: 128
-        xRange: 0, 0
-        yRange: 0, 1
-        curve: 0, 0, 0, 1, 0, 0
       }
     }
   }

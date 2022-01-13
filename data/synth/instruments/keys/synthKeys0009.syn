@@ -1,5 +1,5 @@
 instrument {
-  name: Piano 2
+  name: Synth Keys 9
   volume: 1
   multiDelay {
     gain: 0.91
@@ -10,7 +10,7 @@ instrument {
     out: 0, 0
   }
   voice {
-    volume: 0.2
+    volume: 0.33
     tuning: 1
     stereoPhaseOffset: 0.0004
     pan: 0

@@ -24,7 +24,7 @@ instrument {
     highPass: 4
   }
   voice {
-    volume: 1.5
+    volume: 1
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -49,7 +49,7 @@ instrument {
       pitchDependendGaussianSmoothing: 0
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
-      waveValueOffset: 0
+      waveValueOffset: -0
       minHarmonicSmoothing: 1
       maxHarmonicSmoothing: 500
       harmonicSmoothingSlope: 1

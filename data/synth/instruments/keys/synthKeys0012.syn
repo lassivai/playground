@@ -34,7 +34,7 @@ instrument {
     out: 14700, 1
   }
   voice {
-    volume: 0.23
+    volume: 0.48
     tuning: 1
     stereoPhaseOffset: 0.25
     pan: 0

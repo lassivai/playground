@@ -22,7 +22,25 @@
 #include "volray_sketch.h"
 
 
+void printFramebufferLimits() {
 
+    int res;
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &res);
+    printf("Max Color Attachments: %d\n", res);
+
+    glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, &res);
+    printf("Max Framebuffer Width: %d\n", res);
+
+    glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, &res);
+    printf("Max Framebuffer Height: %d\n", res);
+
+    glGetIntegerv(GL_MAX_FRAMEBUFFER_SAMPLES, &res);
+    printf("Max Framebuffer Samples: %d\n", res);
+
+    glGetIntegerv(GL_MAX_FRAMEBUFFER_LAYERS, &res);
+    printf("Max Framebuffer Layers: %d\n", res);
+
+}
 
 int main(int argc, char* argv[])
 {
@@ -91,6 +109,8 @@ int main(int argc, char* argv[])
     return 0;
     //sketch = new TestSketch();
   }
+
+  printFramebufferLimits();
 
   sketch->init(cliArgs);
 

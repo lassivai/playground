@@ -24,9 +24,9 @@
   * - minimize/maximize panels to title bar size
   *
   */
-  
 
-  
+
+
 static double _a = 0, _b = 0, _c = 1, _d = 1;
 static bool _rel = true;
 static GlShader boxShadowShader;
@@ -44,11 +44,11 @@ static Texture *createBoxShadowTexture(GeomRenderer &geomRenderer, int w, int h,
   int shadowTextureWidth = w + shadowWidth*2, shadowTextureHeight = h + shadowWidth*2;
   Texture *boxShadowTexture = new Texture(shadowTextureWidth, shadowTextureHeight);
   //boxShadowTexture->clear(0, 0, 0, 0);
-  
+
   Quadx quad(shadowTextureWidth, shadowTextureHeight);
-  
+
   Vec2d d(0, max(shadowTextureHeight, geomRenderer.screenH) - shadowTextureHeight);
-  
+
   boxShadowShader.activate();
   boxShadowShader.setUniform2i("boxSize", w, h);
   boxShadowShader.setUniform1i("shadowWidth", shadowWidth);
@@ -57,7 +57,7 @@ static Texture *createBoxShadowTexture(GeomRenderer &geomRenderer, int w, int h,
   //boxShadowShader.setUniform4d("backgroundColor", backgroundColor);
   //boxShadowShader.setUniform2i("displacement", displacementX, displacementY);
   //boxShadowShader.setUniform1i("onlyExterior", onlyExterior);
-  
+
   //boxShadowTexture.activate(boxShadowShader, "tex", 0);
   boxShadowTexture->setRenderTarget();
   //glViewport(0, 0, 1400, 1000);
@@ -69,10 +69,10 @@ static Texture *createBoxShadowTexture(GeomRenderer &geomRenderer, int w, int h,
   //mandelbrotShader.setUniform1i("pass", rememberIterations && !previewActive ? currentPass : 0);
   //quad.render();
   boxShadowTexture->unsetRenderTarget();
-  
+
   boxShadowShader.deActivate();
   //boxShadowTexture.inactivate(0);
-  
+
   return boxShadowTexture;
 }
 
@@ -93,11 +93,11 @@ static Texture *createSpriteShadowTexture(GeomRenderer &geomRenderer, Texture &s
   int shadowTextureWidth = spriteTexture.w + shadowWidth*2, shadowTextureHeight = spriteTexture.h + shadowWidth*2;
   Texture *spriteShadowTexture = new Texture(shadowTextureWidth, shadowTextureHeight);
   //boxShadowTexture->clear(0, 0, 0, 0);
-  
+
   Quadx quad(shadowTextureWidth, shadowTextureHeight);
-  
+
   Vec2d d(0, max(shadowTextureHeight, geomRenderer.screenH) - shadowTextureHeight);
-  
+
   spriteShadowShader.activate();
   spriteTexture.activate(spriteShadowShader, "sprite", 0);
   spriteShadowShader.setUniform2i("spriteSize", spriteTexture.w, spriteTexture.h);
@@ -108,7 +108,7 @@ static Texture *createSpriteShadowTexture(GeomRenderer &geomRenderer, Texture &s
   spriteShadowShader.setUniform4f("shadowColor", shadowColor);
 
   spriteShadowTexture->setRenderTarget();
-  
+
   geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
   //glLoadIdentity();
 
@@ -118,27 +118,27 @@ static Texture *createSpriteShadowTexture(GeomRenderer &geomRenderer, Texture &s
   spriteTexture.inactivate(0);
   spriteShadowShader.deActivate();
 
-  
+
   return spriteShadowTexture;
 }
 
 
 static Texture *createLabelTexture(GeomRenderer &geomRenderer, TextGl &textRenderer, const std::string &text, int textSize, const Vec4d &textColor = Vec4d(1, 1, 1, 1)) {
-  
+
   Vec2d dim = textRenderer.getDimensions(text, textSize);
   textRenderer.setColor(textColor);
-  
+
   Texture *labelTexture = new Texture(dim.x, dim.y);
-  
+
   Vec2d d(0, max(dim.y, geomRenderer.screenH) - dim.y);
-  
+
   labelTexture->setRenderTarget();
   clear(1, 1, 1, 0);
   geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
   //glLoadIdentity();
   textRenderer.print(text, d.x, d.y, textSize);
   labelTexture->unsetRenderTarget();
-  
+
   return labelTexture;
 }
 
@@ -170,13 +170,13 @@ struct GuiEventListener {
 struct GuiElement
 {
   static int screenW, screenH;
-  
+
   Texture *shadowTexture = NULL;
   bool drawShadow = false;
   int shadowWidth = 10;
   Vec2d shadowDisplacement = Vec2d(3, 3);
   Vec2d shadowPosition;
-  
+
   Texture prerenderedGuiElement;
   bool prerenderingNeeded = true;
 
@@ -202,22 +202,43 @@ struct GuiElement
   bool isVisible = true;
 
   Vec4d overlayColor;
-  
+
   // TODO different sorts of fade in/fade out effects utilizing these timers
   TicToc mouseArrivedTicToc, mouseDepartedTicToc, mousePressedTicToc, mouseReleasedTicToc;
-  
+
   GuiElement *guiElementCapturingMouse = NULL;
   int mousePosX = 0, mousePosY = 0;
-  
+
   bool mouseCapturedForChildren = false;
   bool mouseHidden = false;
-  
+
   bool closeRequested = false;
-  
+
   int readyToReceiveEvents = false;
-  
+
   static SDLInterface *sdlInterface;
-  
+
+
+  static int  defaultFontSize, actualFontSize;
+  static double fontSizeRatio, fontHeightRatio;
+  static GuiElement* root;
+
+  static void setFontSize(int size, TextGl &textRenderer) {
+    actualFontSize = size;
+    fontSizeRatio = (double)actualFontSize / defaultFontSize;
+    fontHeightRatio = textRenderer.getLineHeight(actualFontSize) / textRenderer.getLineHeight(defaultFontSize);
+    //informChildren(root);
+  }
+  static void informChildren(GuiElement *element) {
+    element->prerenderingNeeded = true;
+    for(int i=0; i<element->children.size(); i++) {
+      informChildren(element->children[i]);
+    }
+    element->onFontSizeChanged();
+  }
+  virtual void onFontSizeChanged() {}
+
+
   bool captureMouseForChildren() {
     GuiElement *root = this;
     while(root->parent) {
@@ -230,25 +251,25 @@ struct GuiElement
       root->guiElementCapturingMouse = guiElementCapturingMouse = this;
       mouseCapturedForChildren = true;
       //applyToChildren([](GuiElement *parent, GuiElement *child) { child->mouseCapturedForChildren = true; });
-      
+
       //root->deactivateMouseInput();
-      
+
       return true;
     //}
     //return false;
   }
   void deactivateMouseInput() {
     if(mouseCapturedForChildren) return;
-    
+
     isInputGrabbed = false;
     isMouseHover = false;
-    
+
     for(int i=0; i<children.size(); i++) {
       children[i]->deactivateMouseInput();
     }
   }
-  
-  
+
+
   bool captureAndHideMouse() {
     GuiElement *root = this;
     while(root->parent) {
@@ -263,7 +284,7 @@ struct GuiElement
     }
     return false;
   }
-  
+
   bool releaseMouse() {
     if(guiElementCapturingMouse) {
       GuiElement *root = this;
@@ -281,7 +302,7 @@ struct GuiElement
           mouseCapturedForChildren = false;
         }
         root->guiElementCapturingMouse = guiElementCapturingMouse = NULL;
-        
+
         return true;
       }
     }
@@ -304,9 +325,9 @@ struct GuiElement
   virtual ~GuiElement() {
     //printf("Gui element '%s', %lu removed\n", name.c_str(), (long)this);
   }
-  
+
   bool blockParentInputOnMouseHover = false;
-  
+
   bool isInputBlockedInChildren() {
     for(int i=0; i<children.size(); i++) {
       if(children[i]->isVisible) {
@@ -321,7 +342,7 @@ struct GuiElement
         }
       }
     }
-    
+
     return false;
   }
 
@@ -369,7 +390,7 @@ struct GuiElement
   virtual void setPosition(double x, double y) {
     this->pos.set(x, y);
   }
-  
+
   virtual Vec2d updateAbsolutePosition() {
     absolutePos = parent ? pos + parent->updateAbsolutePosition() : pos;
     return absolutePos;
@@ -403,7 +424,7 @@ struct GuiElement
     }
     onVisibilityChanged(isVisible);
   }
-  
+
   /*
   virtual void setVisible(bool isVisible) {
 
@@ -413,13 +434,13 @@ struct GuiElement
       }
       //onVisibilityChanged(isVisible);
     }
-    
+
     this->isVisible = isVisible;
-    
+
     if(isInputGrabbed && !isVisible) {
       isInputGrabbed = false;
     }
-    
+
     for(int i=0; i<children.size(); i++) {
       children[i]->setVisible(isVisible);
     }
@@ -428,13 +449,13 @@ struct GuiElement
 
   /*virtual void toggleVisibility() {
     isVisible = !isVisible;
-    
+
     if(isVisible) {
       prerenderingNeeded = true;
     }
     //onVisibilityChanged(isVisible);
   }*/
-  
+
 
   virtual void addChildElement(GuiElement *guiElement) {
     children.push_back(guiElement);
@@ -451,7 +472,7 @@ struct GuiElement
       }
     }
   }
-  
+
   virtual bool hasChildElement(GuiElement *guiElement) {
     for(int i=0; i<children.size(); i++) {
       if(children[i] == guiElement) {
@@ -480,7 +501,7 @@ struct GuiElement
     }
     children.clear();
   }
-  
+
   virtual void clearChildElements() {
     for(int i=0; i<children.size(); i++) {
       children[i]->parent = NULL;
@@ -505,19 +526,19 @@ struct GuiElement
 
   bool checkInputGrab() {
     if(!isVisible) return false;
-    
+
     isInputGrabbedAnywhere = false;
     isInputGrabbedInChildren = false;
-    
+
     for(GuiElement *childGuiElement : children) {
       if(childGuiElement->checkInputGrab()) {
         isInputGrabbedInChildren = true;
         //return true;
       }
     }
-    
+
     isInputGrabbedAnywhere = isInputGrabbed || isInputGrabbedInChildren;
-    
+
     return isInputGrabbedAnywhere;
   }
 
@@ -534,9 +555,9 @@ struct GuiElement
 
   void onValueChange(GuiElement *guiElement) {
     if(!isVisible) return;
-    
+
     //printf("onValueChange %s\n", name.c_str());
-    
+
     for(GuiEventListener *guiEventListener : guiEventListeners) {
       guiEventListener->onValueChange(guiElement);
     }
@@ -548,7 +569,7 @@ struct GuiElement
   void onAction() {
     onAction(this);
   }
-  
+
   void onAction(GuiElement *guiElement) {
     if(!isVisible) return;
 
@@ -560,7 +581,7 @@ struct GuiElement
     }
     prerenderingNeeded = true;
   }
-  
+
   template<class T>
   void getValue(T &value) {
     getTypedValue(value);
@@ -570,7 +591,7 @@ struct GuiElement
   virtual void getTypedValue(int &value) {  }
   virtual void getTypedValue(Vec4d &value) {  }
   virtual void getTypedValue(std::string &value) {  }
-  
+
 
   virtual void getValue(void *value) { printf("Error GuiElement::getValue(void*) not implemented! name: '%s'", name.c_str()); }
 
@@ -591,7 +612,7 @@ struct GuiElement
     }
     return root->doesThisApplyToAnyOtherElement(conditionFunction, this);
   }
-  
+
   void applyToChildren(const std::function<void(GuiElement *parent, GuiElement *child)> &applyFunction, GuiElement *invoker = NULL) {
     if(!invoker) invoker = this;
     for(int i=0; i<children.size(); i++) {
@@ -599,9 +620,9 @@ struct GuiElement
       children[i]->applyToChildren(applyFunction, invoker);
     }
   }
-  
+
 private:
-  
+
   bool doesThisApplyToAnyOtherElement(const std::function<bool(GuiElement *a, GuiElement *b)> &conditionFunction, GuiElement *enquiringElement) {
     for(int i=0; i<children.size(); i++) {
       if(children[i] != enquiringElement && conditionFunction(enquiringElement, children[i])) {
@@ -613,16 +634,16 @@ private:
     }
     return false;
   }
-  
+
 public:
-  
+
 
   // FIXME this should be called only when things change
   virtual void prepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {
     absolutePos = parent ? pos + parent->absolutePos : pos;
     absoluteZLayer = parent ? zLayer + parent->absoluteZLayer : zLayer;
     //printf("%f, %f\n", pos.x, absolutePos.x);
-    
+
     for(GuiElement *childGuiElement : children) {
       childGuiElement->prepare(geomRenderer, textRenderer);
     }
@@ -632,7 +653,7 @@ public:
     onPrepareShadowTexture(geomRenderer);
 
     prerender(geomRenderer, textRenderer);
-        
+
     readyToReceiveEvents = true;
   }
   virtual void onPrepare(GeomRenderer &geomRenderer, TextGl &textRenderer) {}
@@ -648,7 +669,10 @@ public:
       }
 
       prerenderedGuiElement.setRenderTarget();
-      
+
+      //clear(0, 0, 0, 0);
+
+
       // TODO put this stuff into Texture::setRenderTarget()
       double w = max(size.x, geomRenderer.screenW);
       double h = max(size.y, geomRenderer.screenH);
@@ -663,7 +687,7 @@ public:
       //glMatrixMode(GL_MODELVIEW);
       clear(1, 1, 1, 0);
       Vec2d d(0, max(size.y, geomRenderer.screenH) - prerenderedGuiElement.h);
-      
+
       //geomRenderer.setZLayer(absoluteZLayer);
 
       if(drawBackground || drawBorder) {
@@ -679,16 +703,16 @@ public:
       onPrerender(geomRenderer, textRenderer, d);
 
       //geomRenderer.resetZLayer();
-      
+
       prerenderedGuiElement.unsetRenderTarget();
-      
+
       // TODO put this stuff into Texture::unsetRenderTarget()
       glViewport(0, 0, geomRenderer.screenW, geomRenderer.screenH);
       geomRenderer.sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::Projection);
       geomRenderer.sdlInterface->glmMatrixStack.loadIdentity();
       geomRenderer.sdlInterface->glmMatrixStack.ortho(0, geomRenderer.screenW, geomRenderer.screenH, 0, -100, 100);
       geomRenderer.sdlInterface->glmMatrixStack.setMatrixMode(GlmMatrixStack::ModelView);
-      
+
       //glMatrixMode(GL_PROJECTION);
       //glLoadIdentity();
       //glOrtho(0, geomRenderer.screenW, geomRenderer.screenH, 0, -100, 100);
@@ -707,7 +731,7 @@ public:
   virtual void onPrerender(GeomRenderer &geomRenderer, TextGl &textRenderer, const Vec2d &displacement) {}
 
   virtual void onPrepareShadowTexture(GeomRenderer &geomRenderer) {}
-  
+
   // not the fastest to excecute single shadow stretched for all boxes case yet, bu this is probably fast enough for now, it only needs to be
   // rendered once per each gui element at initialization, so not too critical
 
@@ -733,6 +757,7 @@ public:
       if(prerenderedGuiElement.w > 0 && prerenderedGuiElement.h > 0) {
         prerenderedGuiElement.render(absolutePos+size*0.5, overlayColor);
       }
+      geomRenderer.strokeWidth = 1;
       onRender(geomRenderer, textRenderer);
     }
     for(GuiElement *childGuiElement : children) {
@@ -740,18 +765,18 @@ public:
         childGuiElement->renderShadow();
       }
     }
-    
+
     for(GuiElement *childGuiElement : children) {
       childGuiElement->render(geomRenderer, textRenderer, currentZLayer, nextZLayer);
     }
   }
 
 
-  
-  
-  
+
+
+
   virtual void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) {}
-  
+
 
   virtual bool isPointWithin(const Vec2d &p) {
     return isVisible && p.x >= absolutePos.x && p.x <= absolutePos.x + size.x && p.y >= absolutePos.y && p.y <= absolutePos.y + size.y;
@@ -788,7 +813,7 @@ public:
   }
   virtual void onMouseWheel(Events &events) {
     if(!isVisible || !readyToReceiveEvents) return;
-    
+
     if(guiElementCapturingMouse && guiElementCapturingMouse != this) {
       guiElementCapturingMouse->onMouseWheel(events);
       return;
@@ -805,7 +830,7 @@ public:
   }
   virtual void onMousePressed(Events &events) {
     if(!isVisible || !readyToReceiveEvents) return;
-    
+
     if(guiElementCapturingMouse && guiElementCapturingMouse != this) {
       guiElementCapturingMouse->onMousePressed(events);
       return;
@@ -815,7 +840,7 @@ public:
         children[i]->onMousePressed(events);
       }
     }
-    
+
     //if(isInputGrabbed) {
     if(isPointWithin(events.m)) {
       mousePressedTicToc.tic();
@@ -835,12 +860,12 @@ public:
         children[i]->onMouseReleased(events);
       }
     }
-    
+
     if(isInputGrabbed) {
       mouseReleasedTicToc.tic();
     }
     //if(isPointWithin(events.m)) {
-    
+
       onMouseReleasedNotify(events, this);
     //}
   }
@@ -961,8 +986,8 @@ public:
       parent->onMouseDepartedNotify(events, guiElement);
     }
   }
-  
-  
+
+
   void onTextInputNotify(Events &events, GuiElement *guiElement = NULL) {
     if(guiElement == NULL) guiElement = this;
     for(GuiEventListener *guiEventListener : guiEventListeners) {
@@ -972,7 +997,7 @@ public:
       parent->onTextInputNotify(events, guiElement);
     }
   }
-  
+
   /*void onValueChangeNotify(Events &events, GuiElement *guiElement = NULL) {
     if(guiElement == NULL) guiElement = this;
     for(GuiEventListener *guiEventListener : guiEventListeners) {
@@ -1011,7 +1036,7 @@ public:
       parent->sendMessage(message, guiElement);
     }
   }
-  
+
   virtual void sendMessage(const std::vector<std::string> &message, GuiElement *guiElement = NULL) {
     if(guiElement == NULL) guiElement = this;
     for(GuiEventListener *guiEventListener : guiEventListeners) {
@@ -1027,10 +1052,10 @@ public:
     std::vector<GuiElement*> allChildren;
     gatherChildElementsByZLayer(allChildren);
   }*/
-  
+
   std::vector<GuiElement*> sortChildrenByZLayer() {
     std::vector<GuiElement*> sorted;
-    
+
     for(int i=0; i<children.size(); i++) {
       bool childAdded = false;
       for(int k=0; k<sorted.size(); k++) {
@@ -1080,16 +1105,16 @@ struct RowColumnPlacer : public LayoutPlacer {
   static const int Left = 0, Middle = 1, Right = 2, Top = 3, Bottom = 4;
   int horizontalAlignment = Left;
   int verticalAlignment = Middle;
-  
+
   double progressDeltaX = 0;
   double alignmentDeltaX = 0;
   double alignmentDeltaY = 0;
-  
+
   virtual ~RowColumnPlacer() {}
-  
+
   void setPosition(GuiElement *guiElement) override {
     double x, y;
-    
+
     if(horizontalAlignment == Left) {
       x = getX();
     }
@@ -1099,7 +1124,7 @@ struct RowColumnPlacer : public LayoutPlacer {
     if(horizontalAlignment == Right) {
       x = getX() - guiElement->size.x;
     }
-    
+
     if(verticalAlignment == Top) {
       y = getY();
     }
@@ -1109,19 +1134,19 @@ struct RowColumnPlacer : public LayoutPlacer {
     else if(verticalAlignment == Bottom) {
       y = getY() + knobSize - guiElement->size.y;
     }
-    
+
     progressX(guiElement->size.x + progressDeltaX);
     x += alignmentDeltaX;
     y += alignmentDeltaY;
-    
+
     guiElement->setPosition(x, y);
   }
-  
+
   inline void setDeltas(double alignmentDeltaX = 0, double alignmentDeltaY = 0) {
     this->alignmentDeltaX = alignmentDeltaX;
     this->alignmentDeltaY = alignmentDeltaY;
   }
-  
+
 
   RowColumnPlacer &alignLeftTop(double alignmentDeltaX = 0, double alignmentDeltaY = 0) {
     setDeltas(alignmentDeltaX, alignmentDeltaY);
@@ -1159,7 +1184,7 @@ struct RowColumnPlacer : public LayoutPlacer {
     verticalAlignment = Bottom;
     return *this;
   }
-  
+
   void alignLeftTop(GuiElement *guiElement, double alignmentDeltaX = 0, double alignmentDeltaY = 0) {
     setDeltas(alignmentDeltaX, alignmentDeltaY);
     horizontalAlignment = Left;
@@ -1196,18 +1221,18 @@ struct RowColumnPlacer : public LayoutPlacer {
     verticalAlignment = Bottom;
     setPosition(guiElement);
   }
-  
+
   double width = 300;
   double line = 0;
   double lineStart = 0;
   double column = 10;
   double columnStart = 10;
   double knobSize = 32; // rename to height
-  
+
   bool rightToLeft = false;
-  
+
   //double defaultDeltaX = 0;
-  
+
   RowColumnPlacer() {}
   RowColumnPlacer(double width) : width(width) {}
   RowColumnPlacer(GuiElement *parentElement) : width(parentElement->size.x) {}
@@ -1229,7 +1254,7 @@ struct RowColumnPlacer : public LayoutPlacer {
     this->rightToLeft = rightToLeft;
     this->knobSize = height;
   }
-  
+
   void reset() {
     line = lineStart;
     column = columnStart;
@@ -1248,7 +1273,7 @@ struct RowColumnPlacer : public LayoutPlacer {
   double progressX(double deltaX) {
     double r = column;
     column += deltaX;
-    
+
     if(column >= width - columnStart) {
       column = columnStart;
       r = column;
@@ -1257,7 +1282,7 @@ struct RowColumnPlacer : public LayoutPlacer {
     }
     return rightToLeft ? width - r : r;
   }
-  
+
   double getX() {
     return rightToLeft ? width - column : column;
   }
@@ -1275,7 +1300,7 @@ struct ConstantWidthColumnPlacer : public LayoutPlacer {
   double verticalSpacing = 2;
   double verticalBorder = 6;
   double horizontalBorder = 6;
-  
+
   virtual ~ConstantWidthColumnPlacer() {}
   ConstantWidthColumnPlacer() {}
   ConstantWidthColumnPlacer(double width, double verticalSpacing = 2, double horizontalBorder = 6, double verticalBorder = 6) {
@@ -1300,7 +1325,7 @@ struct ConstantWidthColumnPlacer : public LayoutPlacer {
     guiElement->setSize(width, guiElement->size.y);
     y += guiElement->size.y + verticalSpacing;
   }
-  
+
   ConstantWidthColumnPlacer &align() {
     return *this;
   }
@@ -1313,4 +1338,3 @@ struct ConstantWidthColumnPlacer : public LayoutPlacer {
     return y;
   }
 };
-

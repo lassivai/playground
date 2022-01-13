@@ -1,8 +1,8 @@
 instrument {
-  name: Synth 3
+  name: Synth keys 15
   volume: 1
   voice {
-    volume: 0.14
+    volume: 0.25
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0

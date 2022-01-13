@@ -4,7 +4,7 @@ instrument {
   multiDelay {
     gain: 1.09
     wet: 0.88
-    samplerate: 48000
+    samplerate: 44100
     out: 1, 1
     out: 0, 0
     out: 0, 0
@@ -22,7 +22,7 @@ instrument {
     bandwidthKeyTracking: 0
   }
   voice {
-    volume: 0.08
+    volume: 0.14
     tuning: 1
     stereoPhaseOffset: 0.6
     pan: 0
@@ -62,7 +62,7 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.624373957, 1.005025126, 0, 0.871452421, 0.75879397, 0, 1, 0, 0
+        curve: 0, 1, 0, 0.624373957, 1, 0, 0.871452421, 0.75879397, 0, 1, 0, 0
       }
     }
   }

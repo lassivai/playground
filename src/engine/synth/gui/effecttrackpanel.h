@@ -5,17 +5,17 @@
 struct EffectTrackPanel : public Panel {
   /*struct EffectPreviewPanel : public Panel {
     PostProcessingEffect *postProcessingEffect;
-    
+
     EffectPreviewPanel(PostProcessingEffect *postProcessingEffect) : Panel("Voice preview panel") {
       drawBorder = false;
       drawBackground = false;
       draggable = false;
       this->postProcessingEffect = postProcessingEffect;
     }
-          
+
     virtual void onRender(GeomRenderer &geomRenderer, TextGl &textRenderer) {
       if(!isVisible) return;
-      
+
     }
   };*/
   struct EffectTrackTitleBar : public SynthTitleBarExt {
@@ -25,20 +25,20 @@ struct EffectTrackPanel : public Panel {
     MenuButton *addEqualizerMenuButton = NULL;
     MenuButton *addReverbMenuButton = NULL;
     MenuButton *addMultidelayMenuButton = NULL;
-    
+
     EffectTrackTitleBar(const std::string &title, EffectTrackPanel *effectTrackPanel) : SynthTitleBarExt(title, effectTrackPanel) {
       init(effectTrackPanel);
     }
-    
+
     void init(EffectTrackPanel *effectTrackPanel) {
       this->effectTrackPanel = effectTrackPanel;
-      menu = addMenu();
-      
+      //menu = addMenu();
+
       addBiquadMenuButton = menu->addMenuButton("Add Biquad Filter");
       addEqualizerMenuButton = menu->addMenuButton("Add Equalizer");
       addReverbMenuButton = menu->addMenuButton("Add Reverb");
       addMultidelayMenuButton = menu->addMenuButton("Add Multidelay");
-      
+
       addGuiEventListener(new EffectTrackTitleBarListeneter(this));
     }
     struct EffectTrackTitleBarListeneter : public GuiEventListener {
@@ -63,17 +63,17 @@ struct EffectTrackPanel : public Panel {
 
 
   EffectTrackTitleBar *titleBar = NULL;
-  
+
   std::vector<PostProcessingEffect*> *postProcessingEffects = NULL;
-  
+
   GuiElement *parentGuiElement = NULL;
-  
+
   DelayLine *delayLine;
-  
+
   EffectTrackPanel(std::vector<PostProcessingEffect*> *postProcessingEffects, DelayLine *delayLine, GuiElement *parentGuiElement) : Panel("Effect track panel") {
     init(postProcessingEffects, delayLine, parentGuiElement);
   }
-  
+
   void init(std::vector<PostProcessingEffect*> *postProcessingEffects, DelayLine *delayLine, GuiElement *parentGuiElement) {
     this->parentGuiElement = parentGuiElement;
     this->delayLine = delayLine;
@@ -85,10 +85,10 @@ struct EffectTrackPanel : public Panel {
 
     this->addGuiEventListener(new EffectTrackPanelListener(this));
     parentGuiElement->addChildElement(this);
-    
+
     titleBar = new EffectTrackTitleBar("Effects", this);
     //line += titleBar->size.y;
-    
+
     /*for(int i=0; i<postProcessingEffects->size(); i++) {
       Panel *panel = new Panel(trackItemSize.x, trackItemSize.y, 0, trackItemStartY+trackItemSize.y*i);
       postProcessingEffects->at(i)->initializeEffectTrackPanel(panel);
@@ -97,14 +97,14 @@ struct EffectTrackPanel : public Panel {
     //update();
     update();
   }
-  
+
   void onItemsChanged() {
     //update
   }
 
   void update() {
     double line = titleBar->size.y+5;
-    
+
     for(int i=0; i<postProcessingEffects.size(); i++) {
       if(!hasChildElement(postProcessingEffects[i]->getPreviewPanel())) {
         addChildElement(postProcessingEffects[i]->getPreviewPanel());
@@ -151,7 +151,7 @@ struct EffectTrackPanel : public Panel {
 
       }*/
     }
-    
+
   };
-  
+
 };

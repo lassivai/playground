@@ -15,9 +15,9 @@ struct CheckBox : public GuiElement
 
   Vec2d padding;
   bool value = false;
-  
+
   Vec2d boxSize, labelSize;
-  
+
   double gap;
 
   Vec2d boxPosition;
@@ -29,21 +29,21 @@ struct CheckBox : public GuiElement
     this->label = label;
     this->pos.set(x, y);
     //this->padding.set(paddingX, paddingY);
-    
+
     labelColor.set(0.8, 0.8, 0.8, 0.8);
     inputBackgroundColor.set(0.12, 0.12, 0.12, 0.85);
     inputBorderColor.set(0.5, 0.5, 0.5, 0.8);
     selectedColor.set(0.8, 0.8, 0.8, 0.6);
-    
+
     this->textSize = textSize;
     this->overlayColor = overlayColor;
-    
+
     gap = textSize * 0.66;
-    
+
     this->value = value;
-    
+
     drawShadow = true;
-    
+
     blockParentInputOnMouseHover = true;
   }
 
@@ -51,27 +51,31 @@ struct CheckBox : public GuiElement
     this->label = label;
     //this->pos.set(x, y);
     //this->padding.set(paddingX, paddingY);
-    
+
     labelColor.set(0.8, 0.8, 0.8, 0.8);
     inputBackgroundColor.set(0.12, 0.12, 0.12, 0.85);
     inputBorderColor.set(0.5, 0.5, 0.5, 0.8);
     selectedColor.set(0.8, 0.8, 0.8, 0.6);
-    
+
     this->textSize = textSize;
     this->overlayColor = overlayColor;
-    
+
     gap = textSize * 0.66;
-    
+
     this->value = value;
-    
+
     drawShadow = true;
-    
+
     blockParentInputOnMouseHover = true;
-    
+
     this->size.y = 23;
     layoutPlacer.setPosition(this);
   }
-  
+
+  void setTextSize(int size) {
+    textSize = size;
+  }
+
   virtual void onPrepareShadowTexture(GeomRenderer &geomRenderer) {
     if(drawShadow) {
       if(!shadowTexture) {
@@ -104,22 +108,22 @@ struct CheckBox : public GuiElement
     labelSize = textRenderer.getDimensions(label, textSize) + padding * 2.0;
     boxSize.set(labelSize.y*0.5, labelSize.y*0.5);
     size.set(labelSize.x + boxSize.x*1.5 + gap, labelSize.y);
-    
+
     boxPosition = Vec2d(labelSize.x + gap, boxSize.y*0.25);
   }
 
   void onPrerender(GeomRenderer &geomRenderer, TextGl &textRenderer, const Vec2d &displacement) {
-    
+
     textRenderer.setColor(labelColor);
     textRenderer.print(label, displacement + padding, textSize);
-    
+
     geomRenderer.texture = NULL;
     geomRenderer.fillColor = inputBackgroundColor;
     geomRenderer.strokeColor = inputBorderColor;
     geomRenderer.strokeType = 1;
     geomRenderer.strokeWidth = 1;
     geomRenderer.drawRect(boxSize, displacement + boxSize*0.5 + boxPosition);
-    
+
     if(value) {
       geomRenderer.fillColor = selectedColor;
       geomRenderer.strokeColor = selectedColor;
@@ -141,7 +145,7 @@ struct CheckBox : public GuiElement
   virtual void getTypedValue(bool &value) {
     value = this->value;
   }
-  
+
   void getValue(void *value) {
     *(bool*)value = this->value;
   }

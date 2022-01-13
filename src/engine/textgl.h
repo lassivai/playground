@@ -4,6 +4,7 @@
 #include "util.h"
 #include "gfxwrap.h"
 #include "image.h"
+
 //#include "fontl.h"
 #include <cstdio>
 #include <string>
@@ -61,6 +62,7 @@ struct TextGl
   Vec4d textColor;
 
 
+
   ~TextGl() {
     for(auto &uintFontDescPair : fontDescriptions) {
       delete uintFontDescPair.second;
@@ -81,7 +83,7 @@ struct TextGl
   double getLineHeight(int size, double scale = 1.0) {
     int actualSize = (int)(scale * size);
     int closestInitialSize = getClosestKeyAboveOrBelow(actualSize, fontDescriptions);
-    
+
     double scaleFactor = (double)actualSize/closestInitialSize;
     FontDescription *fontDescription = fontDescriptions[closestInitialSize];
     if(!fontDescription) {

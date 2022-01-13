@@ -2,7 +2,7 @@ instrument {
   name: Synth keys 17
   volume: 1
   voice {
-    volume: 0.25
+    volume: 0.45
     tuning: 1
     stereoPhaseOffset: 0.4
     pan: 0

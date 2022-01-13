@@ -2,7 +2,7 @@ instrument {
   name: Synth keys 18
   volume: 1
   voice {
-    volume: 0.15
+    volume: 0.22
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -24,7 +24,7 @@ instrument {
       lockedStereoPhase: 0
       numSteps: 1
       gaussianSmoothing: 0
-      pitchDependendGaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
       pitchDependendPartialAttenuation: 0
       pitchDependendGain: 0
       waveValueOffset: 0
@@ -48,6 +48,12 @@ instrument {
         xRange: 0, 0
         yRange: 0, 1
         curve: 0, 0, 0, 1, 0, 0
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.609348915, 1, 0, 0.801335559, 0.798994975, 0, 0.938230384, 0.567839196, 0, 1, 0, 0
       }
     }
   }

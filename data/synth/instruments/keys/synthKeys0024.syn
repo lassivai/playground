@@ -3,7 +3,7 @@ instrument {
   volume: 1
   noteFilterFrequencyModular: -1, 1, 1000, 6000
   voice {
-    volume: 0.62
+    volume: 0.8
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0

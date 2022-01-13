@@ -24,7 +24,7 @@ instrument {
     highPass: 20
   }
   voice {
-    volume: 0.75
+    volume: 0.55
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -40,7 +40,7 @@ instrument {
       waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: Zeros in range
-      waveTableSize: 16384
+      waveTableSize: 2048
       waveformParameters: 0, 0, 0
       phaseOffsets: 0, 1
       lockedStereoPhase: 1
@@ -74,7 +74,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.5
+    volume: 0.3
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -85,7 +85,6 @@ instrument {
     frequencyModulator: 0
     amplitudeEnvelope: 0
     frequencyEnvelope: -1
-    fixedFrequency: 100
     waveform {
       type: White noise
       waveTableMode: None
@@ -93,7 +92,7 @@ instrument {
       phaseMode: First zero
       waveTableSize: 2048
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.00097704, 0.00097704
+      phaseOffsets: 0.00048852, 0.00048852
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0
@@ -126,7 +125,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.3
+    volume: 0.2
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0

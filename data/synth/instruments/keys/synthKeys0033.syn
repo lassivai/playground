@@ -14,7 +14,7 @@ instrument {
     bandwidthFrequency: 0.059999999
   }
   voice {
-    volume: 0.5
+    volume: 0.1
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -65,12 +65,12 @@ instrument {
         numDataPoints: 128
         xRange: 0, 0
         yRange: 0, 1
-        curve: 0, 1, 0, 0.555926544, 1.010050251, 0, 0.771285476, 0.854271357, 0, 0.936560935, 0.497487437, 0, 1, 0, 0
+        curve: 0, 1, 0, 0.555926544, 1, 0, 0.771285476, 0.854271357, 0, 0.936560935, 0.497487437, 0, 1, 0, 0
       }
     }
   }
   voice {
-    volume: 0.5
+    volume: 0.1
     tuning: 0.25
     stereoPhaseOffset: 0
     pan: 0
@@ -115,7 +115,7 @@ instrument {
     }
   }
   voice {
-    volume: 1
+    volume: 0.2
     tuning: 1
     stereoPhaseOffset: 0.6
     pan: 0
@@ -126,13 +126,12 @@ instrument {
     frequencyModulator: -1
     amplitudeEnvelope: 2
     frequencyEnvelope: -1
-    fixedFrequency: 1
     waveform {
       type: White noise
       waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: First zero
-      waveTableSize: 65536
+      waveTableSize: 2048
       waveformParameters: 0, 0, 0
       phaseOffsets: 0, 0
       lockedStereoPhase: 1

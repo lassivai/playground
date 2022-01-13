@@ -24,7 +24,7 @@ instrument {
     highPass: 20
   }
   voice {
-    volume: 0.25
+    volume: 0.08
     tuning: 1
     stereoPhaseOffset: 0
     pan: 0
@@ -80,7 +80,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.25
+    volume: 0.08
     tuning: 4
     stereoPhaseOffset: 0
     pan: 0
@@ -142,7 +142,7 @@ instrument {
     }
   }
   voice {
-    volume: 0.45
+    volume: 0.15
     tuning: 0.5
     stereoPhaseOffset: 0
     pan: 0
