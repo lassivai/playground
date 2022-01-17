@@ -1,64 +1,116 @@
 instrument {
   name: FM synth 5
-  volume: 1.00000
-
+  volume: 1
+  reverb {
+    subtype: Zita
+    gain: 0.5
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.89
+    rt60: 3
+    rt60factorLow: 1
+    rt60factorHigh: 0.3
+    dcCutFrequency: 2.5
+    lfo1: 0.3
+    lfo2: 1
+    lfoFactor: 0.9
+    spin: 0.7
+    spinFactor: 0.5
+    xOverLow: 90
+    xOverHigh: 3000
+    apFeedback: 0.5
+    lowPass: 10000
+    highPass: 4
+  }
   voice {
-    volume: 0.150000
-    tuning: 1.000000
+    volume: 0.15
+    tuning: 1
     stereoPhaseOffset: 0.000003
+    pan: 0
     unison: 1
-    unisonDetuning: 1.000000
+    unisonDetuning: 1
     unisonDetuningRandomSeeds: 0, 0
-    amplitudeEnvelope: 1
+    amplitudeModulator: 0
     frequencyModulator: 1
+    amplitudeEnvelope: 1
+    frequencyEnvelope: -1
     waveform {
       type: Wave08
       waveTableMode: Single faster
-      waveformParameters: 60.000000
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 60, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: None
         count: 1
-        usePattern: 0
-        frequencies: 1.000000
-        gains: 1.000000
+        frequencies: 1
+        gains: 1
       }
     }
   }
-  envelope {
-    output: 1
-    type: ahe
-    parameters: 0.000000, 0.000000, -60.000000
-  }
   modulator {
-    depthFM: 3.000000
+    frequency: 0.5
+    stereoPhaseOffset: 0.5
+    pan: 0
+    stereoPhaseDifference: 0
+    relativeMode: 1
+    inputAM: -1
+    inputFM: -1
+    outputAM: -1
     outputFM: 1
     amplitudeEnvelope: 2
-    frequency: 0.500000
-    stereoPhaseOffset: 0.500000
-    stereoPhaseDifference: 0.000000
-    relativeMode: 1
+    frequencyEnvelope: -1
+    depthAM: 1
+    depthFM: 3
     waveform {
       type: Wave05
       waveTableMode: Single faster
-      waveformParameters: 1.000000
-      phaseOffsets: 0.000000, 0.000000
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
-      gaussianSmoothing: 0.000000
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
       partials {
+        pattern: Equation
         count: 12
-        usePattern: 1
-        frequencyParameters: 1.000000, 1.000000, 0.000000, 0.000000, 1.000000, 0.000000
-        gainParameters: 1.800000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+        frequencyParameters: 1, 1, 0, 0, 1, 0
+        gainParameters: 1.8, 0, 0, 0, 0, 0
       }
     }
   }
   envelope {
-    output: 2
+    type: ahe
+    parameters: 0, 0, -60, -0.05
+    output: 1
+  }
+  envelope {
     type: fourPoint
-    parameters: 0.000000, 1.000000, 1.000000, 1.000000, 0.500000, 0.000000, 0.000000, 0.000000
+    parameters: 0, 1, 1, 1, 0.5, 0, 0, 0
+    output: 2
   }
 }

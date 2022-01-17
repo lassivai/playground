@@ -13,6 +13,7 @@
 
 #include "spectrummapfixed.h"
 
+#include "gui/effecttrackpanel.h"
 /* TODO 
  * Option to choose longer delay line
  *
@@ -162,7 +163,7 @@ struct Instrument : public HierarchicalTextFileParser {
   std::vector<PostProcessingEffect*> postProcessingEffects;
   DelayLine delayLine;
 
-  int activePostProcessingEffect = 0;
+  //int activePostProcessingEffect = 0;
 
   Vec2d sampleOut;
 
@@ -248,7 +249,7 @@ struct Instrument : public HierarchicalTextFileParser {
     
     delayLine.reset();
 
-    activePostProcessingEffect = 0;
+    //activePostProcessingEffect = 0;
 
     sampleOut.set(0, 0);
 
@@ -380,7 +381,7 @@ struct Instrument : public HierarchicalTextFileParser {
 
     volume = instrument.volume;
 
-    activePostProcessingEffect = instrument.activePostProcessingEffect;
+    //activePostProcessingEffect = instrument.activePostProcessingEffect;
 
     isMuted = instrument.isMuted;
     isActive = instrument.isActive;
@@ -1126,7 +1127,7 @@ public:
         voicePreviewPanels[i]->setPosition(columnB, line+4);
 
         addChildElement(voiceOpenGuiGuis[i] = new Button("Open voice GUI", "data/synth/textures/gui.png", columnC-20, line+2, Button::ToggleButton));
-        voiceOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
+        //voiceOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
         
         voiceAmplitudeModulatorInputIndexGuis[i] = new NumberBox("", instrument->voices[i].inputAM, NumberBox::INTEGER, -1, maxNumModulators, columnC, line, 2);
         voiceAmplitudeModulatorInputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
@@ -1191,6 +1192,9 @@ public:
         voiceAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputAmplitudeEnvelope);
         voiceFrequencyEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputFrequencyEnvelope);
         
+        voiceOpenGuiGuis[i]->setValue(false);
+        //voiceOpenGuiGuis[i]->setValue(instrument->voices[i].getPanel() != NULL && instrument->voices[i].getPanel()->isVisible);
+        
         voiceLabels[i]->setVisible(i < instrument->numVoices);
         voicePreviewPanels[i]->setVisible(i < instrument->numVoices);
         voiceOpenGuiGuis[i]->setVisible(i < instrument->numVoices);
@@ -1198,6 +1202,8 @@ public:
         voiceFrequencyModulatorInputIndexGuis[i]->setVisible(i < instrument->numVoices);
         voiceAmplitudeEnvelopeIndexGuis[i]->setVisible(i < instrument->numVoices);
         voiceFrequencyEnvelopeIndexGuis[i]->setVisible(i < instrument->numVoices);
+        
+        
       }
       setSize(columnF + width + 5, 10 + lineHeight * (instrument->numVoices+1) + 10);
     }
@@ -1460,7 +1466,7 @@ public:
         modulatorPreviewPanels[i]->setPosition(columnB, line+4);
 
         addChildElement(modulatorOpenGuiGuis[i] = new Button("Open modulator GUI", "data/synth/textures/gui.png", columnC-20, line+2, Button::ToggleButton));
-        modulatorOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
+        //modulatorOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
 
         genericModulatorAmplitudeModulatorOutputIndexGuis[i] = new NumberBox("", instrument->modulators[i].outputAM, NumberBox::INTEGER, -1, maxNumModulators, columnC, line, 2);
         genericModulatorAmplitudeModulatorOutputIndexGuis[i]->incrementMode = NumberBox::IncrementMode::Linear;
@@ -1534,6 +1540,8 @@ public:
         genericModulatorFrequencyModulatorInputIndexGuis[i]->setValue(instrument->modulators[i].inputFM);
         genericModulatorAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].amplitudeEnvelope);
         genericModulatorFrequencyEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].frequencyEnvelope);
+        
+        modulatorOpenGuiGuis[i]->setValue(false);
         
         modulatorLabels[i]->setVisible(i < instrument->numModulators);
         modulatorPreviewPanels[i]->setVisible(i < instrument->numModulators);
@@ -1778,7 +1786,7 @@ public:
         envelopePreviewPanels[i]->setPosition(columnB, line+4);
 
         addChildElement(envelopeOpenGuiGuis[i] = new Button("Open envelope GUI", "data/synth/textures/gui.png", columnC-20, line+2, Button::ToggleButton));
-        envelopeOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
+        //envelopeOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
         
         
         genericEnvelopeOutputGuis[i] = new NumberBox("", instrument->envelopes[i].outputIndex, NumberBox::INTEGER, -1, maxNumEnvelopes, columnC, line, 2);
@@ -1825,6 +1833,8 @@ public:
         envelopeLabels[i]->setVisible(i < instrument->numEnvelopes);
         envelopePreviewPanels[i]->setVisible(i < instrument->numEnvelopes);
         envelopeOpenGuiGuis[i]->setVisible(i < instrument->numEnvelopes);
+        
+        envelopeOpenGuiGuis[i]->setValue(false);
         
         genericEnvelopeOutputGuis[i]->setValue(instrument->envelopes[i].outputIndex);
         genericEnvelopeOutputGuis[i]->setVisible(i < instrument->numEnvelopes);
@@ -2161,7 +2171,7 @@ public:
     InstrumentTitleBar *titleBar = NULL;
     
     TextBox *instrumentNameGui = NULL;
-    ListBox *instrumentEffectsGui = NULL;
+    //ListBox *instrumentEffectsGui = NULL;
     
     PreviewPanel *previewPanel = NULL;
     
@@ -2175,6 +2185,8 @@ public:
     
     ModularParameterPanel *modularParameterPanel = NULL;
     VoiceCrossModulation::VoiceCrossModulationPanel *voiceCrossModulationPanel = NULL;
+    
+    EffectTrackPanel *effectTrackPanel = NULL;
     
     Instrument *instrument = NULL;
     GuiElement *parentGuiElement = NULL;
@@ -2222,10 +2234,10 @@ public:
 
       instrumentNameGui = new TextBox("Name", instrument->name, 12, line);
       this->addChildElement(instrumentNameGui);
-
-      instrumentEffectsGui = new ListBox("Effects/filters", 10, line+=lineHeight, 12);
+      line += lineHeight;
+      /*instrumentEffectsGui = new ListBox("Effects/filters", 10, line+=lineHeight, 12);
       this->addChildElement(instrumentEffectsGui);
-      line+=lineHeight;
+      line+=lineHeight;*/
       /*addChildElement(previewPanel = new PreviewPanel(instrument, size.x-20, 90));
       previewPanel->setPosition(10, line+=6);
       line += previewPanel->size.y;*/
@@ -2244,10 +2256,10 @@ public:
       
       envelopesPanel = new EnvelopesPanel(this->instrument, this);
       envelopesPanel->setPosition(this->size.x + 5, 0);
-
+      
       modulatorsPanel = new ModulatorsPanel(this->instrument, this);
       modulatorsPanel->setPosition(0, voicesPanel->pos.y + voicesPanel->size.y + 23 + 5);
-      modulatorsPanel->setVisible(false);
+      //modulatorsPanel->setVisible(false);
 
       addChildElement(modularParameterPanel = new ModularParameterPanel(this->instrument));
       modularParameterPanel->setVisible(false);
@@ -2264,16 +2276,20 @@ public:
       instrument->biquadFilter->getPanel()->setVisible(this->instrument->biquadFilter->isActive);
       instrument->biquadFilter->getPanel()->setPosition(voicesPanel->size.x + 5, envelopesPanel->size.y + 23 + 5);
 
-      addChildElement(recordedNotesPanel = new RecordedNotesPanel(instrument));
-      recordedNotesPanel->setPosition(0, 300);
+      //addChildElement(recordedNotesPanel = new RecordedNotesPanel(instrument));
+      //recordedNotesPanel->setPosition(0, 300);
+
+      effectTrackPanel = new EffectTrackPanel(&this->instrument->postProcessingEffects, &instrument->delayLine, this);
+      effectTrackPanel->setPosition(envelopesPanel->pos.x + envelopesPanel->size.x + 5, 0);
+      effectTrackPanel->setVisible(true);
 
       update();
 
-      updatePostPocessingPanels();
+      //updatePostPocessingPanels();
 
     }
 
-    void updatePostPocessingPanels() {
+    /*void updatePostPocessingPanels() {
       if(instrument->postProcessingEffects.size() > 0) {
         for(int i=0; i<instrument->postProcessingEffects.size(); i++) {
           if(i != instrument->activePostProcessingEffect && instrument->postProcessingEffects[i]->getPanel()) {
@@ -2281,7 +2297,7 @@ public:
           }
         }
       }
-    }
+    }*/
 
     void update(bool reinit = false) {
 
@@ -2289,7 +2305,7 @@ public:
       //showModularMatrixGui->setValue(modularParameterPanel && modularParameterPanel->isVisible);
       //showVoiceCrossModulationMatrixGui->setValue(voiceCrossModulationPanel && voiceCrossModulationPanel->isVisible);
       //showBiquadFilterGui->setValue(instrument->biquadFilter->getPanel() && instrument->biquadFilter->getPanel()->isVisible);
-      instrumentEffectsGui->clearItems();
+      /*instrumentEffectsGui->clearItems();
       if(instrument->postProcessingEffects.size() == 0) {
         instrumentEffectsGui->addItems("No effects");
       }
@@ -2299,7 +2315,7 @@ public:
                                          std::to_string(i+1) + "/" + std::to_string(instrument->postProcessingEffects.size()));
         }
         instrumentEffectsGui->setValue(instrument->activePostProcessingEffect);
-      }
+      }*/
       voicesPanel->update();
       modulatorsPanel->update();
       envelopesPanel->update();
@@ -2361,12 +2377,12 @@ public:
           guiElement->getValue((void*)&instrumentPanel->instrument->name);
           instrumentPanel->getRoot()->sendMessage("instrumentNameChanged", instrumentPanel->instrument);
         }
-        if(guiElement == instrumentPanel->instrumentEffectsGui) {
+        /*if(guiElement == instrumentPanel->instrumentEffectsGui) {
           guiElement->getValue((void*)&instrumentPanel->instrument->activePostProcessingEffect);
           //printf("1... %d, %lu\n", instrument->activePostProcessingEffect, instrument->postProcessingEffects.size());
           instrumentPanel->update();
           //printf("2... %d, %lu\n", instrument->activePostProcessingEffect, instrument->postProcessingEffects.size());
-        }
+        }*/
         /*if(guiElement == instrumentPanel->showModularMatrixGui) {
           bool visible = false;
           guiElement->getValue((void*)&visible);
@@ -2386,7 +2402,7 @@ public:
       }
 
 
-      void onKeyDown(GuiElement *guiElement, Events &events) {
+      /*void onKeyDown(GuiElement *guiElement, Events &events) {
         if(guiElement == instrumentPanel->instrumentEffectsGui) {
           bool changed = false;
           // FIXME clean
@@ -2467,7 +2483,7 @@ public:
           }
           printf("(debugging) at InstrumentPanelListener::onKeyDown(): 11...\n");
         }
-      }
+      }*/
     };
   };
 
@@ -2559,6 +2575,9 @@ public:
     
     if(instrumentPanel && instrumentPanel->isVisible) {
       instrumentPanel->startUpdate();
+    }
+    if(instrumentPanel) {
+      instrumentPanel->effectTrackPanel->onItemsChanged();
     }
   }
 

@@ -65,7 +65,7 @@
 #include "synth/audioplayer.h"
 //#include "sndfileio.h"
 
-//#include "synth/gui/effecttrackpanel.h"
+
 
 #include "games/minesweeper.h"
 

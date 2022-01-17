@@ -11,7 +11,11 @@ print variable-name
 frame frame-number
 up n and down n, scroll frames
 
+possible place for cores
+/var/lib/apport/coredump
 
+possible info about cores
+/var/log/apport.log
 
 ---------------- Prone to bugs ----------------
 

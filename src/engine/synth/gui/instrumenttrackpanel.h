@@ -330,7 +330,7 @@ struct InstrumentTrackPanel : public Panel {
       addChildElement(activeInstrumentNameGuis[i]);
 
       addChildElement(activeInstrumentOpenGuiGuis[i] = new Button("Open Instrument GUI", "data/synth/textures/gui.png", columnA2, line+2, Button::ToggleButton));
-      activeInstrumentOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
+      //activeInstrumentOpenGuiGuis[i]->pressedOverlayColor.set(1, 1, 1, 0.22);
 
       activeInstrumentVolumeGuis[i] = new NumberBox("", synth->instrumentTracks[i].volume, NumberBox::FLOATING_POINT, 0, 1e6, columnB, line, 6);
       activeInstrumentVolumeGuis[i]->setTextSize(GuiElement::actualFontSize);

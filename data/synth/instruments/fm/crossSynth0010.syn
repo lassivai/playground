@@ -1,115 +1,133 @@
-synth {
-  instrument {
-    name: Cross synth 10
-    volume: 1
-    biquadFilter {
-      subtype: High-pass
-      gain: 1
-      wet: 1
-      frequency: 20
-      dbGain: 3
-      bandwidth: 2
-      qualityFactor: 1
-    }
-    reverb {
-      subtype: Zita
-      gain: 0.8
-      wet: 1
-      dry: 1
-      width: 1
-      diffusion: 0.99
-      rt60: 5
-      rt60factorLow: 1
-      rt60factorHigh: 0.4
-      dcCutFrequency: 1
-      lfo1: 6
-      lfo2: 6
-      lfoFactor: 0.1
-      spin: 0.7
-      spinFactor: 0.09
-      xOverLow: 1
-      xOverHigh: 8
-      apFeedback: 0
-      lowPass: 1000
-      highPass: 60
-    }
-    voice {
-      volume: 0.25
-      tuning: 1.024
-      stereoPhaseOffset: 0
-      pan: 0
-      unison: 1
-      unisonDetuning: 0.001
-      unisonDetuningRandomSeeds: 0, 0
-      amplitudeModulator: 0
-      frequencyModulator: 0
-      amplitudeEnvelope: 0
-      frequencyEnvelope: -1
-      waveform {
-        type: Sin
-        waveTableMode: Single
-        waveformParameters: 1
-        phaseOffsets: 0, 0
-        lockedStereoPhase: 1
-        numSteps: 1
-        gaussianSmoothing: 0
-        pitchDependendGaussianSmoothing: 0
-        pitchDependendPartialAttenuation: 0
-        waveValueOffset: 0
-        partials {
-          pattern: None
-          count: 1
-          frequencies: 1
-          gains: 0.5
-        }
+instrument {
+  name: Cross synth 10
+  volume: 1
+  reverb {
+    subtype: Zita
+    gain: 0.8
+    wet: 1
+    dry: 1
+    width: 1
+    diffusion: 0.9
+    rt60: 5
+    rt60factorLow: 1
+    rt60factorHigh: 0.4
+    dcCutFrequency: 1
+    lfo1: 6
+    lfo2: 6
+    lfoFactor: 0.1
+    spin: 0.7
+    spinFactor: 0.09
+    xOverLow: 1
+    xOverHigh: 8
+    apFeedback: 0
+    lowPass: 1000
+    highPass: 60
+  }
+  biquadFilter {
+    subtype: High-pass
+    keyTrackingMode: Pitch
+    gain: 1
+    wet: 1
+    frequency: 20
+    dbGain: 3
+    bandwidth: 2
+    qualityFactor: 1
+    frequencyKeyTracking: 0
+    bandwidthKeyTracking: 0
+  }
+  voice {
+    volume: 0.25
+    tuning: 1.024
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Sin
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
       }
     }
-    voice {
-      volume: 0.25
-      tuning: 1.024
-      stereoPhaseOffset: 0.5
-      pan: 0
-      unison: 5
-      unisonDetuning: 0.3
-      unisonDetuningRandomSeeds: 0, 0
-      amplitudeModulator: 0
-      frequencyModulator: 0
-      amplitudeEnvelope: 0
-      frequencyEnvelope: -1
-      filterFrequencyModular: -1, 1, 800, 30000
-      waveform {
-        type: Sin
-        waveTableMode: Single
-        waveformParameters: 1
-        phaseOffsets: 0, 0
-        lockedStereoPhase: 1
-        numSteps: 1
-        gaussianSmoothing: 0
-        pitchDependendGaussianSmoothing: 0
-        pitchDependendPartialAttenuation: 0
-        waveValueOffset: 0
-        partials {
-          pattern: None
-          count: 1
-          frequencies: 1
-          gains: 0.5
-        }
+  }
+  voice {
+    volume: 0.25
+    tuning: 1.024
+    stereoPhaseOffset: 0.5
+    pan: 0
+    unison: 5
+    unisonDetuning: 0.3
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    filterFrequencyModular: -1, 1, 800, 30000
+    waveform {
+      type: Sin
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: Random in range
+      waveTableSize: 2048
+      waveformParameters: 1, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
       }
     }
-    envelope {
-      type: ahe
-      parameters: 0.1, -0, -7
-      output: 0
-    }
-    envelope {
-      type: ahe
-      parameters: 0, -0, -4
-      output: 1
-    }
-    voiceCrossModulation {
-      mode: Frequency modulation
-      numVoices: 2
-      amounts: 0.2, 0, 7, 6
-    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0.1, -0, -7, -0.05
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -0, -4, -0.05
+    output: 1
+  }
+  voiceCrossModulation {
+    mode: Frequency modulation
+    amplitudeMode: Constant
+    numVoices: 2
+    amounts: 0.2, 0, 7, 6
   }
 }

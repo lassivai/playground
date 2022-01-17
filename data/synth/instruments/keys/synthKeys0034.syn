@@ -2,6 +2,18 @@ instrument {
   name: Synth Keys 34
   volume: 1
   noteFilterFrequencyModular: -1, 1, 200, 6000
+  reverb {
+    subtype: MVerb
+    gain: 1.3
+    mix: 0.300000012
+    earlyMix: 1
+    size: 1
+    density: 0.5
+    decay: 0.800000012
+    preDelay: 0
+    dampingFrequency: 0.200000003
+    bandwidthFrequency: 1
+  }
   voice {
     volume: 0.13
     tuning: 1
@@ -21,7 +33,7 @@ instrument {
       phaseMode: First zero
       waveTableSize: 2048
       waveformParameters: 0, 0, 0
-      phaseOffsets: 0.00097704, 0.00097704
+      phaseOffsets: 0, 0
       lockedStereoPhase: 1
       numSteps: 1
       gaussianSmoothing: 0

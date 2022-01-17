@@ -209,7 +209,7 @@ struct Reverb : public PostProcessingEffect {
     NumberBox *preDelayGui = NULL;
 
     static const int numLayouts = 3;
-    int layout = 1;
+    int layout = 0;
     
     struct ReverbGuiLayout : public SynthGuiLayout {
       struct Tab {
