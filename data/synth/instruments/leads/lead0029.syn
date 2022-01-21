@@ -1,0 +1,177 @@
+instrument {
+  name: Lead 29
+  volume: 1
+  reverb {
+    subtype: FreeVerb
+    gain: 1
+    wet: 0.933333
+    dry: 0
+    width: 1
+    roomSize: 0.58
+    damp: 0.94
+  }
+  voice {
+    volume: 0.65
+    tuning: 40
+    stereoPhaseOffset: 90
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    filterFrequencyModular: -1, 1, 500, 3000
+    waveform {
+      type: Gradient noise
+      waveTableMode: Single faster
+      waveTableSeamMode: Linear seam
+      phaseMode: First zero
+      waveTableSize: 65536
+      waveformParameters: 0, 0, 0
+      phaseOffsets: 1.831082628, 1.831082628
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 0
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      fastNoise {
+        noiseType: 6
+        frequency: 40000
+        seed: 56789
+        interpolation: 0
+        fractalType: 0
+        fractalOctaves: 3
+        fractalLacunarity: 2
+        fractalGain: 0.5
+        cellularDistanceFunction: 0
+        cellularReturnType: 0
+      }
+    }
+    biquadFilter {
+      subtype: Low-pass
+      keyTrackingMode: Pitch
+      gain: 1
+      wet: 1
+      frequency: 2000
+      dbGain: 3
+      bandwidth: 2
+      qualityFactor: 1
+      frequencyKeyTracking: 0
+      bandwidthKeyTracking: 0
+    }
+  }
+  voice {
+    volume: 0.25
+    tuning: 0.5
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Square
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 0.5, 0, 0
+      phaseOffsets: 0, 0
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.58096828, 1, 0, 0.782971619, 0.964824121, 0, 0.938230384, 0.653266332, 0, 1, 0, 0
+      }
+    }
+  }
+  voice {
+    volume: 0.25
+    tuning: 1
+    stereoPhaseOffset: 0
+    pan: 0
+    unison: 1
+    unisonDetuning: 0.001
+    unisonDetuningRandomSeeds: 0, 0
+    amplitudeModulator: 0
+    frequencyModulator: 0
+    amplitudeEnvelope: 0
+    frequencyEnvelope: -1
+    waveform {
+      type: Wave05
+      waveTableMode: Single
+      waveTableSeamMode: No seam
+      phaseMode: First zero
+      waveTableSize: 2048
+      waveformParameters: 20, 0, 0
+      phaseOffsets: 0.00048852, 0.00048852
+      lockedStereoPhase: 1
+      numSteps: 1
+      gaussianSmoothing: 0
+      pitchDependendGaussianSmoothing: 1
+      pitchDependendPartialAttenuation: 0
+      pitchDependendGain: 0
+      waveValueOffset: 0
+      minHarmonicSmoothing: 1
+      maxHarmonicSmoothing: 100
+      harmonicSmoothingSlope: 1
+      harmonicSmoothingPower: 1
+      partials {
+        pattern: None
+        count: 1
+        frequencies: 1
+        gains: 0.5
+      }
+      pitchSmoothingsDraggingGraph {
+        numDataPoints: 128
+        xRange: 0, 0
+        yRange: 0, 1
+        curve: 0, 1, 0, 0.774624374, 1, 0, 0.903171953, 0.577889447, 0, 1, 0, 0
+      }
+    }
+  }
+  envelope {
+    type: ahe
+    parameters: 0, 0, -6, -0.05
+    output: 0
+  }
+  envelope {
+    type: ahe
+    parameters: 0, -4, -4, -0.05
+    output: 1
+  }
+}

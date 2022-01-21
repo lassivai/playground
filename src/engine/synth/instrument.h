@@ -1192,8 +1192,8 @@ public:
         voiceAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputAmplitudeEnvelope);
         voiceFrequencyEnvelopeIndexGuis[i]->setValue(instrument->voices[i].inputFrequencyEnvelope);
         
-        voiceOpenGuiGuis[i]->setValue(false);
-        //voiceOpenGuiGuis[i]->setValue(instrument->voices[i].getPanel() != NULL && instrument->voices[i].getPanel()->isVisible);
+        //voiceOpenGuiGuis[i]->setValue(false);
+        voiceOpenGuiGuis[i]->setValue(instrument->voices[i].getPanel() != NULL && instrument->voices[i].getPanel()->isVisible);
         
         voiceLabels[i]->setVisible(i < instrument->numVoices);
         voicePreviewPanels[i]->setVisible(i < instrument->numVoices);
@@ -1541,7 +1541,8 @@ public:
         genericModulatorAmplitudeEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].amplitudeEnvelope);
         genericModulatorFrequencyEnvelopeIndexGuis[i]->setValue(instrument->modulators[i].frequencyEnvelope);
         
-        modulatorOpenGuiGuis[i]->setValue(false);
+        //modulatorOpenGuiGuis[i]->setValue(false);
+        modulatorOpenGuiGuis[i]->setValue(instrument->modulators[i].getPanel() != NULL && instrument->modulators[i].getPanel()->isVisible);
         
         modulatorLabels[i]->setVisible(i < instrument->numModulators);
         modulatorPreviewPanels[i]->setVisible(i < instrument->numModulators);
@@ -1834,7 +1835,8 @@ public:
         envelopePreviewPanels[i]->setVisible(i < instrument->numEnvelopes);
         envelopeOpenGuiGuis[i]->setVisible(i < instrument->numEnvelopes);
         
-        envelopeOpenGuiGuis[i]->setValue(false);
+        //envelopeOpenGuiGuis[i]->setValue(false);
+        envelopeOpenGuiGuis[i]->setValue(instrument->envelopes[i].getPanel() != NULL && instrument->envelopes[i].getPanel()->isVisible);
         
         genericEnvelopeOutputGuis[i]->setValue(instrument->envelopes[i].outputIndex);
         genericEnvelopeOutputGuis[i]->setVisible(i < instrument->numEnvelopes);
@@ -2316,17 +2318,7 @@ public:
         }
         instrumentEffectsGui->setValue(instrument->activePostProcessingEffect);
       }*/
-      voicesPanel->update();
-      modulatorsPanel->update();
-      envelopesPanel->update();
-      modularParameterPanel->update();
-      voiceCrossModulationPanel->update();
-      
-      if(!this->instrument->biquadFilter->getPanel()) {
-        this->instrument->biquadFilter->addPanel(this);
 
-        this->instrument->biquadFilter->getPanel()->setVisible(false);
-      }
       
       if(reinit) {
         for(int i=0; i<instrument->voices.size(); i++) {
@@ -2350,6 +2342,19 @@ public:
           }
         }
       }
+      
+      voicesPanel->update();
+      modulatorsPanel->update();
+      envelopesPanel->update();
+      modularParameterPanel->update();
+      voiceCrossModulationPanel->update();
+      
+      if(!this->instrument->biquadFilter->getPanel()) {
+        this->instrument->biquadFilter->addPanel(this);
+
+        this->instrument->biquadFilter->getPanel()->setVisible(false);
+      }
+      
       titleBar->update();
     }
     

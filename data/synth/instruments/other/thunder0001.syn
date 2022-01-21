@@ -24,8 +24,8 @@ instrument {
     highPass: 200
   }
   voice {
-    volume: 2.05
-    tuning: 0.0005
+    volume: 1
+    tuning: 1
     stereoPhaseOffset: 0
     pan: 0
     unison: 1
@@ -40,7 +40,7 @@ instrument {
       waveTableMode: Single faster
       waveTableSeamMode: No seam
       phaseMode: Zeros in range
-      waveTableSize: 1048576
+      waveTableSize: 131072
       waveformParameters: 0, 0, 0
       phaseOffsets: 0, 1
       lockedStereoPhase: 0
